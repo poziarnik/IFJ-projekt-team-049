@@ -1,11 +1,10 @@
+
 #include "Scanner.h"
 
 int main(){
-    int c;
-    while (c!=EOF)
-    {
-        c = fgetc(stdin);
-        printf("%c",c);
+    int c = 0;
+    while ( (c = fgetc(stdin)) != EOF){
+        printf("%c", c);
     }
-    
+    return 0;
 }    
