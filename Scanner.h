@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct MyToken {        //token
-    int type;                   //typ tokenu
-    char* content;              //bude nutne alokovat pamet
+    char* type;                   //typ tokenu
+    char* att;              //bude nutne alokovat pamet
 }Token;
 
 /*
@@ -15,10 +16,6 @@ typedef struct MyToken {        //token
     4 - operator
 */
 
-Token getToken( FILE Myfile, int counter);
-
-/*
-    parametre:
-    FILE MyFile - citany subor
-    int counter - sucastne miesto v subore
-*/
+int getToken( FILE* Myfile, Token* MyToken);
+Token* createToken();
+void tokenInit(Token* MyToken);

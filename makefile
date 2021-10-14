@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c99 -Wall -pedantic -lm -fcommon -g
 FILES = Scanner.c Scanner.h main.c
 
-run: 
+advanced: 
 	$(CC) $(CFLAGS) -o test $(FILES) 
 
 primitive:
