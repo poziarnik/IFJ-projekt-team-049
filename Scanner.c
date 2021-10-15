@@ -66,12 +66,11 @@ int getToken( FILE* Myfile, Token* MyToken){
 Token* createToken(){
     Token* NewToken;
     NewToken = (Token*)malloc(sizeof(Token*));
-    if (NewToken == NULL)
+    if (NewToken != NULL)
     {
-        return NULL;
+        tokenInit(NewToken);
     }
-   tokenInit(NewToken);
-   return NewToken; 
+    return NewToken; 
 }
 
 /*

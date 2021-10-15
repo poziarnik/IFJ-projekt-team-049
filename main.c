@@ -17,7 +17,7 @@ int main(){
         
         return 1;
     }
-
+    printf("   /asf");
 
     
     getToken(stdin, mytoken);
