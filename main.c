@@ -10,17 +10,12 @@
 */
 int main(){
 
-    Token* mytoken;
-    getToken(stdin, mytoken);
-
-    if ((createToken(mytoken)) == NULL){
-        
+    Token* mytoken = createToken();
+    if(mytoken == NULL){
         return 1;
     }
-    printf("   /asf");
-
-    
     getToken(stdin, mytoken);
+    
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
@@ -28,6 +23,8 @@ int main(){
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
     
+    
+    //Token* MyToken=createToken();
     
 
     //getToken(stdin, 5);

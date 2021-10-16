@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+
 
 typedef struct MyToken {        //token
     char* type;                   //typ tokenu
@@ -19,3 +21,7 @@ typedef struct MyToken {        //token
 int getToken( FILE* Myfile, Token* MyToken);
 Token* createToken();
 void tokenInit(Token* MyToken);
+void tokenFullup(Token* MyToken, char* type, char* att);
+char* createStr();
+char* addToString(char** MyString, char* newCharacter, int* sizeOfStr, int* charNb);
+void magnifyStr(char** MyString, int sizeOfStr);
