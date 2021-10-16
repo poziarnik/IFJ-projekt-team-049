@@ -14,14 +14,19 @@ int main(){
     if(mytoken == NULL){
         return 1;
     }
-    getToken(stdin, mytoken);
+    for (int i = 0; i < 100; i++)
+    {
+        getToken(stdin, mytoken);
+    }
     
+    
+    
+    /*getToken(stdin, mytoken);
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
     getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
+    getToken(stdin, mytoken);*/
     
     
     //Token* MyToken=createToken();

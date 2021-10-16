@@ -23,6 +23,6 @@ Token* createToken();
 void tokenInit(Token* MyToken);
 void tokenFullup(Token* MyToken, char* type, char* att);
 char* createStr();
-char* addToString(char** MyString, char* newCharacter, int* sizeOfStr, int* charNb);
+char* addToString(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
 void magnifyStr(char** MyString, int sizeOfStr);
 int isKeyword(char *word);
