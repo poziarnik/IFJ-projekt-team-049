@@ -49,47 +49,49 @@ int getToken( FILE* Myfile, Token* MyToken){
                     state = 6;                                          //retazcovy literal
                 }
                 else if (symbol == '-'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 7;                                          //operator
+                    
+                    state = 10;                                          //operator
                 }
                 else if (symbol == '+'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 8;                                          //operator
+                    state = 16;                                          //operator
                 }
                 else if (symbol == '*'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 9;                                          //operator
+                    state = 17;                                          //operator
                 }
                 else if (symbol == '.'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 10;                                         //operator
+                    state = 18;                                         //operator
                 }
                 else if (symbol == '#'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 11;                                         //operator
+                    state = 20;                                         //operator
                 }
                 else if (symbol == '/'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 12;                                         //delenie
+                    state = 21;                                         //delenie
                 }
                 else if (symbol == '<'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 14;                                         //operator
+                    state = 23;                                         //operator
                 }
                 else if (symbol == '>'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 16;
+                    state = 25;
                 }
                 else if (symbol == '='){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 18;
+                    state = 27;
                 }
                 else if (symbol == '~'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 20;
-                } 
+                    state = 29;
+                }
+                else state = 0;
                 break;
-            case 1: //TODO
+
+            case 1: 
                 if (symbol >= '0' && symbol <= '9'){
                     state = 2;
                 }
@@ -110,7 +112,7 @@ int getToken( FILE* Myfile, Token* MyToken){
                 //state=1;
                 break;
 
-            case 2: //TODO
+            case 2: 
                 if ((symbol == '_') || (symbol >= '0' && symbol <= '9') || (symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') ){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);     
                 }
@@ -118,9 +120,10 @@ int getToken( FILE* Myfile, Token* MyToken){
                     ungetc(symbol, stdin);
                     MyToken->type = "IDENTIFIKATOR";
                     END=true;
-                    break;
                 }
-            case 3: //TODO
+                break;
+
+            case 3: 
                 if (symbol >= '0' && symbol <= '9'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
                 }
@@ -134,9 +137,10 @@ int getToken( FILE* Myfile, Token* MyToken){
                     ungetc(symbol, stdin);
                     MyToken->type = "CELE CISLO";
                     END=true;
-                    break;
                 }
-            case 4: //TODO
+                break;
+
+            case 4: 
                 if (symbol >= '0' && symbol <= '9'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
                 }
@@ -147,9 +151,10 @@ int getToken( FILE* Myfile, Token* MyToken){
                     ungetc(symbol, stdin);
                     MyToken->type = "DESATINNY LITERAL";
                     END=true;
-                    break;
                 }
-            case 5: //TODO
+                break;
+
+            case 5:
                 if (symbol >= '0' && symbol <= '9'){
                     addToString(&str,symbol, &sizeOfStr, &CharNb);
                 }
@@ -157,33 +162,112 @@ int getToken( FILE* Myfile, Token* MyToken){
                     ungetc(symbol, stdin);
                     MyToken->type = "DESATINNY LITERAL";
                     END=true;
-                    break;
                 }
-            case 6: //TODO
-                ungetc(symbol, stdin);
-                END=true;
                 break;
-            case 7: //TODO
+
+            case 6: //TODO
+                if (symbol >= 32 && symbol <= 127 && symbol != 34){
+                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                }
+                else if (symbol == '"'){
+                    state = 7;
+                }
+                else if (symbol == '\\'){
+                    state = 8;
+                }
+                
+                
+                    //treba pridat chybu
+                
+                break;
+            
+            case 7:
+                MyToken->type = "RETAZCOVY LITERAL";
+                END = true;
+                break;
+            
+            case 8:
+                if (symbol >= '0' && symbol <= '2'){
+                    state = 9;
+                }
+                //else if(ak je symbol z escape sekvencie){    
+                //}
+                ungetc(symbol, stdin);
+                break;
+
+            case 9:
+                if (symbol >= '0' && symbol <= '9'){
+                    state = 31;
+                }
+                ungetc(symbol, stdin);
+                break;
+
+            case 31:
+                //if()
+                //zapisat do retazca premeneny znak
+                state = 6;
+                break; 
+
+            case 10: //TODO
                 if (symbol == '-'){
-                    //DOPISAT ASI MILION DALSICH STAVOV
+                    
+                    state = 11;
                 }
                 else{
                     ungetc(symbol, stdin);
+                    addToString(&str,symbol, &sizeOfStr, &CharNb);
                     MyToken->type = "ODCITANIE";
                     END=true;
                 }
                 break;
-            case 8:
+
+            case 11:
+                if (symbol == '['){
+                    state = 12;
+                }
+                else if (symbol == '\n'){
+                    state = 0;
+                }
+                else state = 11;
+                break;
+
+            case 12:
+                if (symbol == '['){
+                    state = 13;
+                }
+                else state = 11;
+                break;
+                
+            case 13:
+                if (symbol == ']'){
+                    state = 14;
+                }
+                else state = 13;
+                break;
+
+            case 14:
+                if (symbol == ']'){
+                    state = 15;
+                }
+                else state = 13;
+                //treba uvazovat este moznost, ze bude v komentari napriklad ]]]] ...
+                break;
+
+            case 15:
+                state = 0;
+                break;
+
+            case 16:
                 MyToken->type = "SCITANIE";
                 END=true;
                 break;
 
-            case 9:
+            case 17:
                 MyToken->type = "NASOBENIE";
                 END=true;
                 break;
 
-            case 10: //TODO
+            case 18: //TODO
                 if (symbol == '.'){
                     MyToken->type = "KONKATENACIA";
                     END=true;
@@ -191,16 +275,16 @@ int getToken( FILE* Myfile, Token* MyToken){
                 break;
                 // TODO KED BUDE IBA JEDNA BODKA
 
-            case 11:
+            case 20:
                 ungetc(symbol, stdin);
                 MyToken->type = "DLZKA";
                 END=true;
                 break;
 
-            case 12: //TODO
+            case 21: //TODO
                 if (symbol == '/'){
                     //add to string
-                    state = 13;
+                    state = 22;
                 }
                 else{
                     ungetc(symbol, stdin);
@@ -208,16 +292,17 @@ int getToken( FILE* Myfile, Token* MyToken){
                     END=true;
                 }
                 break;
-            case 13: 
+
+            case 22: 
                 ungetc(symbol, stdin);
                 MyToken->type = "CELOCISELNE DELENIE";
                 END=true;
                 break; 
 
-            case 14: //TODO
+            case 23: //TODO
                 if (symbol == '='){
                     //add to string
-                    state = 15;
+                    state = 24;
                 }
                 else{
                    ungetc(symbol, stdin);
@@ -225,16 +310,17 @@ int getToken( FILE* Myfile, Token* MyToken){
                    END=true;
                 }
                 break;
-            case 15: 
+
+            case 24: 
                 ungetc(symbol, stdin);
                 MyToken->type = "LESS OR EQUAL";
                 END=true;
                 break;
 
-            case 16: //TODO
+            case 25: //TODO
                 if (symbol == '='){
                     //add to string
-                    state = 17;
+                    state = 26;
                 }
                 else{
                     ungetc(symbol, stdin);
@@ -243,31 +329,38 @@ int getToken( FILE* Myfile, Token* MyToken){
                     
                 }
                 break;
-            case 17: 
+
+            case 26: 
                 ungetc(symbol, stdin);
                 MyToken->type = "GREATER OR EQUAL";
                 END=true;
                 break;
 
-            case 18: //TODO
+            case 27: //TODO
                 if (symbol == '='){
-                    state = 19;
+                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    state = 28;
+                }
+                else{
+                    ungetc(symbol, stdin);
+                    END=true;
                 }
                 //pridat co sa stane ak bude samotne =
                 break;
-            case 19: 
-                ungetc(symbol, stdin);
+
+            case 28: 
                 MyToken->type = "EQUAL";
                 END=true;
                 break;
 
-            case 20: //TODO
+            case 29: //TODO
                 if (symbol == '='){
-                    state = 21;
+                    state = 30;
                 }
                 //pridat co sa stane ak bude samotne ~
                 break;
-            case 21: 
+
+            case 30: 
                 MyToken->type = "NOTEQUAL";
                 END=true;
                 break;
@@ -363,4 +456,68 @@ int isKeyword(char *word){
 
     return zhoda;
 
+}
+
+int isEscapeSeq(char symbol, char *string, int *stringLen){
+    char sequentions[12] = "abfnrtv\\\"\'z";
+
+    int zhoda = 0;
+
+    for (int i = 0; i < 11; i++){
+        if (symbol == sequentions[i]){
+            zhoda = i;
+        }
+    }
+
+    char c;
+
+    if (zhoda != 0){
+        switch (zhoda){
+        case 1:
+            c = 7;
+            string[*(stringLen)++] = c;
+            break;
+        case 2:
+            c = 8;
+            string[*(stringLen)++] = c;
+            break;
+        case 3:
+            c = 12;
+            string[*(stringLen)++] = c;
+            break;
+        case 4:
+            c = '\n';
+            string[*(stringLen)++] = c;
+            break;
+        case 5:
+            c = 13;
+            string[*(stringLen)++] = c;
+            break;
+        case 6:
+            c = 9;
+            string[*(stringLen)++] = c;
+            break;
+        case 7:
+            c = 11;
+            string[*(stringLen)++] = c;
+            break;
+        case 8:
+            c = '\\';
+            string[*(stringLen)++] = c;
+            break;
+        case 9:
+            c = '\"';
+            string[*(stringLen)++] = c;
+            break;
+        case 10:
+            c = '\'';
+            string[*(stringLen)++] = c;
+            break;
+        case 11:
+            //TODO SKIP WHITE SPACES \z ...
+            break;
+        }
+    }
+
+    return zhoda;
 }
