@@ -10,23 +10,16 @@
 */
 int main(){
 
-    Token* mytoken = createToken();
-    if(mytoken == NULL){
-        return 1;
-    }
+    
     for (int i = 0; i < 100; i++)
     {
+        Token* mytoken = createToken();
+        if(mytoken == NULL){
+            return 1;
+        }
         getToken(stdin, mytoken);
     }
     
-    
-    
-    /*getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
-    getToken(stdin, mytoken);
-    getToken(stdin, mytoken);*/
     
     
     //Token* MyToken=createToken();

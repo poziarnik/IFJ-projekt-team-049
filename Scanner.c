@@ -215,7 +215,7 @@ int getToken( FILE* Myfile, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    addToString(&str,45, &sizeOfStr, &CharNb);
                     MyToken->type = "ODCITANIE";
                     END=true;
                 }
@@ -365,9 +365,6 @@ int getToken( FILE* Myfile, Token* MyToken){
                 END=true;
                 break;
         }
-        
-
-        
     }
     printf("%s\n",str);
     return 0;
@@ -428,6 +425,9 @@ char* addToString(char** MyString, int newCharacter, int* sizeOfStr, int* charNb
     if(*charNb == (*sizeOfStr)-1){
         *sizeOfStr = *sizeOfStr + 50;
         *MyString = (char*)realloc(*MyString, sizeof(char)*(*sizeOfStr));
+        if (*MyString == NULL){
+            return NULL;
+        }
     }
     
     strcat(*MyString,&charValue);
