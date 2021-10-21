@@ -7,8 +7,12 @@
 typedef struct MyToken {        //token
     char* type;                   //typ tokenu
     char* att;              //bude nutne alokovat pamet
+    struct MyToken* next;
 }Token;
 
+typedef struct list{
+    Token* Head;
+}TokenList;
 /*
     typy tokenov
     0 - key word
@@ -18,11 +22,13 @@ typedef struct MyToken {        //token
     4 - operator
 */
 
-int getToken( FILE* Myfile, Token* MyToken);
-Token* createToken();
+int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken);
+Token* tokenCreate();
 void tokenInit(Token* MyToken);
 void tokenFullup(Token* MyToken, char* type, char* att);
-char* createStr();
-char* addToString(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
-void magnifyStr(char** MyString, int sizeOfStr);
+char* stringCreate();
+char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
 int isKeyword(char *word);
+void listInit(TokenList* list);
+void listAddToken(TokenList* list, Token* NewToken);
+void listFree(TokenList* list);

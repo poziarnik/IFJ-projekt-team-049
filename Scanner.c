@@ -1,8 +1,8 @@
 #include "Scanner.h"
+
 /*
     getToken() - stavovy automat
     Funkcia postupne cita char zo stdin a rozoduje co bude vo vystupnom tokene podla stavoveho automatu
-
     param Myfile - ukazatel na otvarany subor
     param MyToken - Token do ktoreho budu ulozene data
     
@@ -11,15 +11,15 @@
         1 - koniec suboru
         2 - lexikalana chyba 
 */
-int getToken( FILE* Myfile, Token* MyToken){
+int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
     int symbol;
     bool END = false;
     int state = 0;                      
     int sizeOfStr = 50;                 //pouzivam pre spravnu alokaciu pamate
     int CharNb = 0;
-    char* str=createStr();              //hlavny string
-    char* att=createStr();              //atribut
+    char* str=stringCreate();              //hlavny string
+    char* att=stringCreate();              //atribut
     
     
     while(END != true)
@@ -33,16 +33,16 @@ int getToken( FILE* Myfile, Token* MyToken){
         {
             case 0:
                 if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z')){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 1;                                          //identifikator
                 }
                 else if (symbol == '_'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 2;                                          //identifikator
                 }
                 else if (symbol >= '0' && symbol <= '9')
                 {
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 3;                                          //intiger
                 }
                 else if (symbol == '"'){
@@ -53,39 +53,39 @@ int getToken( FILE* Myfile, Token* MyToken){
                     state = 10;                                          //operator
                 }
                 else if (symbol == '+'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 16;                                          //operator
                 }
                 else if (symbol == '*'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 17;                                          //operator
                 }
                 else if (symbol == '.'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 18;                                         //operator
                 }
                 else if (symbol == '#'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 20;                                         //operator
                 }
                 else if (symbol == '/'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 21;                                         //delenie
                 }
                 else if (symbol == '<'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 23;                                         //operator
                 }
                 else if (symbol == '>'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 25;
                 }
                 else if (symbol == '='){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 27;
                 }
                 else if (symbol == '~'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 29;
                 }
                 else state = 0;
@@ -96,7 +96,7 @@ int getToken( FILE* Myfile, Token* MyToken){
                     state = 2;
                 }
                 else if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z')){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else{
                     ungetc(symbol, stdin);
@@ -114,7 +114,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 2: 
                 if ((symbol == '_') || (symbol >= '0' && symbol <= '9') || (symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') ){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);     
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);     
                 }
                 else{
                     ungetc(symbol, stdin);
@@ -125,7 +125,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 3: 
                 if (symbol >= '0' && symbol <= '9'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '.'){
                     state = 4;
@@ -142,7 +142,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 4: 
                 if (symbol >= '0' && symbol <= '9'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == 'e' || symbol == 'E'){
                     state = 5;
@@ -156,7 +156,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 5:
                 if (symbol >= '0' && symbol <= '9'){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else{
                     ungetc(symbol, stdin);
@@ -167,7 +167,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 6: //TODO
                 if (symbol >= 32 && symbol <= 127 && symbol != 34){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '"'){
                     state = 7;
@@ -215,7 +215,7 @@ int getToken( FILE* Myfile, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    addToString(&str,45, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,45, &sizeOfStr, &CharNb);
                     MyToken->type = "ODCITANIE";
                     END=true;
                 }
@@ -338,7 +338,7 @@ int getToken( FILE* Myfile, Token* MyToken){
 
             case 27: //TODO
                 if (symbol == '='){
-                    addToString(&str,symbol, &sizeOfStr, &CharNb);
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 28;
                 }
                 else{
@@ -366,7 +366,8 @@ int getToken( FILE* Myfile, Token* MyToken){
                 break;
         }
     }
-    printf("%s\n",str);
+    MyToken->att=str;
+    listAddToken(list, MyToken);
     return 0;
 }
 
@@ -376,7 +377,7 @@ int getToken( FILE* Myfile, Token* MyToken){
         NULL - neuspesna alokacia
         Token* - uspesne alokovany a inicializovany token  
 */
-Token* createToken(){
+Token* tokenCreate(){
     Token* NewToken;
     NewToken = (Token*)malloc(sizeof(Token));
     if (NewToken != NULL)
@@ -394,6 +395,12 @@ void tokenInit(Token* MyToken){
     MyToken->att = NULL;
 }
 
+/*
+    naplni token 
+    param MyToken - naplneny token
+    param type - typ ktory chceme do tokenu ulozit
+    param att - atribut ktory chceme do tokenu ulozit
+*/
 void tokenFullup(Token* MyToken, char* type, char* att){
     MyToken->type = type;
     MyToken->att = att;
@@ -406,7 +413,7 @@ void tokenFullup(Token* MyToken, char* type, char* att){
         NULL - alokacia sa nepodarila
         char* - ukazatel na string
 */
-char* createStr(){
+char* stringCreate(){
     char* MyString;
     MyString=(char*)malloc(sizeof(char)*50);
     return MyString;
@@ -420,7 +427,7 @@ char* createStr(){
     param sizeOfStr - velkost stringu po vsetky doterajsich alokaciach
     param charNb - terajsie miesto charakteru v stringu
 */
-char* addToString(char** MyString, int newCharacter, int* sizeOfStr, int* charNb){
+char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb){
     char charValue = newCharacter ;
     if(*charNb == (*sizeOfStr)-1){
         *sizeOfStr = *sizeOfStr + 50;
@@ -434,6 +441,7 @@ char* addToString(char** MyString, int newCharacter, int* sizeOfStr, int* charNb
     *charNb = *charNb +1;
     return *MyString;
 }
+
 /* 
     Tabulka klucovych slov
     skontoluje ci sa predany string nachadza v tabulke
@@ -520,4 +528,47 @@ int isEscapeSeq(char symbol, char *string, int *stringLen){
     }
 
     return zhoda;
+}
+
+/*
+    inicializujem zoznam
+    zoznam je vytvoeny koli moznosti pohodlne 
+    param list - inicializovany zoznam
+*/
+void listInit(TokenList* list){
+    list->Head = NULL;
+}
+
+/*
+    prida token dna koniec zoznamu
+    param list - zoznam do ktoreho vkladam token
+    param NewToken - pridavany token
+*/
+void listAddToken(TokenList* list, Token* NewToken){
+    if (list->Head == NULL){
+        list->Head = NewToken;
+    }
+    else{
+        Token* i = list->Head;
+        while (i->next!=NULL){
+            i=i->next;
+        }
+        i->next = NewToken;
+    }
+
+}
+
+/*
+    uvolni vsetky tokeny ulozene v zozname
+    param list - uvolnovany zoznam
+*/
+void listFree(TokenList* list){
+    Token* tmp;
+    Token* i = list->Head;
+    while(i != NULL){
+        tmp=i;
+        i=i->next;
+        free(tmp->att);
+        free(tmp);
+    }
 }
