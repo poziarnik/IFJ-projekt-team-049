@@ -7,7 +7,7 @@
     make advanced - preklad s varovaniami
     spustenie - ./test<main.c 
               - cita so stdin tak bz malo ist spusti z hocijakym suborom napr <Scanner.c <Scanner.h whatever
-    kontrola s valgrindom - valgrind --leak-check=yes test
+    kontrola s valgrindom - valgrind ./test<linux
 */
 int main(){
 
@@ -17,16 +17,20 @@ int main(){
     }*/
 
     TokenList list;
-    for (int i = 0; i < 200; i++){
+    int end=0;
+    while(end!=1){
         Token* mytoken = tokenCreate();
         if(mytoken == NULL){
             return 1;
         }
-        tokenScan(stdin, &list, mytoken);
+        end=tokenScan(stdin, &list, mytoken);
     }
+    int r=0;
     for (Token* i = list.Head; i != NULL; i = i->next)
     {
-        printf("%s\n%s\n\n",i->att, i->type);
+        printf("---------------------------------------------------\n%d. token\n",r=r+1);
+        printf("atribut: %s\ntyp: %s\n",i->att, i->type);
+        
     }
     listFree(&list);
     

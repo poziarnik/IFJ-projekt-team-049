@@ -18,8 +18,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     int state = 0;                      
     int sizeOfStr = 50;                 //pouzivam pre spravnu alokaciu pamate
     int CharNb = 0;
+    //char* str;
     char* str=stringCreate();              //hlavny string
-    char* att=stringCreate();              //atribut
+    //char* att=stringCreate();              //atribut
     
     
     while(END != true)
@@ -27,6 +28,8 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
         symbol = getchar();
         if (symbol == EOF){
             END = true;
+            free(str);              //ak ukoncujem scan musim uvolnit posledny str a token ktore boli allocovane ale nenaplnene
+            free(MyToken);
             return 1;
         }
         switch (state)
@@ -380,8 +383,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 Token* tokenCreate(){
     Token* NewToken;
     NewToken = (Token*)malloc(sizeof(Token));
-    if (NewToken != NULL)
-    {
+    if (NewToken != NULL){
         tokenInit(NewToken);
     }
     return NewToken; 
