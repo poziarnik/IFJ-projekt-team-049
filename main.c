@@ -17,6 +17,7 @@ int main(){
     }*/
 
     TokenList list;
+    listInit(&list);
     int end=0;
     while(end!=1){
         Token* mytoken = tokenCreate();
@@ -24,14 +25,20 @@ int main(){
             return 1;
         }
         end=tokenScan(stdin, &list, mytoken);
+        if (end == 0){
+            printf("----------------------------------------------------------\n");
+            printf("atribut: %s\ntyp: %s\n",mytoken->att, mytoken->type);
+        }
+        else if (end == 2){
+            printf("----------------------------------------------------------\n");
+            printf("lexikalna chyba!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        }
     }
-    int r=0;
-    for (Token* i = list.Head; i != NULL; i = i->next)
-    {
-        printf("---------------------------------------------------\n%d. token\n",r=r+1);
-        printf("atribut: %s\ntyp: %s\n",i->att, i->type);
-        
-    }
+    //int r=0;
+    //for (Token* i = list.Head; i != NULL; i = i->next){
+        //printf("---------------------------------------------------\n%d. token\n",r=r+1);
+        //printf("atribut: %s\ntyp: %s\n",i->att, i->type); 
+    //}
     listFree(&list);
     
     return 0;

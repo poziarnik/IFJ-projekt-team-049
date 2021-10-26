@@ -4,7 +4,7 @@ global g : function (integer) : integer -- deklarace funkce
 function f(x : integer) : integer
 	if x > 0then return x-1
 	else
-		write("calling g with ", x)
+		write("calling g with\220 ", x)
 		return g(x)
 	end
 end

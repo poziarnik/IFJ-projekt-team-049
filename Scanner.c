@@ -18,9 +18,8 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     int state = 0;                      
     int sizeOfStr = 50;                 //pouzivam pre spravnu alokaciu pamate
     int CharNb = 0;
-    //char* str;
     char* str=stringCreate();              //hlavny string
-    //char* att=stringCreate();              //atribut
+    int escapeInt [3];
     
     
     while(END != true)
@@ -91,6 +90,14 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 29;
                 }
+                else if (symbol == '('){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state = 32;
+                }
+                else if (symbol == ')'){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state = 33;
+                }
                 else state = 0;
                 break;
 
@@ -131,9 +138,11 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '.'){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 4;
                 }
                 else if (symbol == 'e' || symbol == 'E'){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 5;
                 }
                 else{
@@ -148,6 +157,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == 'e' || symbol == 'E'){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 5;
                 }
                 else{
@@ -160,16 +170,42 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
             case 5:
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state=34;
                 }
+                else if (symbol == '+' || symbol == '-')
+                {
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state=35;
+                }
+                
                 else{
                     ungetc(symbol, stdin);
                     MyToken->type = "DESATINNY LITERAL";
                     END=true;
                 }
                 break;
-
+            case 34:
+                if ((symbol >= '0' && symbol <= '9') ){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state=34;
+                }
+                else{
+                    ungetc(symbol, stdin);
+                    MyToken->type = "DESATINNY LITERAL";
+                    END=true;
+                }
+            case 35:        //ak po e- nejde cislo tak chyba
+                if ((symbol >= '0' && symbol <= '9') ){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state=34;
+                }
+                else{
+                    return 2;
+                }
+                
+                break;
             case 6: //TODO
-                if (symbol >= 32 && symbol <= 127 && symbol != 34){
+                if (symbol >= 32 && symbol <= 127 && symbol != 34 && symbol != 92){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '"'){
@@ -191,23 +227,32 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
             
             case 8:
                 if (symbol >= '0' && symbol <= '2'){
+                    escapeInt[0]=symbol;
                     state = 9;
                 }
-                //else if(ak je symbol z escape sekvencie){    
-                //}
-                ungetc(symbol, stdin);
+                else{
+                    int isESC=isEscapeSeq(symbol);
+                    if (isESC != -1){
+                         stringAddChar(&str,isESC, &sizeOfStr, &CharNb);
+                    }
+                    else{
+                        ungetc(symbol,stdin);
+                    }   
+                    state = 6;
+                }
                 break;
 
             case 9:
                 if (symbol >= '0' && symbol <= '9'){
+                    escapeInt[1]=symbol;
                     state = 31;
                 }
-                ungetc(symbol, stdin);
                 break;
 
             case 31:
-                //if()
-                //zapisat do retazca premeneny znak
+                if (symbol >= '0' && symbol <= '9'){
+                    stringAddChar(&str,(escapeInt[0]-48)*100+(escapeInt[1]-48)*10+(symbol-48), &sizeOfStr, &CharNb);
+                }
                 state = 6;
                 break; 
 
@@ -302,9 +347,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 END=true;
                 break; 
 
-            case 23: //TODO
+            case 23: 
                 if (symbol == '='){
-                    //add to string
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 24;
                 }
                 else{
@@ -320,9 +365,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 END=true;
                 break;
 
-            case 25: //TODO
+            case 25: 
                 if (symbol == '='){
-                    //add to string
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 26;
                 }
                 else{
@@ -346,6 +391,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
+                    MyToken->type = "ASIGN";
                     END=true;
                 }
                 //pridat co sa stane ak bude samotne =
@@ -353,18 +399,33 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
             case 28: 
                 MyToken->type = "EQUAL";
+                ungetc(symbol,stdin);
                 END=true;
                 break;
 
             case 29: //TODO
                 if (symbol == '='){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = 30;
+                }
+                else{
+                    ungetc(symbol,stdin);
                 }
                 //pridat co sa stane ak bude samotne ~
                 break;
 
             case 30: 
                 MyToken->type = "NOTEQUAL";
+                END=true;
+                break;
+            case 32: 
+                MyToken->type = "LEFT BRACKET";
+                ungetc(symbol,stdin);
+                END=true;
+                break;
+            case 33: 
+                MyToken->type = "RIGHT BRACKET";
+                ungetc(symbol,stdin);
                 END=true;
                 break;
         }
@@ -448,6 +509,8 @@ char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* char
     Tabulka klucovych slov
     skontoluje ci sa predany string nachadza v tabulke
     param word - kontrolovany string 
+    return - cislo znaku v tabulke
+    return - -1 ak nie je sucastou tabulky
 */
 int isKeyword(char *word){
     char keyword[15][10]={
@@ -468,7 +531,7 @@ int isKeyword(char *word){
 
 }
 
-int isEscapeSeq(char symbol, char *string, int *stringLen){
+int isEscapeSeq(int symbol){
     char sequentions[12] = "abfnrtv\\\"\'z";
 
     int zhoda = 0;
@@ -479,49 +542,39 @@ int isEscapeSeq(char symbol, char *string, int *stringLen){
         }
     }
 
-    char c;
+    int c=-1;
 
     if (zhoda != 0){
         switch (zhoda){
         case 1:
             c = 7;
-            string[*(stringLen)++] = c;
             break;
         case 2:
             c = 8;
-            string[*(stringLen)++] = c;
             break;
         case 3:
             c = 12;
-            string[*(stringLen)++] = c;
             break;
         case 4:
-            c = '\n';
-            string[*(stringLen)++] = c;
+            c = 10;
             break;
         case 5:
             c = 13;
-            string[*(stringLen)++] = c;
             break;
         case 6:
             c = 9;
-            string[*(stringLen)++] = c;
             break;
         case 7:
             c = 11;
-            string[*(stringLen)++] = c;
             break;
         case 8:
-            c = '\\';
-            string[*(stringLen)++] = c;
+            c = 92;
             break;
         case 9:
-            c = '\"';
-            string[*(stringLen)++] = c;
+            c = 34;
             break;
         case 10:
-            c = '\'';
-            string[*(stringLen)++] = c;
+            c = 39;
             break;
         case 11:
             //TODO SKIP WHITE SPACES \z ...
@@ -529,7 +582,7 @@ int isEscapeSeq(char symbol, char *string, int *stringLen){
         }
     }
 
-    return zhoda;
+    return c;
 }
 
 /*
@@ -574,3 +627,12 @@ void listFree(TokenList* list){
         free(tmp);
     }
 }
+
+
+
+
+
+
+/*lexikalne chyby
+        1. e- / e+  bez nasledujuceho cisla spusti chybu napr 123e-A      
+*/

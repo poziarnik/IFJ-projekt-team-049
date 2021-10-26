@@ -29,6 +29,7 @@ void tokenFullup(Token* MyToken, char* type, char* att);
 char* stringCreate();
 char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
 int isKeyword(char *word);
+int isEscapeSeq(int symbol);
 void listInit(TokenList* list);
 void listAddToken(TokenList* list, Token* NewToken);
 void listFree(TokenList* list);

@@ -4,14 +4,14 @@ function main() -- uzivatelska funkce bez parametru
 	local vysl : integer = 0
 	write("Zadejte cislo pro vypocet faktorialu\n")
 	a = readi()
-	if a == nil then
+	if a ==+ nil then
 		write("a je nil\n") return
 	else
 	end
 	if a < 0 then
-		write("Faktorial nelze spocitat\n")
+		write("Faktorial\070 nelze spocitat\n")
 	else
-		vysl = 1
+		vysl = 1e--525
 	while a > 0 do
 		vysl = vysl * a a = a - 1 -- dva prikazy
 	end
