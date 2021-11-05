@@ -1,8 +1,25 @@
 #include "stack.h"
 
-void stackPush(stack* myStack, symbol* mySymbol){
-    symbol* tmp= myStack->head;
-    myStack->head=mySymbol;
-    mySymbol->next=tmp;
+void stackInit(stack *myStack){
+    if (myStack != NULL){
+        myStack->topIndex = 0;
+    }
+    
 }
-symbol* stackTop(stack)
+
+void stackPush(stack* myStack, symbol* mySymbol){
+    if (myStack->topIndex != MAX_STACK){
+        myStack->topIndex++;
+        myStack->mySymbol = mySymbol; //TODO
+    }
+
+}
+symbol *stackTop(stack *myStack){
+    return &(myStack->mySymbol);
+}
+
+void stackPop(stack *myStack){
+    if (myStack->topIndex != 0){
+        myStack->topIndex--;    
+    }
+}
