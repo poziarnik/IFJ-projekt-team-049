@@ -7,14 +7,14 @@ void stackInit(stack *myStack){
     
 }
 
-void stackPush(stack* myStack, symbol* mySymbol){
+void stackPush(stack* myStack, char* mySymbol){
     if (myStack->topIndex != MAX_STACK){
         myStack->topIndex++;
-        myStack->mySymbol[myStack->topIndex] = mySymbol; //TODO
+        myStack->mySymbol[myStack->topIndex] = mySymbol;
     }
 
 }
-symbol *stackTop(stack *myStack){
+char *stackTop(stack *myStack){
     if (myStack->topIndex != 0)
     {
         return myStack->mySymbol[myStack->topIndex];
@@ -31,15 +31,12 @@ void stackPop(stack *myStack){
     
 }
 
-void symbolInit(symbol* MySymbol){
-    MySymbol->att="";
-    MySymbol->type="";
-}
 
-symbol* symbolCreate(){
-    symbol* NewSymbol;
-    NewSymbol = (symbol*)malloc(sizeof(symbol));
+char* symbolCreate(){
+    char* NewSymbol;
+    NewSymbol = (char*)malloc(sizeof(char));
     if (NewSymbol != NULL){
         tokenInit(NewSymbol);
     }
     return NewSymbol; 
+}
