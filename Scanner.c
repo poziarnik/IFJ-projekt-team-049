@@ -27,8 +27,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
         symbol = getchar();
         if (symbol == EOF){
             END = true;
-            free(str);              //ak ukoncujem scan musim uvolnit posledny str a token ktore boli allocovane ale nenaplnene
-            free(MyToken);
+            MyToken->type="$";
+            MyToken->att="";
+            MyToken->next=NULL;
             return 1;
         }
         switch (state)

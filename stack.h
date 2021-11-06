@@ -6,11 +6,14 @@
 typedef struct Symbol {        //token
     char* type;                   //typ tokenu
     char* att;              //bude nutne alokovat pamet
-    struct Symbol* next;
 }symbol;
 
 typedef struct{
-    symbol *mySymbol;
+    symbol *mySymbol[MAX_STACK];
     int topIndex; 
 }stack;
 
+void stackInit(stack *myStack);
+void stackPush(stack* myStack, symbol* mySymbol);
+symbol *stackTop(stack *myStack);
+void stackPop(stack *myStack);
