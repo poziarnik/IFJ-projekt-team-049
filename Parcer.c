@@ -20,24 +20,22 @@ int compare(Token* MyToken, TokenList* list){
     stackInit(MyStack);
     char SymbolNow[1];
     stackPush(MyStack,"$");
-    tokenToSymbol(MyToken->type,SymbolNow);
-    stackPush(MyStack, SymbolNow);
     char wannaBeRule[MAX_RULELENGHT];
     int line=0;
     int column=0;
-                     // +   *   (   )   i   $
+            //zasobnik  +   *   (   )   i   $
     char table[6][6]={{'>','<','<','>','<','>'}, // +
                       {'>','>','<','>','<','>'}, // *
                       {'<','<','<','=','<','0'}, // (
                       {'>','>','0','>','0','>'}, // )
                       {'>','>','0','>','0','>'}, // i
                       {'<','<','<','0','<','0'}};// $
-    
+                                               // Token
     char* rules[4]={"E+E","E*E","(E)","i"};
-    printf("%s chiil\n",MyStack->head->Character);
-    printf("niecp %i %i\n",topOfStackToLine(MyStack),symbolToColumn(MyToken->type));
+    //printf("%s chiil\n",MyStack->head->Character);
+    
     while (true){
-        
+        printf("tabulka %i %i\n",topOfStackToLine(MyStack),symbolToColumn(MyToken->type));
         switch (table[topOfStackToLine(MyStack)][symbolToColumn(MyToken->type)])
         {
         case '>':
@@ -46,7 +44,7 @@ int compare(Token* MyToken, TokenList* list){
             break;
 
         case '<':
-            printf("scanujem");
+            //printf("scanujem");
             stackPush(MyStack,"<");
             tokenToSymbol(MyToken->type,SymbolNow);
             stackPush(MyStack,SymbolNow);
@@ -75,7 +73,6 @@ int compare(Token* MyToken, TokenList* list){
 }
     
 int symbolToColumn(char* tokenType){
-    
     if (strcmp(tokenType,"SCITANIE")==0)
     {
         return 0;
@@ -92,7 +89,7 @@ int symbolToColumn(char* tokenType){
     {
         return 3;
     }
-    else if ((strcmp(tokenType,"IDENTIFIKATOR") || strcmp(tokenType,"CELE CISLO") || strcmp(tokenType,"DESATINNY LITERAL"))==0)
+    else if (strcmp(tokenType,"CELE CISLO")==0) //(strcmp(tokenType,"IDENTIFIKATOR") || strcmp(tokenType,"CELE CISLO") || strcmp(tokenType,"DESATINNY LITERAL"))==0
     {
         return 4;
     }
