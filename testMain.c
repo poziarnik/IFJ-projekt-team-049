@@ -1,23 +1,15 @@
-#include "stack.h"
+//#include "stack.h"
+#include "Parcer.h"
+//#include "Scanner.h"
 int main(){
-    stack* MyStack=(stack*)malloc(sizeof(stack));
-    stackInit(MyStack);
-    for (int i = 5; i > 0; i--)
-    {
-        symbol* MySymbol=(symbol*)malloc(sizeof(symbol));
-        MySymbol->att="asdfas";   
-        MySymbol->type="asdasdf";
-        stackPush(MyStack, MySymbol);
-    }
-    
-    stackPop(MyStack);
-    stackPop(MyStack);
-    stackPop(MyStack);
-    stackPop(MyStack);
-    stackPop(MyStack);
-    stackPop(MyStack);
 
+    TokenList list;
+    listInit(&list);
+    Token* MyToken = tokenCreate();
+    tokenScan(stdin,&list,MyToken);
+    compare(MyToken,&list);
+
+return 0;
     
-    symbol* topsymbol=stackTop(MyStack);
-    printf("%i topindex:%i",topsymbol->x, MyStack->topIndex);
+    
 }
