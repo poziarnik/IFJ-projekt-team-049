@@ -21,33 +21,47 @@ int compare(Token* MyToken, TokenList* list){
     char SymbolNow[1];
     stackPush(MyStack,"$");
     char wannaBeRule[MAX_RULELENGHT];
+    wannaBeRule[0]='\0';
     int line=0;
     int column=0;
-            //zasobnik  +   *   (   )   i   $
+               //token  +   *   (   )   i   $
     char table[6][6]={{'>','<','<','>','<','>'}, // +
                       {'>','>','<','>','<','>'}, // *
                       {'<','<','<','=','<','0'}, // (
                       {'>','>','0','>','0','>'}, // )
                       {'>','>','0','>','0','>'}, // i
                       {'<','<','<','0','<','0'}};// $
-                                               // Token
+                                               // Zasobnik
     char* rules[4]={"E+E","E*E","(E)","i"};
     //printf("%s chiil\n",MyStack->head->Character);
+    for (int i = 0; i < 6; i++){
+        for (int j = 0; j < 6; j++)
+        {
+            printf("%c %i %i\n",table[i][j],i,j);
+        }
+        
+    }
+    
     
     while (true){
-        printf("tabulka %i %i\n",topOfStackToLine(MyStack),symbolToColumn(MyToken->type));
+        
+        printf("\ntabulka %i %i znak v tabulke |%c|-----------------------------------------\n",topOfStackToLine(MyStack),symbolToColumn(MyToken->type), table[topOfStackToLine(MyStack)][symbolToColumn(MyToken->type)]);
+        stackPrint(MyStack);
+        printf("stackTop: %s Token: %s\n",MyStack->head->Character,MyToken->type);
         switch (table[topOfStackToLine(MyStack)][symbolToColumn(MyToken->type)])
         {
         case '>':
             topOfStackUntilLB(wannaBeRule,MyStack);
-            printf("%i\n",isItRule(rules,wannaBeRule));
+            printf("pravidelo: %i\n",isItRule(rules,wannaBeRule, MyStack));
             break;
 
         case '<':
-            //printf("scanujem");
-            stackPush(MyStack,"<");
+            stackPushLB(MyStack);
+            SymbolNow[0]='\0';
             tokenToSymbol(MyToken->type,SymbolNow);
+            stackPrint(MyStack);
             stackPush(MyStack,SymbolNow);
+            
             MyToken=tokenCreate();
             tokenScan(stdin,list,MyToken);
             break;
@@ -66,12 +80,16 @@ int compare(Token* MyToken, TokenList* list){
             return 1;
             break;
         default:
+            return 1;
             break;
         }
     }
     return 0;
 }
-    
+/*
+    zoberie typ tokenu a vrati odpovedajuce cislo stlpca v precedencnej tabulke ak token neodpoveda ziadnemu symbolu, ktory
+    moze byt sucastou expresion vracia stlpec $ ktory znaci koniec expresion
+*/
 int symbolToColumn(char* tokenType){
     if (strcmp(tokenType,"SCITANIE")==0)
     {
@@ -98,10 +116,12 @@ int symbolToColumn(char* tokenType){
         return 5;
     }
 }
+/*
+    zoberie prvy terminal(neberie E) z vrcholu stacku a vrati k nemu odpovedajuci riadok precedencnej tabulky 
+*/
 int topOfStackToLine(stack* MyStack){
     char dataptr[2];
-    stackTop(MyStack,dataptr);
-    //printf("%s %i\n",dataptr,(strcmp(dataptr,"i")));
+    stackTopTerminal(MyStack,dataptr);
     if (strcmp(dataptr,"+")==0){
         return 0;
     }
@@ -125,8 +145,10 @@ int topOfStackToLine(stack* MyStack){
     }
     
 }
+/*
+    zoberie typ tokenu a prevedie ho na jednoduchy symbol ktory sa pouziva na zasobniku
+*/
 void tokenToSymbol(char* tokenType, char* symbol){
-    //printf("%s",tokenType);
     if (strcmp(tokenType,"SCITANIE")==0)
     {
         strcpy(symbol,"+");
@@ -147,18 +169,21 @@ void tokenToSymbol(char* tokenType, char* symbol){
     {
         strcpy(symbol,"i");
     }
-    
 }
-int isItRule(char** rules,char* wannaBeRule){
+/*
+    skontroluje ci je wannaBeRule nejake pravidlo a nasledne vrati cislo pravidla
+*/
+int isItRule(char** rules,char* wannaBeRule, stack* MyStack){
     for (int i = 0; i < NUMBER_OF_RULES; i++){
         if (strcmp(rules[i],wannaBeRule)==0)
         {
+            stackPush(MyStack, "E");
             return i;
         }
     }
     return -1;
 }
-    
+
 //tabulku pravidle
 //fumkcia terminal top stack
 //funkcia TOPSECOND
