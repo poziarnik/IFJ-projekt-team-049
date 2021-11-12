@@ -11,6 +11,7 @@
         1 - koniec suboru
         2 - lexikalana chyba 
 */
+
 int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
     int symbol;
@@ -630,7 +631,9 @@ void listFree(TokenList* list){
 }
 
 
-
+float function(float a, float b) {
+    return 0.0f;
+}
 
 
 
