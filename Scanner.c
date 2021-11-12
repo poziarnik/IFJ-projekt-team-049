@@ -631,7 +631,9 @@ void listFree(TokenList* list){
 
 
 
-
+int function(int a) {
+    return 10;
+}
 
 
 /*lexikalne chyby
