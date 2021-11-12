@@ -3,8 +3,22 @@
 #include "Scanner.h"
 #include "stack.h"
 
+/**
+ * @brief 
+ * 
+ * @param MyToken fgfgdgfd
+ * @param list 
+ * @return int (vizerror.h)
+ *         
+ */
 int compare(Token* MyToken, TokenList* list);
-int symbolToColumn(char* tokenType);
+/**
+ * @brief 
+ * 
+ * @param tokenType 
+ * @return int 
+ */
+int tokenToColumn(char* tokenType);
 int topOfStackToLine(stack* MyStack);
 void tokenToSymbol(char* tokenType, char* symbol);
 int isItRule(char** rules,char* wannaBeRule, stack* MyStack);

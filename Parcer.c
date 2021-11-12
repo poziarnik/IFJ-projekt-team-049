@@ -45,10 +45,10 @@ int compare(Token* MyToken, TokenList* list){
     
     while (true){
         
-        printf("\ntabulka %i %i znak v tabulke |%c|-----------------------------------------\n",topOfStackToLine(MyStack),symbolToColumn(MyToken->type), table[topOfStackToLine(MyStack)][symbolToColumn(MyToken->type)]);
+        printf("\ntabulka %i %i znak v tabulke |%c|-----------------------------------------\n",topOfStackToLine(MyStack),tokenToColumn(MyToken->type), table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)]);
         stackPrint(MyStack);
         printf("stackTop: %s Token: %s\n",MyStack->head->Character,MyToken->type);
-        switch (table[topOfStackToLine(MyStack)][symbolToColumn(MyToken->type)])
+        switch (table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)])
         {
         case '>':
             topOfStackUntilLB(wannaBeRule,MyStack);
@@ -90,7 +90,7 @@ int compare(Token* MyToken, TokenList* list){
     zoberie typ tokenu a vrati odpovedajuce cislo stlpca v precedencnej tabulke ak token neodpoveda ziadnemu symbolu, ktory
     moze byt sucastou expresion vracia stlpec $ ktory znaci koniec expresion
 */
-int symbolToColumn(char* tokenType){
+int tokenToColumn(char* tokenType){
     if (strcmp(tokenType,"SCITANIE")==0)
     {
         return 0;
