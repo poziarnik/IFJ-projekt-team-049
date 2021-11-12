@@ -1,0 +1,6 @@
+code ::= [prolog] <prog>
+prolog ::= require ifj21
+prog ::= varlist ':' 
+
+retstat ::= return [explist] 
+
