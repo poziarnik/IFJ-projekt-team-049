@@ -37,33 +37,33 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
 
 bool fc_program(Token* MyToken, TokenList* list){                  //<prolog><code>
     if(first(MyToken, code)){
-        fc_code(list, MyToken);
+        fc_code(MyToken, list);
     }
     return true;
 }
 bool fc_code(Token* MyToken, TokenList* list){                     //<functionDef><code><statement>
     if (first(MyToken, functionDec)){
-        fc_functionDec(list, MyToken);
+        fc_functionDec(MyToken, list);
     }
     else{
         return false;
     }
     
     if (first(MyToken, code)){
-        fc_code(list, MyToken);
+        fc_code(MyToken, list);
     }
     else{
         return false;
     }
 
     if (first(MyToken, statement)){
-        fc_statement(list, MyToken);
+        fc_statement(MyToken, list);
     }
     return true;
 }
 bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scope>function<function_iden>(<params>:<returntypes>)
     if (first(MyToken,global_scope)){
-        fc_global_scope(list, MyToken);
+        fc_global_scope(MyToken, list);
     }
     else{
         return false;
@@ -77,35 +77,35 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scop
     } 
 
     if(first(MyToken, function_iden)){
-        fc_functionIden(list, MyToken);
+        fc_functionIden(MyToken, list);
     }
     else{
         return false;
     }
 
     if (MyToken->type==L_bracket){
-        fc_tokenScan(stdin, list, MyToken);
+        tokenScan(stdin, list, MyToken);
     }
     else{
         return false;
     } 
 
     if (first(MyToken, params)){
-        fc_params(list, MyToken)
+        fc_params(MyToken, list);
     }
     else{
         return false;
     }
     
     if (MyToken->type==Colon){
-        fc_tokenScan(stdin, list, MyToken);
+        tokenScan(stdin, list, MyToken);
     }
     else{
         return false;
     } 
 
     if(first(MyToken, returnTypes)){
-        fc_returnTypes();
+        fc_returnTypes(MyToken, list);
     }
     else{
         return false;
@@ -120,27 +120,22 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scop
     return true;
 }
 bool fc_global_scope(Token* MyToken,TokenList* list){
-    tokenScan(stdin, list, MyToken)
+    tokenScan(stdin, list, MyToken);
     return true;
 }
 bool fc_functionIden(Token* MyToken,TokenList* list){
-    tokenScan(stdin, list, MyToken)
+    tokenScan(stdin, list, MyToken);
     return true;
 }
-    {
-    fc_tokenScan(stdin, list, MyToken)
+bool fc_params(Token* MyToken,TokenList* list){
+    tokenScan(stdin, list, MyToken);
     return true;
 }
 bool fc_returnTypes(Token* MyToken,TokenList* list){
-    tokenScan(stdin, list, MyToken)
+    tokenScan(stdin, list, MyToken);
     return true;
 }
-
-
-
-    
-
-    
-    
+bool fc_statement(Token* MyToken,TokenList* list){
+    tokenScan(stdin, list, MyToken);
     return true;
 }
