@@ -29,7 +29,8 @@ typedef enum{
     Not_equal,
     L_bracket,
     R_bracket,
-    Pass_to_object,
+    Colon,
+    Comma,
     End_of_file,
 }Token_type;
 
@@ -71,8 +72,6 @@ typedef enum{
     Scanner_state_isequal,
     Scanner_state_notequal,
     Scanner_state_notequal_end,
-    Scanner_state_lBracket,
-    Scanner_state_rBracket,
     Scanner_state_pass_to_object,
 }Scanner_state;
 

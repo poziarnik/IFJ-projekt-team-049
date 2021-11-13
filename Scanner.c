@@ -97,15 +97,24 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else if (symbol == '('){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_lBracket;
+                    MyToken->type = L_bracket;
+                    END = true;
                 }
                 else if (symbol == ')'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_rBracket;
+                    MyToken->type = R_bracket;
+                    END = true;
                 }
                 else if (symbol == ':'){
                     stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_pass_to_object;
+                    MyToken->type = Colon;
+                    END = true;
+                }
+
+                else if (symbol == ','){
+                    stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
+                    MyToken->type = Comma;
+                    END = true;
                 }
                 else state = Scanner_state_reading;
                 break;
@@ -427,21 +436,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 MyToken->type = Not_equal;
                 END=true;
                 break;
-            case Scanner_state_lBracket: 
-                MyToken->type = L_bracket;
-                ungetc(symbol,stdin);
-                END=true;
-                break;
-            case Scanner_state_rBracket: 
-                MyToken->type = R_bracket;
-                ungetc(symbol,stdin);
-                END=true;
-                break;
-            case Scanner_state_pass_to_object:
-                MyToken->type = Pass_to_object;
-                ungetc(symbol, stdin);
-                END = true;
-                break;
+            
         }
     }
     MyToken->att=str;
