@@ -57,23 +57,26 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else if (symbol == '-'){
                     
-                    state = Scanner_state_minus;                                          //operator
+                    state = Scanner_state_minus;                                        
                 }
                 else if (symbol == '+'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_plus;                                          //operator
+                    MyToken->type = Plus;
+                    END = true;
                 }
                 else if (symbol == '*'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_multiplication;                                          //operator
+                    MyToken->type = Multiplication;
+                    END = true;                                      
                 }
                 else if (symbol == '.'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_concatenation;                                         //operator
+                    state = Scanner_state_concatenation;                                       
                 }
                 else if (symbol == '#'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_sizeof;                                         //operator
+                    MyToken->type = Sizeof;
+                    END = true;                                       
                 }
                 else if (symbol == '/'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -323,29 +326,15 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 state = Scanner_state_reading;
                 break;
 
-            case Scanner_state_plus:
-                MyToken->type = Plus;
-                END=true;
-                break;
-
-            case Scanner_state_multiplication:
-                MyToken->type = Multiplication;
-                END=true;
-                break;
 
             case Scanner_state_concatenation: //TODO
                 if (symbol == '.'){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     MyToken->type = Concatenation;
                     END=true;
                 }
                 break;
                 // TODO KED BUDE IBA JEDNA BODKA
-
-            case Scanner_state_sizeof:
-                ungetc(symbol, stdin);
-                MyToken->type = Sizeof;
-                END=true;
-                break;
 
             case Scanner_state_division: //TODO
                 if (symbol == '/'){
