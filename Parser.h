@@ -6,7 +6,7 @@ typedef enum{
     program,
     prolog,
     code,
-    finctionDec,
+    functionDec,
     statement,
     global_scope,   //function rozklad
     function_iden,
@@ -34,4 +34,11 @@ typedef enum{
 }NonTerminal;
 
 int Parse(TokenList* list);
-bool First(Token* MyToken, NonTerminal MyNonTerminal);
+bool first(Token* MyToken, NonTerminal MyNonTerminal);
+bool fc_program(Token* MyToken, TokenList* list);
+bool fc_code(Token* MyToken, TokenList* list);
+bool fc_functionDec(Token* MyToken,TokenList* list);
+bool fc_global_scope(Token* MyToken,TokenList* list);
+bool fc_functionIden(Token* MyToken,TokenList* list);
+bool fc_params(Token* MyToken,TokenList* list);
+bool fc_returnTypes(Token* MyToken,TokenList* list);
