@@ -11,7 +11,7 @@ function main() -- uzivatelska funkce bez parametru
 	if a < 0 then
 		write("Faktorial\070 nelze spocitat\n")
 	else
-		vysl = 1e--525
+		vysl = 1e525
 	while a > 0 do
 		vysl = vysl * a a = a - 1 -- dva prikazy
 	end

@@ -27,7 +27,7 @@ int main(){
         end=tokenScan(stdin, &list, mytoken);
         if (end == 0){
             printf("----------------------------------------------------------\n");
-            printf("atribut: %s\ntyp: %s\n",mytoken->att, mytoken->type);
+            printf("atribut: %s\ntyp: %i\n",mytoken->att, mytoken->type);
         }
         else if (end == 2){
             printf("----------------------------------------------------------\n");

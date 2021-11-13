@@ -12,6 +12,9 @@
         2 - lexikalana chyba 
 */
 
+
+
+
 int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
     int symbol;
@@ -28,33 +31,33 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
         symbol = getchar();
         if (symbol == EOF){
             END = true;
-            MyToken->type="$";
+            MyToken->type = End_of_file;
             MyToken->att="";
             MyToken->next=NULL;
             return 1;
         }
         switch (state)
         {
-            case 0:
+            case Scanner_state_reading:
                 if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z')){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 1;                                          //identifikator
+                    state = Scanner_state_identifier_1;                                          //identifikator
                 }
                 else if (symbol == '_'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 2;                                          //identifikator
+                    state = Scanner_state_identifier_2;                                          //identifikator
                 }
                 else if (symbol >= '0' && symbol <= '9')
                 {
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 3;                                          //intiger
+                    state = Scanner_state_number_1;                                          //intiger
                 }
                 else if (symbol == '"'){
-                    state = 6;                                          //retazcovy literal
+                    state = Scanner_state_string_1;                                          //retazcovy literal
                 }
                 else if (symbol == '-'){
                     
-                    state = 10;                                          //operator
+                    state = Scanner_state_minus;                                          //operator
                 }
                 else if (symbol == '+'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -103,9 +106,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else state = 0;
                 break;
 
-            case 1: 
+            case Scanner_state_identifier_1: 
                 if (symbol >= '0' && symbol <= '9'){
-                    state = 2;
+                    state = Scanner_state_identifier_2;
                 }
                 else if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z')){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -113,63 +116,63 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else{
                     ungetc(symbol, stdin);
                     if (isKeyword(str) == 1 ){ //porovnavam so slovom v ktorom su nahrate znaky
-                        MyToken->type = "KEYWORD";
+                        MyToken->type = 1;
                         END=true;
                     }
                     else{
-                        MyToken->type = "IDENTIFIKATOR";
+                        MyToken->type = 0;
                         END=true;
                     }
                 }
                 //state=1;
                 break;
 
-            case 2: 
+            case Scanner_state_identifier_2: 
                 if ((symbol == '_') || (symbol >= '0' && symbol <= '9') || (symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') ){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);     
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "IDENTIFIKATOR";
+                    MyToken->type = 0;
                     END=true;
                 }
                 break;
 
-            case 3: 
+            case Scanner_state_number_1: 
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '.'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 4;
+                    state = Scanner_state_number_2;
                 }
                 else if (symbol == 'e' || symbol == 'E'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 5;
+                    state = Scanner_state_number_3;
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "CELE CISLO";
+                    MyToken->type = Integer;
                     END=true;
                 }
                 break;
 
-            case 4: 
+            case Scanner_state_number_2: 
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == 'e' || symbol == 'E'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = 5;
+                    state = Scanner_state_number_3;
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "DESATINNY LITERAL";
+                    MyToken->type = Number;
                     END=true;
                 }
                 break;
 
-            case 5:
+            case Scanner_state_number_3:
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state=34;
@@ -182,7 +185,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "DESATINNY LITERAL";
+                    MyToken->type = Number;
                     END=true;
                 }
                 break;
@@ -193,7 +196,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "DESATINNY LITERAL";
+                    MyToken->type = Number;
                     END=true;
                 }
             case 35:        //ak po e- nejde cislo tak chyba
@@ -206,15 +209,15 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 
                 break;
-            case 6: //TODO
+            case Scanner_state_string_1: //TODO
                 if (symbol >= 32 && symbol <= 127 && symbol != 34 && symbol != 92){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
                 else if (symbol == '"'){
-                    state = 7;
+                    state = Scanner_state_string_2;
                 }
                 else if (symbol == '\\'){
-                    state = 8;
+                    state = Scanner_state_string_3;
                 }
                 
                 
@@ -223,7 +226,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
             
             case 7:
-                MyToken->type = "RETAZCOVY LITERAL";
+                MyToken->type = String;
                 END = true;
                 break;
             
@@ -240,7 +243,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     else{
                         ungetc(symbol,stdin);
                     }   
-                    state = 6;
+                    state = Scanner_state_string_1;
                 }
                 break;
 
@@ -258,7 +261,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 state = 6;
                 break; 
 
-            case 10: //TODO
+            case Scanner_state_minus: //TODO
                 if (symbol == '-'){
                     
                     state = 11;
@@ -266,7 +269,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else{
                     ungetc(symbol, stdin);
                     stringAddChar(&str,45, &sizeOfStr, &CharNb);
-                    MyToken->type = "ODCITANIE";
+                    MyToken->type = Minus;
                     END=true;
                 }
                 break;
@@ -304,22 +307,22 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
 
             case 15:
-                state = 0;
+                state = Scanner_state_reading;
                 break;
 
             case 16:
-                MyToken->type = "SCITANIE";
+                MyToken->type = Plus;
                 END=true;
                 break;
 
             case 17:
-                MyToken->type = "NASOBENIE";
+                MyToken->type = Multiplication;
                 END=true;
                 break;
 
             case 18: //TODO
                 if (symbol == '.'){
-                    MyToken->type = "KONKATENACIA";
+                    MyToken->type = Concatenation;
                     END=true;
                 }
                 break;
@@ -327,7 +330,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
             case 20:
                 ungetc(symbol, stdin);
-                MyToken->type = "DLZKA";
+                MyToken->type = Sizeof;
                 END=true;
                 break;
 
@@ -338,14 +341,14 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "DELENIE";
+                    MyToken->type = Division;
                     END=true;
                 }
                 break;
 
             case 22: 
                 ungetc(symbol, stdin);
-                MyToken->type = "CELOCISELNE DELENIE";
+                MyToken->type = Division_integer;
                 END=true;
                 break; 
 
@@ -356,14 +359,14 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                    ungetc(symbol, stdin);
-                   MyToken->type = "LESS";
+                   MyToken->type = Less;
                    END=true;
                 }
                 break;
 
             case 24: 
                 ungetc(symbol, stdin);
-                MyToken->type = "LESS OR EQUAL";
+                MyToken->type = Less_equal;
                 END=true;
                 break;
 
@@ -374,7 +377,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "GREATER";
+                    MyToken->type = More;
                     END=true;
                     
                 }
@@ -382,7 +385,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
             case 26: 
                 ungetc(symbol, stdin);
-                MyToken->type = "GREATER OR EQUAL";
+                MyToken->type = More_equal;
                 END=true;
                 break;
 
@@ -393,14 +396,14 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = "ASIGN";
+                    MyToken->type = Assign;
                     END=true;
                 }
                 //pridat co sa stane ak bude samotne =
                 break;
 
             case 28: 
-                MyToken->type = "EQUAL";
+                MyToken->type = Is_equal;
                 ungetc(symbol,stdin);
                 END=true;
                 break;
@@ -417,16 +420,16 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
 
             case 30: 
-                MyToken->type = "NOTEQUAL";
+                MyToken->type = Not_equal;
                 END=true;
                 break;
             case 32: 
-                MyToken->type = "LEFT BRACKET";
+                MyToken->type = L_bracket;
                 ungetc(symbol,stdin);
                 END=true;
                 break;
             case 33: 
-                MyToken->type = "RIGHT BRACKET";
+                MyToken->type = R_bracket;
                 ungetc(symbol,stdin);
                 END=true;
                 break;
@@ -456,7 +459,7 @@ Token* tokenCreate(){
     param MyToken - inicializovany token 
 */
 void tokenInit(Token* MyToken){
-    MyToken->type = NULL;
+    // MyToken->type = NULL;
     MyToken->att = NULL;
 }
 
@@ -466,7 +469,7 @@ void tokenInit(Token* MyToken){
     param type - typ ktory chceme do tokenu ulozit
     param att - atribut ktory chceme do tokenu ulozit
 */
-void tokenFullup(Token* MyToken, char* type, char* att){
+void tokenFullup(Token* MyToken, Token_type type, char* att){
     MyToken->type = type;
     MyToken->att = att;
 }
@@ -634,3 +637,4 @@ void listFree(TokenList* list){
 /*lexikalne chyby
         1. e- / e+  bez nasledujuceho cisla spusti chybu napr 123e-A      
 */
+
