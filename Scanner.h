@@ -72,6 +72,7 @@ typedef struct list{
     4 - operator
 */
 
+
 int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken);
 Token* tokenCreate();
 void tokenInit(Token* MyToken);
