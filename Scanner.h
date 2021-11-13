@@ -58,10 +58,7 @@ typedef enum{
     Scanner_state_comment_block_start,
     Scanner_state_comment_block_end1,
     Scanner_state_comment_block_end2,
-    Scanner_state_plus,
-    Scanner_state_multiplication,
     Scanner_state_concatenation,
-    Scanner_state_sizeof,
     Scanner_state_division,
     Scanner_state_division_int,
     Scanner_state_less,
@@ -72,7 +69,6 @@ typedef enum{
     Scanner_state_isequal,
     Scanner_state_notequal,
     Scanner_state_notequal_end,
-    Scanner_state_pass_to_object,
 }Scanner_state;
 
 /**
