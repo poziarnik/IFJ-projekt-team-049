@@ -5,7 +5,7 @@ int main(){
     TokenList *list=(TokenList*)malloc(sizeof(TokenList));
     listInit(list);
     if(Parse(list)==1){
-        printf("got it");
+        printf("Meky Zbirka jubilejny koncert\n");
     }
     else{
         printf("to si dojebal");
