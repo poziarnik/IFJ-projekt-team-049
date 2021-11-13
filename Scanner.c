@@ -631,12 +631,6 @@ void listFree(TokenList* list){
 }
 
 
-float function(float a, float b) {
-    return 0.0f;
-}
-
-
-
 /*lexikalne chyby
         1. e- / e+  bez nasledujuceho cisla spusti chybu napr 123e-A      
 */
