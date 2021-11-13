@@ -42,3 +42,6 @@ bool fc_global_scope(Token* MyToken,TokenList* list);
 bool fc_functionIden(Token* MyToken,TokenList* list);
 bool fc_params(Token* MyToken,TokenList* list);
 bool fc_returnTypes(Token* MyToken,TokenList* list);
+bool fc_statement(Token* MyToken,TokenList* list);
+bool chackStr(Token* MyToken, TokenList* list, char* checkType);
+bool chackType(Token* MyToken, TokenList* list, Token_type checkType);

@@ -28,6 +28,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     
     while(END != true)
     {
+        //printf("riso");
+        //fflush(stdout);
+       // printf("%d", state);
         symbol = getchar();
         if (symbol == EOF){
             END = true;
@@ -133,12 +136,11 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     ungetc(symbol, stdin);
                     if (isKeyword(str) == 1 ){ //porovnavam so slovom v ktorom su nahrate znaky
                         MyToken->type = 1;
-                        END=true;
                     }
                     else{
                         MyToken->type = 0;
-                        END=true;
                     }
+                    END=true;
                 }
                 //state=1;
                 break;
@@ -429,7 +431,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
         }
     }
     MyToken->att=str;
-    listAddToken(list, MyToken);
+    //listAddToken(list, MyToken);!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!opravit
     return 0;
 }
 
@@ -593,6 +595,7 @@ void listInit(TokenList* list){
 }
 
 /*
+    nefunguje opravit
     prida token dna koniec zoznamu
     param list - zoznam do ktoreho vkladam token
     param NewToken - pridavany token
