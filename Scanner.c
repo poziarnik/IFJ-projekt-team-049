@@ -1,4 +1,5 @@
 #include "Scanner.h"
+#include "error.h"
 
 /*
     getToken() - stavovy automat
@@ -8,8 +9,8 @@
     
     return:
         0 - uspesne naplnenie
-        1 - koniec suboru
-        2 - lexikalana chyba 
+        10 - koniec suboru
+        1 - lexikalana chyba 
 */
 
 
@@ -29,13 +30,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     while(END != true)
     {
         symbol = getchar();
-        if (symbol == EOF){
-            END = true;
-            MyToken->type = End_of_file;
-            MyToken->att="";
-            MyToken->next=NULL;
-            return 1;
-        }
+        
         switch (state)
         {
             case Scanner_state_reading:
@@ -47,7 +42,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_identifier_2;                                          //identifikator
                 }
-                else if (symbol >= '0' && symbol <= '9')
+                else if (symbol >= '1' && symbol <= '9')
                 {
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_1;                                          //intiger
@@ -119,6 +114,12 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     MyToken->type = Comma;
                     END = true;
                 }
+                else if (symbol == EOF){
+                    stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
+                    MyToken->type = End_of_file;
+                    END = true;
+                    return 10;
+                }
                 else state = Scanner_state_reading;
                 break;
 
@@ -176,6 +177,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
             case Scanner_state_number_2: 
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state = Scanner_state_number_2;
                 }
                 else if (symbol == 'e' || symbol == 'E'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -184,29 +186,33 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else{
                     ungetc(symbol, stdin);
                     MyToken->type = Number;
+                    fprintf(stdout, "CHYBA!");
+                    return LEXICAL_ERROR;
                     END=true;
+                    
                 }
                 break;
 
             case Scanner_state_number_3:
-                if (symbol >= '0' && symbol <= '9'){
-                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state=Scanner_state_number_4;
+                if (symbol >= '1' && symbol <= '9'){
+                    stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
+                    state = Scanner_state_number_4;
                 }
-                else if (symbol == '+' || symbol == '-')
-                {
-                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state=Scanner_state_number_5;
+                else if (symbol == '0'){
+                    state = Scanner_state_number_3;
                 }
-                
+                else if ((symbol == '+' ) || (symbol == '-')){
+                    stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
+                    state = Scanner_state_number_4;
+                }
                 else{
                     ungetc(symbol, stdin);
                     MyToken->type = Number;
                     END=true;
                 }
                 break;
-            case Scanner_state_number_4:
-                if ((symbol >= '0' && symbol <= '9') ){
+             case Scanner_state_number_4:
+                 if ((symbol >= '0' && symbol <= '9')){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_4;
                 }
@@ -215,16 +221,8 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     MyToken->type = Number;
                     END = true;
                 }
-            case Scanner_state_number_5:        //ak po e- nejde cislo tak chyba
-                if ((symbol >= '0' && symbol <= '9') ){
-                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_4;
-                }
-                else{
-                    return 2;
-                }
-                
                 break;
+           
             case Scanner_state_string_start: //TODO
                 if (symbol >= 32 && symbol <= 127 && symbol != 34 && symbol != 92){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -333,6 +331,10 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     MyToken->type = Concatenation;
                     END=true;
                 }
+                else{
+                    return LEXICAL_ERROR;
+                }
+                
                 break;
                 // TODO KED BUDE IBA JEDNA BODKA
 
