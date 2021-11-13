@@ -20,7 +20,7 @@ int compare(Token* MyToken, TokenList* list);
  * @param tokenType 
  * @return int 
  */
-int tokenToColumn(char* tokenType);
+int tokenToColumn(Token_type tokenType);
 int topOfStackToLine(stack* MyStack);
-void tokenToSymbol(char* tokenType, char* symbol);
+void tokenToSymbol(Token_type tokenType, char* symbol);
 int isItRule(char** rules,char* wannaBeRule, stack* MyStack);

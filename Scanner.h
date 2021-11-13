@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+/**
+ * @brief Mnozina typu tokenov
+ * 
+ */
 typedef enum{
     Identifier,
     Keyword,
@@ -29,6 +33,10 @@ typedef enum{
     End_of_file,
 }Token_type;
 
+/**
+ * @brief Mnozina stavov automatu
+ * 
+ */
 typedef enum{
     Scanner_state_reading,
     Scanner_state_identifier_1,
@@ -36,24 +44,42 @@ typedef enum{
     Scanner_state_number_1,
     Scanner_state_number_2,
     Scanner_state_number_3,
+    Scanner_state_number_4,
+    Scanner_state_number_5,
+    Scanner_state_string_start,
+    Scanner_state_string_end,
     Scanner_state_string_1,
     Scanner_state_string_2,
     Scanner_state_string_3,
-    Scanner_state_string_4,
     Scanner_state_minus,
+    Scanner_state_comment_start,
+    Scanner_state_comment_block,
+    Scanner_state_comment_block_start,
+    Scanner_state_comment_block_end1,
+    Scanner_state_comment_block_end2,
     Scanner_state_plus,
     Scanner_state_multiplication,
     Scanner_state_concatenation,
     Scanner_state_sizeof,
     Scanner_state_division,
-
+    Scanner_state_division_int,
+    Scanner_state_less,
+    Scanner_state_less_equal,
+    Scanner_state_more,
+    Scanner_state_more_equal,
+    Scanner_state_assign,
+    Scanner_state_isequal,
+    Scanner_state_notequal,
+    Scanner_state_notequal_end,
+    Scanner_state_lBracket,
+    Scanner_state_rBracket,
+    Scanner_state_pass_to_object,
 }Scanner_state;
 
-
-
-
-
-
+/**
+ * @brief Struktura Tokenu, ktora berie typ a 
+ * 
+ */
 typedef struct MyToken {        //token
     Token_type type;                   //typ tokenu
     char* att;              //bude nutne alokovat pamet
@@ -63,6 +89,7 @@ typedef struct MyToken {        //token
 typedef struct list{
     Token* Head;
 }TokenList;
+
 /*
     typy tokenov
     0 - key word
@@ -71,7 +98,6 @@ typedef struct list{
     3 - sting
     4 - operator
 */
-
 
 int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken);
 Token* tokenCreate();

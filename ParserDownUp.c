@@ -45,7 +45,7 @@ int compare(Token* MyToken, TokenList* list){
         
         printf("\ntabulka %i %i znak v tabulke |%c|-----------------------------------------\n",topOfStackToLine(MyStack),tokenToColumn(MyToken->type), table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)]);
         stackPrint(MyStack);
-        printf("stackTop: %s Token: %s\n",MyStack->head->Character,MyToken->type);
+        printf("stackTop: %s Token: %i\n",MyStack->head->Character,MyToken->type);
         switch (table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)])
         {
         case '>':
@@ -88,24 +88,24 @@ int compare(Token* MyToken, TokenList* list){
     zoberie typ tokenu a vrati odpovedajuce cislo stlpca v precedencnej tabulke ak token neodpoveda ziadnemu symbolu, ktory
     moze byt sucastou expresion vracia stlpec $ ktory znaci koniec expresion
 */
-int tokenToColumn(char* tokenType){
-    if (strcmp(tokenType,"SCITANIE")==0)
+int tokenToColumn(Token_type tokenType){
+    if (tokenType == Plus)
     {
         return 0;
     }
-    else if (strcmp(tokenType,"NASOBENIE")==0)
+    else if (tokenType == Multiplication)
     {
         return 1;
     }
-    else if (strcmp(tokenType,"LEFT BRACKET")==0)
+    else if (tokenType == L_bracket)
     {
         return 2;
     }
-    else if (strcmp(tokenType,"RIGHT BRACKET")==0)
+    else if (tokenType == R_bracket)
     {
         return 3;
     }
-    else if (strcmp(tokenType,"CELE CISLO")==0) //(strcmp(tokenType,"IDENTIFIKATOR") || strcmp(tokenType,"CELE CISLO") || strcmp(tokenType,"DESATINNY LITERAL"))==0
+    else if (tokenType == Integer) //(strcmp(tokenType,"IDENTIFIKATOR") || strcmp(tokenType,"CELE CISLO") || strcmp(tokenType,"DESATINNY LITERAL"))==0
     {
         return 4;
     }
@@ -146,24 +146,24 @@ int topOfStackToLine(stack* MyStack){
 /*
     zoberie typ tokenu a prevedie ho na jednoduchy symbol ktory sa pouziva na zasobniku
 */
-void tokenToSymbol(char* tokenType, char* symbol){
-    if (strcmp(tokenType,"SCITANIE")==0)
+void tokenToSymbol(Token_type tokenType, char* symbol){
+    if (tokenType == Plus)
     {
         strcpy(symbol,"+");
     }
-    else if (strcmp(tokenType,"NASOBENIE")==0)
+    else if (tokenType == Multiplication)
     {
         strcpy(symbol,"*");
     }
-    else if (strcmp(tokenType,"LEFT BRACKET")==0)
+    else if (tokenType == L_bracket)
     {
         strcpy(symbol,"(");
     }
-    else if (strcmp(tokenType,"RIGHT BRACKET")==0)
+    else if (tokenType == R_bracket)
     {
         strcpy(symbol,")");
     }
-    else if (strcmp(tokenType,"CELE CISLO")==0)//strcmp(tokenType,"DESATINNY LITERAL" (strcmp(tokenType,"IDENTIFIKATOR") ||
+    else if (tokenType == Integer)//strcmp(tokenType,"DESATINNY LITERAL" (strcmp(tokenType,"IDENTIFIKATOR") ||
     {
         strcpy(symbol,"i");
     }
