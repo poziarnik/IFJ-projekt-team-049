@@ -51,8 +51,7 @@ int stackPushLB(stack* myStack){
     strcpy(newSymbol->Character,"<");
 
     Symbol* tmp=myStack->head;
-    if (strcmp(tmp->Character,"E")==0)
-    {
+    if (strcmp(tmp->Character,"E")==0){
         newSymbol->next=tmp->next;
         tmp->next=newSymbol;
     }
@@ -60,6 +59,7 @@ int stackPushLB(stack* myStack){
         newSymbol->next=tmp;
         myStack->head=newSymbol;
     }
+    return 0;
 }
 
 /*

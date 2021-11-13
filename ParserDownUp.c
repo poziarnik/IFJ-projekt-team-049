@@ -1,4 +1,4 @@
-#include "Parcer.h"
+#include "ParserDownUp.h"
 //#include "Scanner.h"
 //#include "stack.h"
 #define NUMBER_OF_RULES 4
@@ -22,8 +22,6 @@ int compare(Token* MyToken, TokenList* list){
     stackPush(MyStack,"$");
     char wannaBeRule[MAX_RULELENGHT];
     wannaBeRule[0]='\0';
-    int line=0;
-    int column=0;
                //token  +   *   (   )   i   $
     char table[6][6]={{'>','<','<','>','<','>'}, // +
                       {'>','>','<','>','<','>'}, // *

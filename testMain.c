@@ -1,5 +1,5 @@
 //#include "stack.h"
-#include "Parcer.h"
+#include "Parser.h"
 //#include "Scanner.h"
 int main(){
 
