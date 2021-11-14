@@ -1,1 +1,1 @@
-global function factorial ( n : integer)
+global function factorial ( n : integer, a : number)

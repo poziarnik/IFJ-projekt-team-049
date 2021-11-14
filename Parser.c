@@ -4,8 +4,7 @@
 int Parse(TokenList* list){
     Token* MyToken=(Token*)malloc(sizeof(Token));
     tokenScan(stdin, list, MyToken);
-    if (fc_program(MyToken, list))
-    {
+    if (fc_program(MyToken, list)){
         return 1;
     }
     
@@ -68,7 +67,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         }
     }
     else if(MyNonTerminal==nextParam){
-        if (first(MyToken, param)){
+        if (MyToken->type==Comma){
             return true;
         }
         else{
@@ -83,7 +82,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
 
 
 
-bool fc_program(Token* MyToken, TokenList* list){                  //<prolog><code>
+bool fc_program(Token* MyToken, TokenList* list){                  //program: <prolog><code>
     if(first(MyToken, code)){
         return fc_code(MyToken, list);
     }
@@ -93,27 +92,33 @@ bool fc_program(Token* MyToken, TokenList* list){                  //<prolog><co
     
     return true;
 }
-bool fc_code(Token* MyToken, TokenList* list){                     //<functionDec><code><statement>
+bool fc_code(Token* MyToken, TokenList* list){                     //code: <functionDec><code><statement>
     if (first(MyToken, functionDec)){
-        fc_functionDec(MyToken, list);
+        if(!fc_functionDec(MyToken, list)){
+            return false;
+        }
     }
     else{
         return false;
     }
     
     if (first(MyToken, code)){
-        fc_code(MyToken, list);
+        if(!fc_code(MyToken, list)){
+            return false;
+        }
     }
 
     if (first(MyToken, statement)){
-        fc_statement(MyToken, list);
+        if(!fc_statement(MyToken, list)){
+            return false;
+        }
     }
     
     return true;
 }
-bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scope>function<function_iden>(<params>:<returntypes>)
+bool fc_functionDec(Token* MyToken,TokenList* list){              //functionDec: <global_scope>function<function_iden>(<params><returntypes>)
     /*if (first(MyToken,global_scope)){
-        /*tokenScan(stdin, list, MyToken);
+        tokenScan(stdin, list, MyToken);
         printf("%s\n",MyToken->att);
         return fc_global_scope(MyToken, list) && \
         chackStr(MyToken, list, "function") && fc_functionIden(MyToken, list) && \
@@ -126,18 +131,24 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scop
         return false;
     }*/
     if (first(MyToken,global_scope)){
-        fc_global_scope(MyToken, list);
+        if(!fc_global_scope(MyToken, list)){
+            return false;
+        }
     }
 
     if (chackStr(MyToken, list, "function")){
+        printf("String: %s\n",MyToken->att);
         tokenScan(stdin, list, MyToken);
     }
     else{
+        printf("som tu bitch\n");
         return false;
     } 
 
     if(first(MyToken, function_iden)){
-        fc_functionIden(MyToken, list);
+        if(!fc_functionIden(MyToken, list)){
+            return false;
+        }
     }
     else{
         return false;
@@ -152,22 +163,15 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scop
     } 
 
     if (first(MyToken, params)){
-        fc_params(MyToken, list);
+        if(!fc_params(MyToken, list)){
+            return false;
+        }
     }
-    
-    if (MyToken->type==Colon){
-        printf("%s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);        
-    }
-    else{
-        return false;
-    } 
     
     if(first(MyToken, returnTypes)){
-        fc_returnTypes(MyToken, list);
-    }
-    else{
-        return false;
+        if(!fc_returnTypes(MyToken, list)){
+            return false;
+        }
     }
     
     if (MyToken->type==R_bracket){
@@ -179,8 +183,8 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //<global_scop
     } 
     return true;
 }
-bool fc_global_scope(Token* MyToken,TokenList* list){                   //global
-    if (chackStr(MyToken,list,"global"))
+bool fc_global_scope(Token* MyToken,TokenList* list){                   //global_scope: global
+    if(chackStr(MyToken,list,"global"))
     {
         printf("global_scope: %s\n",MyToken->att);
         tokenScan(stdin, list, MyToken);
@@ -189,7 +193,7 @@ bool fc_global_scope(Token* MyToken,TokenList* list){                   //global
     
     return true;
 }
-bool fc_functionIden(Token* MyToken,TokenList* list){                   //<functionIden>
+bool fc_functionIden(Token* MyToken,TokenList* list){                   //functionIden: <functionIden>
     if (MyToken->type==Identifier){
         printf("functionIden: %s\n",MyToken->att);
         tokenScan(stdin, list, MyToken);
@@ -199,28 +203,35 @@ bool fc_functionIden(Token* MyToken,TokenList* list){                   //<funct
     }
     return true;
 }
-bool fc_params(Token* MyToken,TokenList* list){                         //<param><nextParam>
+bool fc_params(Token* MyToken,TokenList* list){                         //params: <param><nextParam>
     
     if(first(MyToken, param)){
-        fc_param(MyToken, list);
+        if(!fc_param(MyToken, list)){
+            return false;
+        }
     }
     else{
         return false;
     }
 
     if(first(MyToken, nextParam)){
-        fc_nextParam(MyToken, list);
+        if(!fc_nextParam(MyToken, list)){
+            return false;
+        }
     }
 
     /*printf("params: %s\n",MyToken->att);
     tokenScan(stdin, list, MyToken);*/
     return true;
 }
-bool fc_param(Token* MyToken,TokenList* list){                          //<identifier>:<type>
+bool fc_param(Token* MyToken,TokenList* list){                          //param: <identifier>:<type>
     if(MyToken->type==Identifier){
-        printf("identifier : %s\n",MyToken->att);
+        printf("identifier: %s\n",MyToken->att);
         tokenScan(stdin, list, MyToken);
     }   
+    else{
+        return false;
+    }
 
     if (chackStr(MyToken, list, ":")){
         tokenScan(stdin, list, MyToken);
@@ -240,14 +251,7 @@ bool fc_param(Token* MyToken,TokenList* list){                          //<ident
 
     return true;
 }
-bool fc_nextParam(Token* MyToken,TokenList* list){                      //<param>,<nextparam>
-    if (first(MyToken, param)){
-        fc_param(MyToken, list);
-    }
-    else{
-        return false;
-    }
-
+bool fc_nextParam(Token* MyToken,TokenList* list){                      //nextparam: ,<param><nextparam>
     if (chackStr(MyToken, list, ",")){
         tokenScan(stdin, list, MyToken);
     }
@@ -255,15 +259,70 @@ bool fc_nextParam(Token* MyToken,TokenList* list){                      //<param
         return false;
     }     
 
+    if (first(MyToken, param)){
+        if(!fc_param(MyToken, list)){
+
+        }
+    }
+    else{
+        return false;
+    }
+
     if (first(MyToken, nextParam)){
-        fc_nextParam(MyToken, list);
+        if(!fc_nextParam(MyToken, list)){
+            return false;
+        }
     }
 
     return true;
 }
-bool fc_returnTypes(Token* MyToken,TokenList* list){
-    printf("returnTypes: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);
+bool fc_returnTypes(Token* MyToken,TokenList* list){                      //returnTypes: :type<nextType>
+    if (MyToken->type==Colon){
+        printf("%s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);        
+    }
+    else{
+        printf("kokot\n");
+        return false;
+    } 
+    
+    if (isTokenType(MyToken)){
+        printf("Type: %s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);
+    }
+    else{
+        return false;
+    }
+
+    if (first(MyToken, nextType)){
+        printf("nextType: %s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);
+    }
+    
+    return true;
+}
+bool fc_nextType(Token* MyToken,TokenList* list){                            //nextType: ,Type<nextType>
+    if (chackStr(MyToken, list, ",")){
+        printf("String: %s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);
+    }
+    else{
+        return false;
+    }
+
+    if (isTokenType(MyToken)){
+        printf("Type: %s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);
+    }
+    else{
+        return false;
+    }
+    
+    if (first(MyToken, nextType)){
+        printf("nextType: %s\n",MyToken->att);
+        tokenScan(stdin, list, MyToken);
+    }
+
     return true;
 }
 bool fc_statement(Token* MyToken,TokenList* list){
@@ -280,17 +339,28 @@ bool chackType(Token* MyToken, TokenList* list, Token_type checkType){
     else{
         return false;
     }
-    
-    
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool chackStr(Token* MyToken, TokenList* list, char* checkType){
-    printf("StringCheck: %s\n",MyToken->att);
-    if (strcmp(MyToken->att,checkType)==0){
-        return true;
+    if ((MyToken->type != Number) || (MyToken->type != Integer)){
+        printf("StringCheck: %s\n",MyToken->att);
+        if (strcmp(MyToken->att,checkType)==0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     else{
         return false;
     }
+    
+    
+    
 }
 bool isTokenType(Token* MyToken){
     if(strcmp(MyToken->att,"integer")==0){
@@ -302,4 +372,9 @@ bool isTokenType(Token* MyToken){
     else if(strcmp(MyToken->att,"string")==0){
         return true;
     }
+    else
+    {
+        return false;
+    }
+    
 }
