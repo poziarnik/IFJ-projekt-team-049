@@ -1,4 +1,5 @@
 #include "Scanner.h"
+#include "error.h"
 
 /*
     zatial len skusanie
@@ -19,27 +20,33 @@ int main(){
     TokenList list;
     listInit(&list);
     int end=0;
-    while(end!=1){
+    while(end!=10){
         Token* mytoken = tokenCreate();
         if(mytoken == NULL){
-            return 1;
+            return 10;
         }
         end=tokenScan(stdin, &list, mytoken);
         if (end == 0){
             printf("----------------------------------------------------------\n");
-            printf("atribut: %s\ntyp: %i\n",mytoken->att, mytoken->type);
+            if ((mytoken->type == Integer) || (mytoken->type == Number)){
+                printf("atribut: %f\ntyp: %i\n",mytoken->data.number, mytoken->type);
+            }
+            else{
+                printf("atribut: %s\ntyp: %i\n",mytoken->data.string, mytoken->type);
+            }
+
         }
-        else if (end == 2){
-            printf("----------------------------------------------------------\n");
-            printf("lexikalna chyba!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        }
+        // else if (end == LEXICAL_ERROR){
+        //     printf("----------------------------------------------------------\n");
+        //     printf("lexikalna chyba!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        // }
     }
     //int r=0;
     //for (Token* i = list.Head; i != NULL; i = i->next){
         //printf("---------------------------------------------------\n%d. token\n",r=r+1);
         //printf("atribut: %s\ntyp: %s\n",i->att, i->type); 
     //}
-    listFree(&list);
+    // listFree(&list);
     
     return 0;
 }    
