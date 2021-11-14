@@ -48,3 +48,8 @@ bool chackType(Token* MyToken, TokenList* list, Token_type checkType);
 bool fc_param(Token* MyToken,TokenList* list);
 bool fc_nextParam(Token* MyToken,TokenList* list);
 bool isTokenType(Token* MyToken);
+bool fc_nextType(Token* MyToken,TokenList* list);
+bool fc_loop(Token* MyToken,TokenList* list);
+bool fc_condition(Token* MyToken,TokenList* list);
+bool fc_assigne(Token* MyToken,TokenList* list);
+bool fc_define(Token* MyToken,TokenList* list);
