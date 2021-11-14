@@ -57,18 +57,13 @@ typedef enum{
     Scanner_state_comment_block,
     Scanner_state_comment_block_start,
     Scanner_state_comment_block_end1,
-    Scanner_state_comment_block_end2,
     Scanner_state_concatenation,
     Scanner_state_division,
-    Scanner_state_division_int,
     Scanner_state_less,
-    Scanner_state_less_equal,
     Scanner_state_more,
-    Scanner_state_more_equal,
     Scanner_state_assign,
     Scanner_state_isequal,
     Scanner_state_notequal,
-    Scanner_state_notequal_end,
 }Scanner_state;
 
 /**
@@ -77,7 +72,13 @@ typedef enum{
  */
 typedef struct MyToken {        //token
     Token_type type;                   //typ tokenu
-    char* att;              //bude nutne alokovat pamet
+    
+    union{
+        int integer;
+        double number;
+        char *string;
+    }data;
+                  
     struct MyToken* next;
 }Token;
 
@@ -105,3 +106,4 @@ int isEscapeSeq(int symbol);
 void listInit(TokenList* list);
 void listAddToken(TokenList* list, Token* NewToken);
 void listFree(TokenList* list);
+
