@@ -2,25 +2,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Scanner.h"
-#include "stack.h"
+#include "error.h"
+#include "Mystack.h"
 
-/**
- * @brief 
- * 
- * @param MyToken fgfgdgfd
- * @param list 
- * @return int (vizerror.h)
- *         
- */
+typedef enum{
+    LESS_MORE_EQUAL_NOTEQUAL,
+    CONCATENATION,
+    PLUS_MINUS,
+    MULTIPLICATION_DIVISION_INTDIV,
+    SIZEOF,
+    LEFTBRACKET,
+    RIGHTBRACKET,
+    DATA,
+    ELSE,
+}precedenceOperators;
+
+typedef enum{
+    R, // POP
+    L, // PUSH
+    E, // ERROR
+    I, // EQUAL
+}tableItems;
+
+
+
+
+
+
+
 int compare(Token* MyToken, TokenList* list);
-/**
- * @brief 
- * 
- * @param tokenType 
- * @return int 
- */
-int tokenToColumn(Token_type tokenType);
-int topOfStackToLine(stack* MyStack);
-void tokenToSymbol(Token_type tokenType, char* symbol);
-int isItRule(char** rules,char* wannaBeRule, stack* MyStack);
+int line_table(Token_type type);
+int colomn_table(TStack *Stack);
+void check_rule(TStack *Stack);
+void full_Stack(TStack *Stack, Token *token, int table[9][9]);
