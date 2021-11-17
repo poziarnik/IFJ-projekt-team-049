@@ -4,11 +4,16 @@ int main(){
     //printf("Meky Zbirka\n");
     TokenList *list=(TokenList*)malloc(sizeof(TokenList));
     listInit(list);
-    if(Parse(list)==1){
+    int result=Parse(list);
+    if(result==PARC_TRUE){
         printf("Meky Zbirka jubilejny koncert\n");
     }
-    else{
-        printf("to si dojebal");
+    else if (result==PARC_FALSE){
+        
+        printf("%d Jozko Vajda",result);
+    }
+    else if(result==10){
+        printf("\nkoniec suboru");
     }
 
     return 0;

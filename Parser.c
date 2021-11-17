@@ -1,14 +1,16 @@
 #include "Parser.h"
 
-
+#define PRINT_ON true
+/*global function factorial ( n : integer, a : number) : integer , number 
+while e do end 21*/
+//bacha segfault
 int Parse(TokenList* list){
+    int status;
     Token* MyToken=(Token*)malloc(sizeof(Token));
     tokenScan(stdin, list, MyToken);
-    if (fc_program(MyToken, list)){
-        return 1;
-    }
+    RETURN_ON_ERROR(fc_program);
     
-    return 0;
+    return PARC_TRUE;
 }
 bool first(Token* MyToken, NonTerminal MyNonTerminal){
     if (MyNonTerminal==program){
@@ -25,9 +27,15 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         if (first(MyToken,global_scope)){
             return true;
         }
+        else if(MyToken->type==Keyword){
+            if(strcmp(MyToken->data.string, "function")==0){
+                return true;
+            }
+        }
     }
     else if(MyNonTerminal==global_scope){
-        if(strcmp(MyToken->att, "global")==0){
+        if(strcmp(MyToken->data.string, "global")==0){
+            printf("%s",MyToken->data.string);
             return true;
         }
     }
@@ -92,7 +100,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     }
     else if(MyNonTerminal==condition){
         if (MyToken->type==Keyword){
-            if (strcmp(MyToken->att,"if")==0){
+            if (strcmp(MyToken->data.string,"if")==0){
                 return true;
             }
             else{
@@ -105,7 +113,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     }
     else if(MyNonTerminal==loop){
         if (MyToken->type==Keyword){
-            if (strcmp(MyToken->att,"while")==0){
+            if (strcmp(MyToken->data.string,"while")==0){
                 return true;
             }
             else{
@@ -119,7 +127,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     }
     else if (MyNonTerminal==define){
         if (MyToken->type==Keyword){
-            if (strcmp(MyToken->att,"local")==0){
+            if (strcmp(MyToken->data.string,"local")==0){
                 return true;
             }
             else{
@@ -131,87 +139,123 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         }
     }
     else if (MyNonTerminal==assigne){
-        if (first(MyToken,varlist)){
+        if (first(MyToken,var)){
             return true;
         }
-        else{
-            return false;
-        }
+        else return false;
     }
     else if (MyNonTerminal==varlist){
         if (first(MyToken,var)){
             return true;
         }
-        else{
-            return false;
-        }
+        else return false;
     }
-    else if (MyNonTerminal==var)
-    {
-        if(isTokenType(MyToken)){
+    else if (MyNonTerminal==var){
+        if(MyToken->type==Identifier){
             return true;
-            //printf("kokot\n");
         }
-        else{
-            return false;
+        else return false;
+        
+    }
+    else if (MyNonTerminal == nextVar){
+        if (MyToken->type==Comma){
+            return true;
         }
+        else return false;
+    }
+    else if (MyNonTerminal==expression)
+    {
+        if(MyToken->type==Identifier){
+            return true;
+        }
+        else return false;
+    }
+    else if (MyNonTerminal == nextExpression){
+        if (MyToken->type==Comma){
+            return true;
+        }
+        else return false;
+    }
+    else if (MyNonTerminal==functionCall)
+    {
+        if(MyToken->type==Identifier){
+            return true;
+        }
+        else return false;
+    }
+    else if (MyNonTerminal == elseCondition)
+    {
+        if (MyToken->type==Keyword){
+            if (strcmp(MyToken->data.string,"else")==0){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+    else if (MyNonTerminal == prolog)
+    {
+        if(MyToken->type==Keyword){
+            return true;
+        }
+        else return false;
+    }
+    else if (MyNonTerminal == initialize)
+    {
+        if (MyToken->type==Assign){
+            return true;
+        }
+        else return false;
     }
     
-    
-    
-    
-    
-    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!dorobit nejake first
+
     return false;
 }
+//ak chyba alebo koniec return ak nie tak nereturnuj nic
 
 
 
 
-
-bool fc_program(Token* MyToken, TokenList* list){                  //program: <prolog><code>
-    if(first(MyToken, code)){
-        return fc_code(MyToken, list);
-    }
-    else{
-        return false;
-    }
     
-    return true;
+    
+
+
+int fc_program(Token* MyToken, TokenList* list){                  //program: <prolog><code>
+    int status;
+    if(first(MyToken, prolog)){
+        RETURN_ON_ERROR(fc_prolog);
+    }
+
+    if(first(MyToken, code)){
+        RETURN_ON_ERROR(fc_code);
+    }
+    else return PARC_FALSE;
+    
+    
+    return PARC_TRUE;
 }
-bool fc_code(Token* MyToken, TokenList* list){                     //code: <functionDec><code><statement>
+int fc_code(Token* MyToken, TokenList* list){                     //code: <functionDec><code><statement>
+    int status;
     if (first(MyToken, functionDec)){
-        if(!fc_functionDec(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_functionDec);
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
     
     if (first(MyToken, code)){
-        if(!fc_code(MyToken, list)){
-            return false;
-        }
-        else{
-            return false;
-        }
-        
-    }
-
-    if (first(MyToken, statement)){
-        if(!fc_statement(MyToken, list)){
-            return false;
-        }
-        else{
-            return false;
-        }
-        
+        RETURN_ON_ERROR(fc_code);
     }
     
-    return true;
+    if (first(MyToken, statement)){
+        RETURN_ON_ERROR(fc_statement); 
+    }
+    
+    return PARC_TRUE;
 }
-bool fc_functionDec(Token* MyToken,TokenList* list){              //functionDec: <global_scope>function<function_iden>(<params><returntypes>)
+int fc_functionDec(Token* MyToken,TokenList* list){              //functionDec: <global_scope>function<function_iden>(<params><returntypes>)<statement>end
+    int status;
     /*if (first(MyToken,global_scope)){
         tokenScan(stdin, list, MyToken);
         printf("%s\n",MyToken->att);
@@ -226,276 +270,508 @@ bool fc_functionDec(Token* MyToken,TokenList* list){              //functionDec:
         return false;
     }*/
     if (first(MyToken,global_scope)){
-        if(!fc_global_scope(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_global_scope);
     }
 
     if (chackStr(MyToken, list, "function")){
-        printf("String: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        printf("String: %s\n",MyToken->data.string);
+        SCAN_TOKEN;
     }
-    else{
-        return false;
-    } 
+    else return PARC_FALSE;
 
     if(first(MyToken, function_iden)){
-        if(!fc_functionIden(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_functionIden);
     }
-    else{
-        return false;
-    }
+    else return PARC_FALSE;
 
     if (MyToken->type==L_bracket){
-        printf("%s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        parcerPrint("function_def" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
-    else{
-        return false;
-    } 
+    else return PARC_FALSE;
 
     if (first(MyToken, params)){
-        if(!fc_params(MyToken, list)){
-            return false;
-        }
+       RETURN_ON_ERROR(fc_params);
+    }
+
+    if (MyToken->type==R_bracket){
+        parcerPrint("function_def" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+      
+    if(first(MyToken, returnTypes)){
+        RETURN_ON_ERROR(fc_returnTypes);
     }
     
-    if (MyToken->type==R_bracket){
-        printf("%s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+    if(first(MyToken, statement)){
+        RETURN_ON_ERROR(fc_statement);
     }
-    else{
-        return false;
-    } 
-
-    if(first(MyToken, returnTypes)){
-        if(!fc_returnTypes(MyToken, list)){
-            return false;
-        }
+    
+    if (chackStr(MyToken, list, "end")){
+        parcerPrint("function_def" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
-
-    return true;
+    else return PARC_FALSE;
+    return PARC_TRUE;
 }
-bool fc_global_scope(Token* MyToken,TokenList* list){                   //global_scope: global
+int fc_global_scope(Token* MyToken,TokenList* list){                   //global_scope: global
+    int status;
     if(chackStr(MyToken,list,"global"))
     {
-        printf("global_scope: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        parcerPrint("global" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
     
     
-    return true;
+    return PARC_TRUE;
 }
-bool fc_functionIden(Token* MyToken,TokenList* list){                   //functionIden: <functionIden>
+int fc_functionIden(Token* MyToken,TokenList* list){                   //functionIden: <functionIden>
+    int status;
     if (MyToken->type==Identifier){
-        printf("functionIden: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        parcerPrint("function_Iden" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
-    return true;
+    return PARC_TRUE;
 }
-bool fc_params(Token* MyToken,TokenList* list){                         //params: <param><nextParam>
-    
+int fc_params(Token* MyToken,TokenList* list){                         //params: <param><nextParam>
+    int status;
     if(first(MyToken, param)){
-        if(!fc_param(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_param);
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 
     if(first(MyToken, nextParam)){
-        if(!fc_nextParam(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_nextParam);
     }
 
     /*printf("params: %s\n",MyToken->att);
     tokenScan(stdin, list, MyToken);*/
-    return true;
+    return PARC_TRUE;
 }
-bool fc_param(Token* MyToken,TokenList* list){                          //param: <identifier>:<type>
+int fc_param(Token* MyToken,TokenList* list){                          //param: <identifier>:<type>
+    int status;
     if(MyToken->type==Identifier){
-        printf("identifier: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        parcerPrint("identifier" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }   
     else{
-        return false;
+        return PARC_FALSE;
     }
 
     if (chackStr(MyToken, list, ":")){
-        tokenScan(stdin, list, MyToken);
+        SCAN_TOKEN;
     }
     else{
-        return false;
+        return PARC_FALSE;
     } 
 
     if(isTokenType(MyToken)){
-        printf("param: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        int status;
+        parcerPrint("param" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
         //return true;
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 
-    return true;
+    return PARC_TRUE;
 }
-bool fc_nextParam(Token* MyToken,TokenList* list){                      //nextparam: ,<param><nextparam>
+int fc_nextParam(Token* MyToken,TokenList* list){                      //nextparam: ,<param><nextparam>
+    int status;
     if (chackStr(MyToken, list, ",")){
-        tokenScan(stdin, list, MyToken);
+        SCAN_TOKEN;
     }
     else{
-        return false;
+        return PARC_FALSE;
     }     
 
     if (first(MyToken, param)){
-        if(!fc_param(MyToken, list)){
-
-        }
+        RETURN_ON_ERROR(fc_param);
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 
     if (first(MyToken, nextParam)){
-        if(!fc_nextParam(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_nextParam);
     }
 
-    return true;
+    return PARC_TRUE;
 }
-bool fc_returnTypes(Token* MyToken,TokenList* list){                      //returnTypes: :type<nextType>
+int fc_returnTypes(Token* MyToken,TokenList* list){                      //returnTypes: :type<nextType>
+    int status;
     if (MyToken->type==Colon){
-        printf("returnTypes start: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);      
+        parcerPrint("return_types start" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;     
     }
     else{
-        return false;
+        return PARC_FALSE;
     } 
 
     if (isTokenType(MyToken)){
         //printf("Type: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
+        SCAN_TOKEN;
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 
     if (first(MyToken, nextType)){
-        if(!fc_nextType(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_nextType);
     }
     
-    return true;
+    return PARC_TRUE;
 }
-bool fc_nextType(Token* MyToken,TokenList* list){                            //nextType: ,Type<nextType>
+int fc_nextType(Token* MyToken,TokenList* list){                            //nextType: ,Type<nextType>
+    int status;
     if (chackStr(MyToken, list, ",")){
-        printf("String: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
-        //return true;
+        parcerPrint("next_type" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
-    else{
-        return false;
-    }
+    else return PARC_FALSE;
 
     if (isTokenType(MyToken)){
-        printf("Type: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
-        printf("Type: %s\n",MyToken->att);
+        parcerPrint("type" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
     else{
-        return false;
-    }
+        return PARC_FALSE;
     
+    }
     if (first(MyToken, nextType)){
-        printf("nextType: %s\n",MyToken->att);
-        tokenScan(stdin, list, MyToken);
-        return true;
-        
+        RETURN_ON_ERROR(fc_nextType);
     }
 
-    return true;
+    return PARC_TRUE;
 }
-bool fc_statement(Token* MyToken,TokenList* list){                              //statemnet: <<loop>||<condition>||<assigne>||<define>> <statment>
+int fc_statement(Token* MyToken,TokenList* list){                              //statemnet: <<loop>||<condition>||<assigne>||<define>> <statment>
+    
+    int status;
     if (first(MyToken, loop)){
-        if(!fc_loop(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_loop);
     }
     else if (first(MyToken, condition)){
-        if(!fc_condition(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_condition);
     }
     else if (first(MyToken, assigne)){
-        if(!fc_assigne(MyToken, list)){
-            return false;
-        }
+        RETURN_ON_ERROR(fc_assigne);
     }
-    else if (first(MyToken, loop)){
-        if(!fc_define(MyToken, list)){
-            return false;
-        }
+    else if (first(MyToken, define)){
+        RETURN_ON_ERROR(fc_define);
+    }
+    else if (first(MyToken, functionCall)){
+        RETURN_ON_ERROR(fc_functionCall);
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 
     if (first(MyToken, statement)){
-        if (!fc_statement(MyToken, list)){
-            return false;
-        }    
+        RETURN_ON_ERROR(fc_statement);    
     }    
-    return true;
+    return PARC_TRUE;
 }
-bool fc_loop(Token* MyToken,TokenList* list){
-    printf("loop: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);
-    return true;
-}
-bool fc_condition(Token* MyToken,TokenList* list){
-    printf("condition: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);
-    return true;
+int fc_loop(Token* MyToken,TokenList* list){                                    //loop: while<expression>do<statement>end
+    int status;
+    if (chackStr(MyToken, list, "while")){
+        parcerPrint("loop" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
     }
-bool fc_assigne(Token* MyToken,TokenList* list){
-    //printf("assigne: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);
-    return true;
+    else return PARC_FALSE;
+
+    if (first(MyToken, expression)){
+        RETURN_ON_ERROR(fc_expression);
+    }
+    else return PARC_FALSE;
+    
+    if (chackStr(MyToken, list, "do")){
+        parcerPrint("loop" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, statement)){
+        RETURN_ON_ERROR(fc_statement);
+    }
+
+    if (chackStr(MyToken, list, "end")){
+        parcerPrint("loop" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+    return PARC_TRUE;
 }
-bool fc_define(Token* MyToken,TokenList* list){
-    printf("define: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);
-    return true;
+int fc_condition(Token* MyToken,TokenList* list){                               //condition: if<expresion>then<statement><elseCondition>end
+    int status;
+    if (chackStr(MyToken, list, "if")){
+        parcerPrint("condition" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, expression)){
+        RETURN_ON_ERROR(fc_expression);
+    }
+    else return PARC_FALSE;
+    
+    if (chackStr(MyToken, list, "then")){
+        parcerPrint("condition" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+    if (first(MyToken, statement)){
+        RETURN_ON_ERROR(fc_statement);
+    }
+
+    if(first(MyToken,elseCondition)){
+        RETURN_ON_ERROR(fc_elseCondition);
+    }
+
+    if (chackStr(MyToken, list, "end")){
+        parcerPrint("condition" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+    return PARC_TRUE;
+}
+int fc_elseCondition(Token* MyToken,TokenList* list){                               //else<statement>
+    int status;
+    if (chackStr(MyToken, list, "else")){
+        parcerPrint("condition" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+    if (first(MyToken, statement)){
+        RETURN_ON_ERROR(fc_statement);
+    }
+
+    return PARC_TRUE;
+}
+    
+int fc_assigne(Token* MyToken,TokenList* list){                                      //<var><nextVar>=<expresion><nextExpresion>     or varlist=expresionlist
+    int status;
+    if (first(MyToken, var)){
+        RETURN_ON_ERROR(fc_var);
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, nextVar)){
+        RETURN_ON_ERROR(fc_nextVar);
+    }
+    
+    if (MyToken->type==Assign){
+        parcerPrint("assign" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;    
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, expression)){
+        RETURN_ON_ERROR(fc_expression);
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, nextExpression)){
+        RETURN_ON_ERROR(fc_nextExpression);
+    }
+    
+    return PARC_TRUE;
+}
+int fc_var(Token* MyToken,TokenList* list){                                         //identifier
+    int status;
+    if(MyToken->type==Identifier){
+        parcerPrint("var" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    return PARC_TRUE;
+}
+int fc_nextVar(Token* MyToken,TokenList* list){                                     //,<var><nextVar>
+    int status;
+    if (chackStr(MyToken, list, ",")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,var)){
+        RETURN_ON_ERROR(fc_var);
+    }
+    else return PARC_FALSE;
+    
+    if (first(MyToken,nextVar)){
+        RETURN_ON_ERROR(fc_nextVar);
+    }
+    
+    return PARC_TRUE;
+}
+int fc_expression(Token* MyToken,TokenList* list){                                  //Martin Huba
+    int status;
+    parcerPrint("expression" ,MyToken ,PRINT_ON);
+    SCAN_TOKEN;
+    return PARC_TRUE;
+}
+int fc_nextExpression(Token* MyToken,TokenList* list){                              //,<expresion><nextExpression>
+    int status;
+    if (chackStr(MyToken, list, ",")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,expression)){
+        RETURN_ON_ERROR(fc_expression);
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,nextExpression)){
+        RETURN_ON_ERROR(fc_nextExpression);
+    }
+    
+    return PARC_TRUE;
+}
+int fc_define(Token* MyToken,TokenList* list){                                        //define: local|identifier:type<inicialize>
+    int status;
+    
+    if (chackStr(MyToken, list, "local")){
+        parcerPrint("define" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+
+    if (MyToken->type==Identifier){
+        parcerPrint("define" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
+    if (chackStr(MyToken, list, ":")){
+        parcerPrint("define" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+
+    if(isTokenType(MyToken)){
+        parcerPrint("define" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,initialize)){
+        RETURN_ON_ERROR(fc_initialize);
+    }
+    
+    return PARC_TRUE;
+}
+int fc_functionCall(Token* MyToken,TokenList* list){                                 //functionCall: identifier(<params>)
+    int status;                                                                      //zatial nie je pouzite(po implementacii symtable pridat do assigne a do define)
+    if (MyToken->type==Identifier){
+        parcerPrint("define" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+
+    if (chackStr(MyToken, list, "(")){
+        
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,params)){
+        RETURN_ON_ERROR(fc_params);
+    }
+    else return PARC_FALSE;
+    
+    if (chackStr(MyToken, list, ")")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    return PARC_TRUE;
+}
+//dorobit function call !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+int fc_initialize(Token* MyToken,TokenList* list){                                  //initialize: =<expresion>||<functionCall>
+    int status;
+    if (chackStr(MyToken, list, "=")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken, expression)){                                                //!!!!!or functionCall
+        RETURN_ON_ERROR(fc_expression);
+    }
+    else return PARC_FALSE;
+    
+    return PARC_TRUE;
+}
+
+int fc_prolog(Token* MyToken,TokenList* list){
+    int status;
+    if (MyToken->type==Keyword){
+        if (chackStr(MyToken, list, "require")){
+            parcerPrint("Prolog" ,MyToken ,PRINT_ON);
+            SCAN_TOKEN;
+        }
+        else return PARC_FALSE;
+    }
+    else return PARC_FALSE;
+
+    if (MyToken->type==String){
+        if (chackStr(MyToken, list, "ifj21")){
+            parcerPrint("Prolog" ,MyToken ,PRINT_ON);
+            SCAN_TOKEN;
+        }
+        else return PARC_FALSE;
+    }
+    else return PARC_FALSE;
+
+    return PARC_TRUE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool chackType(Token* MyToken, TokenList* list, Token_type checkType){
-    printf("TypeCheck: %s\n",MyToken->att);
+int chackType(Token* MyToken, TokenList* list, Token_type checkType){    
     if (MyToken->type==checkType){
-        tokenScan(stdin, list, MyToken);
-        return true;
+        printf("TypeCheck: %d\n",MyToken->type);
+        int status;
+        SCAN_TOKEN;
+        return PARC_TRUE;
     }
     else{
-        return false;
+        return PARC_FALSE;
     }
 }
 
-bool chackStr(Token* MyToken, TokenList* list, char* checkType){
+bool compareTokenStr(Token* MyToken, char* Str){
+    if((MyToken->type != Number) || (MyToken->type != Integer)){
+        //printf("kokot %s %s\n", MyToken->data.string, Str);
+        if(strcmp(MyToken->data.string, Str)==0){
+            //printf("kokot %s %s\n", MyToken->data.string, Str);
+            return true;
+        }
+    }
+    return false;
+}
+bool chackStr(Token* MyToken, TokenList* list, char* Str){
     if ((MyToken->type != Number) || (MyToken->type != Integer)){
-        printf("StringCheck: %s\n",MyToken->att);
-        if (strcmp(MyToken->att,checkType)==0){
+        
+        if (compareTokenStr(MyToken, Str)){
+            //printf("StringCheck: %s\n",MyToken->data.string);
             return true;
         }
         else{
@@ -513,18 +789,56 @@ bool chackStr(Token* MyToken, TokenList* list, char* checkType){
     je identifikator
 */
 bool isTokenType(Token* MyToken){
-    if(strcmp(MyToken->att,"integer")==0){
+    if(compareTokenStr(MyToken, "integer")){
         return true;
     }
-    else if(strcmp(MyToken->att,"number")==0){
+    else if(compareTokenStr(MyToken, "number")){
         return true;
     }
-    else if(strcmp(MyToken->att,"string")==0){
+    else if(compareTokenStr(MyToken, "string")){
         return true;
     }
     else
     {
         return false;
     }
-    
 }
+void parcerPrint(char* state ,Token* MyToken ,bool on){
+    if (on){
+        if ( MyToken->type==Integer){
+            printf("%s: %d\n",state,MyToken->data.integer);
+        }
+        else if (MyToken->type==Number){
+            printf("%s: %f\n",state,MyToken->data.number);
+        }
+        else{
+            if (strcmp(state,"loop")==0)
+            {
+                printf("\033[1;33m");
+                printf("%s: %s\n",state,MyToken->data.string);
+                printf("\033[0m");
+            }
+            else if (strcmp(state,"condition")==0){
+                printf("\033[0;32m");
+                printf("%s: %s\n",state,MyToken->data.string);
+                printf("\033[0m");
+            }
+            else if (strcmp(state,"assign")==0){
+                printf("\033[0;31m");
+                printf("%s: %s\n",state,MyToken->data.string);
+                printf("\033[0m");
+            }
+            else if (strcmp(state,"define")==0){
+                printf("\033[0;34m");
+                printf("%s: %s\n",state,MyToken->data.string);
+                printf("\033[0m");
+            }
+            else
+            {
+                printf("%s: %s\n",state,MyToken->data.string);
+            }
+        }
+    }
+}
+    
+

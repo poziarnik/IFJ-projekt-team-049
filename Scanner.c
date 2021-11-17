@@ -1,6 +1,8 @@
 #include "Scanner.h"
 #include "error.h"
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//ak konci komentarom nevypne sa
 /*
     getToken() - stavovy automat
     Funkcia postupne cita char zo stdin a rozoduje co bude vo vystupnom tokene podla stavoveho automatu
@@ -320,7 +322,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 if (symbol == '['){
                     state = Scanner_state_comment_block;
                 }
-                else if (symbol == '\n'){
+                else if (symbol == '\n' || symbol == EOF){
                     state = Scanner_state_reading;
                 }
                 else{ 
@@ -413,7 +415,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 break;
 
-            case Scanner_state_assign: //TODO
+            case Scanner_state_assign:
                 if (symbol == '='){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     MyToken->type = Is_equal;
@@ -423,6 +425,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else{
                     ungetc(symbol, stdin);
                     MyToken->type = Assign;
+                    MyToken->data.string = str;
                     END=true;
                 }
                 break;
@@ -441,7 +444,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
         }
     }
-    listAddToken(list, MyToken);
+    //listAddToken(list, MyToken);
     return 0;
 }
 

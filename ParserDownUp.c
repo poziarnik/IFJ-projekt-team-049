@@ -10,8 +10,8 @@
 
 /*
     return:
-    1-chcem novy token
-    2-koniec analizy
+    0 - nice
+    -1 - napicu 
 
 
 */
@@ -71,7 +71,7 @@ int compare(Token* MyToken, TokenList* list){
             break;
         
         case '0':
-            return 1;
+            return -1;
             break;
 
         case '\0':
@@ -81,6 +81,7 @@ int compare(Token* MyToken, TokenList* list){
             return 1;
             break;
         }
+        char* dataptr;
     }
     return 0;
 }
