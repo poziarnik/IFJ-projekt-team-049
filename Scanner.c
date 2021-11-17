@@ -441,7 +441,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
         }
     }
-    listAddToken(list, MyToken);
+    // listAddToken(list, MyToken);
     return 0;
 }
 

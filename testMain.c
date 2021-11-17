@@ -7,8 +7,12 @@ int main(){
     listInit(&list);
     Token* MyToken = tokenCreate();
     tokenScan(stdin,&list,MyToken);
-    compare(MyToken,&list);
-
+    int status;
+    status = compare(MyToken,&list);
+    if (status != 0){
+        printf("CHYBA\n");
+    }
+    
 return 0;
     
     
