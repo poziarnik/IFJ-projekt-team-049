@@ -44,6 +44,7 @@ int Stack_first_nonterm(TStack *stack){
             return tmp->Item;
         }
     }
+    return 0;
 }
 
 void Stack_push_beforeNonterm(TStack *stack){
