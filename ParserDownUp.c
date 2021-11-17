@@ -1,194 +1,194 @@
 #include "ParserDownUp.h"
-//#include "Scanner.h"
-//#include "stack.h"
 #define NUMBER_OF_RULES 4
 
+#define SCAN_TOKEN \
+    status = tokenScan(stdin, list, MyToken); \
+    if (status==1) return 1; \
+    if (status==10) return 10
 
 
-
-
-
-/*
-    return:
-    0 - nice
-    -1 - napicu 
-
-
-*/
 int compare(Token* MyToken, TokenList* list){
-    stack* MyStack=(stack*)malloc(sizeof(stack));
-    stackInit(MyStack);
-    char SymbolNow[1];
-    stackPush(MyStack,"$");
-    char wannaBeRule[MAX_RULELENGHT];
-    wannaBeRule[0]='\0';
-               //token  +   *   (   )   i   $
-    char table[6][6]={{'>','<','<','>','<','>'}, // +
-                      {'>','>','<','>','<','>'}, // *
-                      {'<','<','<','=','<','0'}, // (
-                      {'>','>','0','>','0','>'}, // )
-                      {'>','>','0','>','0','>'}, // i
-                      {'<','<','<','0','<','0'}};// $
-                                               // Zasobnik
-    char* rules[4]={"E+E","E*E","(E)","i"};
-    //printf("%s chiil\n",MyStack->head->Character);
-    for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 6; j++)
-        {
-            printf("%c %i %i\n",table[i][j],i,j);
-        }
-        
-    }
-    
-    
-    while (true){
-        
-        printf("\ntabulka %i %i znak v tabulke |%c|-----------------------------------------\n",topOfStackToLine(MyStack),tokenToColumn(MyToken->type), table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)]);
-        stackPrint(MyStack);
-        printf("stackTop: %s Token: %i\n",MyStack->head->Character,MyToken->type);
-        switch (table[topOfStackToLine(MyStack)][tokenToColumn(MyToken->type)])
-        {
-        case '>':
-            topOfStackUntilLB(wannaBeRule,MyStack);
-            printf("pravidelo: %i\n",isItRule(rules,wannaBeRule, MyStack));
-            break;
+    int status;
+    int table[9][9]={
 
-        case '<':
-            stackPushLB(MyStack);
-            SymbolNow[0]='\0';
-            tokenToSymbol(MyToken->type,SymbolNow);
-            stackPrint(MyStack);
-            stackPush(MyStack,SymbolNow);
+        // I       N       P       U       T
+        
+    //   <|>  .. +|- *|/  #   (   )   i   $
+        {'R','L','L','L','L','L','R','L','R'}, // < <= > >= == ~=    S
+        {'R','L','L','L','L','L','R','L','R'}, // ..                  
+        {'R','R','R','L','L','L','R','L','R'}, // + -                T
+        {'R','R','R','R','L','L','R','L','R'}, // * / //              
+        {'R','R','R','R','E','L','R','L','R'}, // #                  A
+        {'L','L','L','L','L','L','I','L','E'}, // (                  
+        {'R','R','R','R','R','E','R','E','R'}, // )                  C
+        {'R','R','R','R','R','E','R','E','R'}, // i
+        {'L','L','L','L','L','L','E','L','E'}  // $                  K
+    };
+                                               
+    TStack *Stack = (TStack*)malloc(sizeof(TStack));
+    if (Stack == NULL) {
+        return INTERNAL_ERROR;
+    }
+    bool END = false;
+    Token *tmp;
+    Stack_push(Stack, ELSE, NULL);
+
+    do{
+        switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken->type)]){
+
+        case 'L':
+        
+            puts("op expand");
+            if (Stack->top->Item == 'E'){
+                Stack_push_beforeNonterm(Stack);
+                Stack_push(Stack, table_input_symbol(MyToken->type), MyToken);
+            }
+            else{
+                Stack_push(Stack, '<', NULL);
+                Stack_push(Stack, table_input_symbol(MyToken->type), MyToken); 
+            }
+            tokenScan(stdin, list, MyToken);
+            break;
+      
+        case 'R':
+            if (Stack->top->Item == PLUS_MINUS || Stack->top->Item == MULTIPLICATION_DIVISION_INTDIV){
+                return SYNTAX_ERROR;
+            }
             
-            MyToken=tokenCreate();
-            tokenScan(stdin,list,MyToken);
+            reduce_by_rule(Stack, MyToken);
+            puts("op reduce");
+            
+            
+            break;
+    
+        case 'I':
+            puts("op equals");
+            reduce_by_rule(Stack, MyToken);
+            
+            // if (stack1.Item == RIGHTBRACKET && stack2.Item == NOTERM && stack3.Item == LEFTBRACKET)
+            // {
+            //     Stack_push(Stack, stack2.Item, stack3.token);
+            // }
+            
+            
             break;
 
-        case '=':
-            tokenToSymbol(MyToken->type,SymbolNow);
-            stackPush(MyStack,SymbolNow);
-            tokenScan(stdin,list,MyToken);
+        case 'E':
+        puts("op end");
+            END = true;            
             break;
+        }  
+
         
-        case '0':
-            return -1;
-            break;
 
-        case '\0':
-            return 1;
-            break;
-        default:
-            return 1;
-            break;
-        }
-        char* dataptr;
+    } while (!END);
+    if (Stack->top->Item == NOTERM && Stack_first_nonterm(Stack) == ELSE){
+        return 0;
     }
+    return SYNTAX_ERROR;
+}
+
+
+int table_input_symbol(Token_type type){
+    switch (type){
+
+        case Less:
+        case Less_equal:
+        case More:
+        case More_equal:
+        case Is_equal:
+        case Not_equal:
+            return LESS_MORE_EQUAL_NOTEQUAL;
+
+        case Concatenation:
+            return CONCATENATION;
+
+        case Plus:
+        case Minus:
+            return PLUS_MINUS;
+
+        case Multiplication:
+        case Division:
+        case Division_integer:
+            return MULTIPLICATION_DIVISION_INTDIV;
+
+        case Sizeof:
+            return SIZEOF;
+
+        case L_bracket:
+            return LEFTBRACKET;
+
+        case R_bracket:
+            return RIGHTBRACKET;
+        
+        case Integer:
+        case Number:
+        case String:
+            return DATA;
+
+        default:
+            return ELSE;
+    }
+}
+
+int reduce_by_rule(TStack *Stack, Token *token){
+    TElement *stack_1;
+    TElement *stack_2;
+    TElement *stack_3;
+    Token *tmp;
+    if (Stack_first_nonterm(Stack) == DATA){
+        tmp = Stack->top->token;
+        Stack_pop_till_bracket(Stack);
+        Stack_push(Stack, NOTERM, tmp);
+    }
+    else if (Stack_first_nonterm(Stack) == PLUS_MINUS ||  \
+        (Stack_first_nonterm(Stack) == MULTIPLICATION_DIVISION_INTDIV)  || \
+        (Stack_first_nonterm(Stack) == LESS_MORE_EQUAL_NOTEQUAL)){
+        stack_1 = Stack->top;
+        Stack_pop(Stack);
+        stack_2 = Stack->top;
+        Stack_pop(Stack);
+        stack_3 = Stack->top;
+        Stack_pop(Stack);
+        Stack_pop(Stack);
+        
+
+        Stack_push(Stack, NOTERM, NULL);   
+    }
+    else if (Stack_first_nonterm(Stack) == LEFTBRACKET){
+        stack_1 = Stack->top;
+        Stack_pop(Stack);
+        stack_2 = Stack->top;
+        Stack_pop(Stack);
+        stack_3 = Stack->top;
+        Stack_pop(Stack);
+        Stack_push(Stack, NOTERM, NULL);  
+    }
+    else if (Stack_first_nonterm(Stack) == SIZEOF){
+        stack_1 = Stack->top;
+        Stack_pop(Stack);
+        stack_2 = Stack->top;
+        Stack_pop(Stack);
+        Stack->top->Item = NOTERM;
+        Stack->top->token = NULL;
+    }
+    stack_1 = NULL;
+    stack_2 = NULL;
+    stack_3 = NULL;
     return 0;
 }
-/*
-    zoberie typ tokenu a vrati odpovedajuce cislo stlpca v precedencnej tabulke ak token neodpoveda ziadnemu symbolu, ktory
-    moze byt sucastou expresion vracia stlpec $ ktory znaci koniec expresion
-*/
-int tokenToColumn(Token_type tokenType){
-    if (tokenType == Plus)
-    {
-        return 0;
-    }
-    else if (tokenType == Multiplication)
-    {
-        return 1;
-    }
-    else if (tokenType == L_bracket)
-    {
-        return 2;
-    }
-    else if (tokenType == R_bracket)
-    {
-        return 3;
-    }
-    else if (tokenType == Integer) //(strcmp(tokenType,"IDENTIFIKATOR") || strcmp(tokenType,"CELE CISLO") || strcmp(tokenType,"DESATINNY LITERAL"))==0
-    {
-        return 4;
-    }
-    else
-    {
-        return 5;
-    }
+
+int reduce_brackets(TStack *Stack, Token *token){
+    TElement *stack1;
+    TElement *stack2;
+    TElement *stack3;
+    stack1 = Stack->top;
+    Stack_pop(Stack);
+    stack2 = Stack->top;
+    Stack_pop(Stack);
+    stack3 = Stack->top;
+    Stack->top->Item = NOTERM;
+    Stack->top->token = NULL;
+
+    return 1;
 }
-/*
-    zoberie prvy terminal(neberie E) z vrcholu stacku a vrati k nemu odpovedajuci riadok precedencnej tabulky 
-*/
-int topOfStackToLine(stack* MyStack){
-    char dataptr[2];
-    stackTopTerminal(MyStack,dataptr);
-    if (strcmp(dataptr,"+")==0){
-        return 0;
-    }
-    else if (strcmp(dataptr,"*")==0){
-        return 1;
-    }
-    else if (strcmp(dataptr,"(")==0){
-        return 2;
-    }
-    else if (strcmp(dataptr,")")==0){
-        return 3;
-    }
-    else if (strcmp(dataptr,"i")==0){
-        return 4;
-    }
-    else if (strcmp(dataptr,"$")==0){
-        return 5;
-    }
-    else{
-        return 6;
-    }
-    
-}
-/*
-    zoberie typ tokenu a prevedie ho na jednoduchy symbol ktory sa pouziva na zasobniku
-*/
-void tokenToSymbol(Token_type tokenType, char* symbol){
-    if (tokenType == Plus)
-    {
-        strcpy(symbol,"+");
-    }
-    else if (tokenType == Multiplication)
-    {
-        strcpy(symbol,"*");
-    }
-    else if (tokenType == L_bracket)
-    {
-        strcpy(symbol,"(");
-    }
-    else if (tokenType == R_bracket)
-    {
-        strcpy(symbol,")");
-    }
-    else if (tokenType == Integer)//strcmp(tokenType,"DESATINNY LITERAL" (strcmp(tokenType,"IDENTIFIKATOR") ||
-    {
-        strcpy(symbol,"i");
-    }
-}
-/*
-    skontroluje ci je wannaBeRule nejake pravidlo a nasledne vrati cislo pravidla
-*/
-int isItRule(char** rules,char* wannaBeRule, stack* MyStack){
-    for (int i = 0; i < NUMBER_OF_RULES; i++){
-        if (strcmp(rules[i],wannaBeRule)==0)
-        {
-            stackPush(MyStack, "E");
-            return i;
-        }
-    }
-    return -1;
-}
-
-//tabulku pravidle
-//fumkcia terminal top stack
-//funkcia TOPSECOND
-
-
-
-    
-
-

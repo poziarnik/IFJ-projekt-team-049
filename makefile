@@ -6,6 +6,7 @@ MAIN =testParserMain.c
 #main.c - scanner
 #testMain.c - zdolaNahor
 NEWFILE = test
+PRECEDENCE = Scanner.c Scanner.h Mystack.c MyStackTree.h ParserDownUp.c ParserDownUp.h testMain.c
 
 advanced: 
 	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) $(MAIN)
@@ -19,3 +20,5 @@ scanner:
 parser:
 	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) testParserMain.c
 	
+precedence:
+	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) 
