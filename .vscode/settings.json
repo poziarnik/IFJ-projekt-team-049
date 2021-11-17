@@ -2,7 +2,7 @@
     "files.associations": {
         "stdlib.h": "c",
         "stdio.h": "c",
-        "parser.h": "c"
+        "parser.h": "c",
         "array": "c",
         "chrono": "c",
         "functional": "c",
