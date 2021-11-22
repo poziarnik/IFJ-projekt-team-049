@@ -34,9 +34,6 @@ void Stack_pop_till_bracket(TStack *Stack){
     
 }
 
-void tree_init(Tnode **tree){
-    *tree = NULL;
-}
 
 int Stack_first_nonterm(TStack *stack){
     for (TElement *tmp = stack->top; tmp != NULL; tmp = tmp->next){

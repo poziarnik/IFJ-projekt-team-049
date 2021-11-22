@@ -15,11 +15,7 @@ typedef struct Stack{
     TElement *top;
 }TStack;
 
-typedef struct tnode{
-    Token *token;
-    struct tnode *left;
-    struct tnode *right;
-}Tnode;
+
 
 void Stack_init(TStack *Stack);
 void Stack_push(TStack *Stack, int newItem, Token *token);
