@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON true
+#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault
@@ -35,7 +35,6 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     }
     else if(MyNonTerminal==global_scope){
         if(strcmp(MyToken->data.string, "global")==0){
-            printf("%s",MyToken->data.string);
             return true;
         }
     }
@@ -196,7 +195,10 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     else if (MyNonTerminal == prolog)
     {
         if(MyToken->type==Keyword){
-            return true;
+            if (strcmp(MyToken->data.string,"require")==0){
+                return true;
+            }
+            else return false;
         }
         else return false;
     }
