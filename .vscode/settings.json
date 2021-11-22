@@ -12,6 +12,7 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "mystacktree.h": "c"
-    }
+        "mystacktree.h": "c",
+        "stdbool.h": "c"
+}
 }
