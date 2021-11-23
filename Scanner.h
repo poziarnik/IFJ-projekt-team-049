@@ -1,3 +1,5 @@
+#ifndef _scanner
+#define _scanner 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -107,3 +109,4 @@ void listInit(TokenList* list);
 void listAddToken(TokenList* list, Token* NewToken);
 void listFree(TokenList* list);
 
+#endif

@@ -43,7 +43,7 @@ typedef struct tree{
     } attr;
 }Tree;
 
-void treeInit(Tree **tree);
+void TreeInit(Tree **tree);
 Tree *treeInsert_BinaryOperator(Tree **tree, TElement *Operator, TElement *Data1, TElement *Data2);
 Tree *tree_insert_UnaryOperator(Tree **tree, TElement *Operator, TElement *Data);
 

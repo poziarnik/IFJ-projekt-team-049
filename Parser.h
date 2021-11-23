@@ -1,3 +1,5 @@
+#ifndef _parcer
+#define _parcer
 #include <stdio.h>
 #include <stdlib.h>
 #include "ParserDownUp.h"
@@ -94,10 +96,6 @@ typedef enum{
     initialize,
     elseCondition,
     functionCall
-
-
-
-
 }NonTerminal;
 
 int Parse(TokenList* list);
@@ -130,3 +128,5 @@ int fc_initialize(Token* MyToken,TokenList* list);
 int fc_functionCall(Token* MyToken,TokenList* list);
 int fc_prolog(Token* MyToken,TokenList* list);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
+
+#endif

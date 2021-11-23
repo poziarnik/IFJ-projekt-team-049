@@ -13,6 +13,7 @@
         "type_traits": "c",
         "utility": "c",
         "mystacktree.h": "c",
-        "stdbool.h": "c"
-}
+        "stdbool.h": "c",
+        "symtable.h": "c"
+    }
 }
