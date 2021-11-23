@@ -47,6 +47,8 @@ int compare(Token* MyToken, TokenList* list){
                 Stack_push(Stack, '<', NULL);
                 Stack_push(Stack, table_input_symbol(MyToken->type), MyToken); 
             }
+            
+            
             tokenScan(stdin, list, MyToken);
             break;
       
@@ -75,7 +77,9 @@ int compare(Token* MyToken, TokenList* list){
 
         case 'E':
         puts("op end");
-            END = true;            
+            END = true;
+            printf("%i", Stack->top->Item);
+                        
             break;
         }  
 
@@ -124,6 +128,7 @@ int table_input_symbol(Token_type type){
         case Integer:
         case Number:
         case String:
+        case Identifier:
             return DATA;
 
         default:
@@ -136,11 +141,15 @@ int reduce_by_rule(TStack *Stack, Token *token){
     TElement *stack_2;
     TElement *stack_3;
     Token *tmp;
+
     if (Stack_first_nonterm(Stack) == DATA){
         tmp = Stack->top->token;
         Stack_pop_till_bracket(Stack);
         Stack_push(Stack, NOTERM, tmp);
     }
+
+
+    // E (operator) E --> E
     else if (Stack_first_nonterm(Stack) == PLUS_MINUS ||  \
         (Stack_first_nonterm(Stack) == MULTIPLICATION_DIVISION_INTDIV)  || \
         (Stack_first_nonterm(Stack) == LESS_MORE_EQUAL_NOTEQUAL)){
@@ -155,6 +164,8 @@ int reduce_by_rule(TStack *Stack, Token *token){
 
         Stack_push(Stack, NOTERM, NULL);   
     }
+
+
     else if (Stack_first_nonterm(Stack) == LEFTBRACKET){
         stack_1 = Stack->top;
         Stack_pop(Stack);
@@ -164,6 +175,8 @@ int reduce_by_rule(TStack *Stack, Token *token){
         Stack_pop(Stack);
         Stack_push(Stack, NOTERM, NULL);  
     }
+
+
     else if (Stack_first_nonterm(Stack) == SIZEOF){
         stack_1 = Stack->top;
         Stack_pop(Stack);
@@ -176,19 +189,4 @@ int reduce_by_rule(TStack *Stack, Token *token){
     stack_2 = NULL;
     stack_3 = NULL;
     return 0;
-}
-
-int reduce_brackets(TStack *Stack, Token *token){
-    TElement *stack1;
-    TElement *stack2;
-    TElement *stack3;
-    stack1 = Stack->top;
-    Stack_pop(Stack);
-    stack2 = Stack->top;
-    Stack_pop(Stack);
-    stack3 = Stack->top;
-    Stack->top->Item = NOTERM;
-    Stack->top->token = NULL;
-
-    return 1;
 }

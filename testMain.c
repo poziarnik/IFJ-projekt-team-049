@@ -11,6 +11,7 @@ int main(){
     status = compare(MyToken,&list);
     if (status != 0){
         printf("CHYBA\n");
+        printf("%i", status);
     }
     
 return 0;
