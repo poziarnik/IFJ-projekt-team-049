@@ -1,19 +1,32 @@
 {
-    "files.associations": {
-        "stdlib.h": "c",
-        "stdio.h": "c",
-        "parser.h": "c",
-        "array": "c",
-        "chrono": "c",
-        "functional": "c",
-        "istream": "c",
-        "ostream": "c",
-        "ratio": "c",
-        "tuple": "c",
-        "type_traits": "c",
-        "utility": "c",
-        "mystacktree.h": "c",
-        "stdbool.h": "c",
-        "symtable.h": "c"
-    }
+  "files.associations": {
+    "stdlib.h": "c",
+    "stdio.h": "c",
+    "parser.h": "c",
+    "array": "c",
+    "chrono": "c",
+    "functional": "c",
+    "istream": "c",
+    "ostream": "c",
+    "ratio": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "mystacktree.h": "c",
+    "stdbool.h": "c",
+    "cstdio": "c"
+  },
+  "C_Cpp_Runner.warnings": [
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic"
+  ],
+  "C_Cpp_Runner.compilerArgs": [],
+  "C_Cpp_Runner.includePaths": [],
+  "C_Cpp_Runner.linkerArgs": [],
+  "C_Cpp_Runner.cStandard": "",
+  "C_Cpp_Runner.cppStandard": "",
+  "C_Cpp_Runner.excludeSearch": [],
+  "C_Cpp_Runner.enableWarnings": true,
+  "C_Cpp_Runner.warningsAsError": false
 }

@@ -82,23 +82,70 @@ void gen_builtin_func(){
 }
 
 int gen_read_i(){
-//TODO
+    printf("\n LABEL $inputi\
+            \n PUSHFRAME\
+            \n DEFVAR LF@retval0\
+            \n DEFVAR LF@retval1\
+            \n MOVE LF@retval1 int@0\
+            \n DEFVAR LF@typeout\
+            \n READ LF@retval0 int\
+            \n TYPE LF@typeout LF@retval0\
+            \n JUMPIFEQ $inputi$istrue LF@typeout string@int\
+            \n MOVE LF@retval0 int@1\
+            \n MOVE LF@retval1 int@1\
+            \n POPFRAME\
+            \n RETURN\
+            \n LABEL $inputi$istrue\
+            \n POPFRAME\
+            \n RETURN");   
 }
 
 int gen_read_s(){
-//TODO
+    printf("\n LABEL $inputs\
+            \n PUSHFRAME\
+            \n DEFVAR LF@retval0\
+            \n DEFVAR LF@retval1\
+            \n MOVE LF@retval1 int@0\
+            \n READ LF@retval0 string\
+            \n JUMPIFNEQ $inputs$noerr LF@retval0 nil@nil\
+            \n MOVE LF@retval1 int@1\
+            \n LABEL $inputs$noerr\
+            \n POPFRAME\
+            \n RETURN ");
 }
 
 int gen_read_n(){
-//TODO
+    printf("\n LABEL $inputf\
+            \n PUSHFRAME\
+            \n DEFVAR LF@retval0\
+            \n DEFVAR LF@retval1\
+            \n MOVE LF@retval1 int@0\
+            \n DEFVAR LF@typeout\
+            \n READ LF@retval0 float\
+            \n TYPE LF@typeout LF@retval0\
+            \n JUMPIFEQ $inputf$istrue LF@typeout string@float\
+            \n MOVE LF@retval0 float@0x1p+0\
+            \n MOVE LF@retval1 int@1\
+            \n POPFRAME\
+            \n RETURN\
+            \n LABEL $inputf$istrue\
+            \n POPFRAME\
+            \n RETURN");
 }
 
 void gen_write(){
-//TODO
+    printf("\n LABEL $write\
+            \n PUSHFRAME\
+            \n");
 }
 
 void gen_f2i(){
-//TODO
+    printf("\n LABEL $float2int\
+            \n PUSHFRAME\
+            \n DEFVAR LF@retval0\
+            \n FLOAT2INT LF@retval0 LF@0\
+            \n POPFRAME\
+            \n RETURN");
 }
 
 void gen_substr(){
