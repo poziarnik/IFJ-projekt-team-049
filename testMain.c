@@ -14,6 +14,7 @@ int main(){
     }
     else{
         puts("CHYBA");
+        printf("%i", status);
         return status;
     }
     

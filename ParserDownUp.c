@@ -92,7 +92,7 @@ int compare(Token* MyToken, TokenList* list){
     puts("");
     puts("---------------------");
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
-        return status;
+        return 0;
     }
     return SYNTAX_ERROR;
     
@@ -226,8 +226,16 @@ int reduce_by_rule(TStack *Stack){
 
 
     else if (Stack_first_nonterm(Stack) == SIZEOF){
+        if (Stack->top->Item != NOTERM){
+            return SYNTAX_ERROR;
+        }
         stack_1 = *Stack->top;
         Stack_pop(Stack);
+
+
+        if (Stack->top->Item != SIZEOF){
+            return SYNTAX_ERROR;
+        }
         stack_2 = *Stack->top;
         Stack_pop(Stack);
 
