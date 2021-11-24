@@ -74,5 +74,6 @@ int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
 SymTreeRoot* treeCreateRoot();
 int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
 int symtableInit(symtable* sym);
+bool isInbuildFun(char* str);
 
 #endif

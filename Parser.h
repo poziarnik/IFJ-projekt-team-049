@@ -81,14 +81,14 @@ typedef enum{
     global_scope,   //function rozklad
     function_iden,
     params,
-    returnTypes,
     param,
     nextParam,
+    returnTypes,
     type,
     nextType,
     condition,      //statment rozklad
     loop,
-    assigne,
+    assigneOrFunctioCall,
     define,
     expression,
     nextExpression,
@@ -97,7 +97,10 @@ typedef enum{
     nextVar,
     initialize,
     elseCondition,
-    functionCall
+    functionCall,
+    FCallparams,
+    FCallparam,
+    FCallnextParam
 }NonTerminal;
 
 int Parse(TokenList* list);
@@ -130,5 +133,7 @@ int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
 bool chackStr(Token* MyToken, TokenList* list, char* checkType);
 int chackType(Token* MyToken, TokenList* list, Token_type checkType);
-
+int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable);
+int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
+int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
 #endif

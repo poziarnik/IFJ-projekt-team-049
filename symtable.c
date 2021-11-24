@@ -157,7 +157,7 @@ void sym_inorder(TreeItem *tree) {
   }
 }
 bool isFunDeclared(char* key, TreeItem* globalTree){
-  if(sym_search(globalTree, key)){
+  if(sym_search(globalTree, key) || isInbuildFun(key)){
     return true;
   }
   return false;
@@ -191,4 +191,8 @@ int symtableInit(symtable* sym){
     sym->sym_stack=symstack;
     sym->sym_globalTree=NULL;
     
+}
+bool isInbuildFun(char* str){
+    if(strcmp(str,"write")==0 || strcmp(str,"read")==0) return true;
+    else return false;
 }

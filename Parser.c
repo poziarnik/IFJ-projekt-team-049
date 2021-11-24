@@ -49,7 +49,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         }
     }
     else if(MyNonTerminal==params){
-        if(MyToken->type==Identifier){
+        if(first(MyToken, param)){
             return true;
         }
     }
@@ -95,7 +95,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         else if(first(MyToken, define)){
             return true;
         }
-        if (first(MyToken, assigne)){
+        if (first(MyToken, assigneOrFunctioCall)){
             return true;
         }
         else{
@@ -142,7 +142,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
             return false;
         }
     }
-    else if (MyNonTerminal==assigne){
+    else if (MyNonTerminal==assigneOrFunctioCall){
         if (first(MyToken,var)){
             return true;
         }
@@ -228,6 +228,25 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
             return true;
         }
         else return false;
+    }
+    else if(MyNonTerminal == FCallparams){
+        if (first(MyToken,FCallparam)){
+            return true;
+        }
+        else return false;
+    }
+    else if(MyNonTerminal == FCallparam){
+        if (first(MyToken, expression)){
+            return true;
+        }
+        else return false;
+    }
+    else if(MyNonTerminal == FCallnextParam){
+        if (MyToken->type==Comma){
+            return true;
+        }
+        else return false;
+        
     }
     
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!dorobit nejake first
@@ -339,8 +358,7 @@ int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable){       
 }
 int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable){                   //global_scope: global
     int status;
-    if(chackStr(MyToken,list,"global"))
-    {
+    if(chackStr(MyToken,list,"global")){
         parcerPrint("global" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -379,6 +397,7 @@ int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable){            
 }
 int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable){                          //param: <identifier>:<type>
     int status;
+    puts("imhere");
     if(MyToken->type==Identifier){
         parcerPrint("identifier" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -474,8 +493,7 @@ int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable){          
 
     return PARC_TRUE;
 }
-int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){                              //statemnet: <<loop>||<condition>||<assigne>||<define>> <statment>
-    
+int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){                              //statemnet: <<loop>||<condition>||<assigne>||<define>> <statment> 
     int status;
     if (first(MyToken, loop)){
         RETURN_ON_ERROR(fc_loop);
@@ -483,22 +501,26 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){         
     else if (first(MyToken, condition)){
         RETURN_ON_ERROR(fc_condition);
     }
-    else if (first(MyToken, assigne)){
-        RETURN_ON_ERROR(fc_assigne);
+    else if (first(MyToken, assigneOrFunctioCall)){
+        if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+            RETURN_ON_ERROR(fc_functionCall);
+        }
+        else{
+            RETURN_ON_ERROR(fc_assigne);
+        }
     }
     else if (first(MyToken, define)){
         RETURN_ON_ERROR(fc_define);
     }
-    else if (first(MyToken, functionCall)){
-        RETURN_ON_ERROR(fc_functionCall);
-    }
     else{
         return PARC_FALSE;
     }
-
     if (first(MyToken, statement)){
-        RETURN_ON_ERROR(fc_statement);    
-    }    
+        RETURN_ON_ERROR(fc_statement);  
+    }
+    /*else if (first(MyToken, functionCall)){
+        RETURN_ON_ERROR(fc_functionCall);
+    }*/    
     return PARC_TRUE;
 }
 int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable){                                    //loop: while<expression>do<statement>end
@@ -612,6 +634,7 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable){           
 }
 int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable){                                         //identifier
     int status;
+    //printf("imhere\n");
     if(MyToken->type==Identifier){
         parcerPrint("var" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -640,12 +663,14 @@ int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable){           
     return PARC_TRUE;
 }
 int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable){                                  //Martin Huba
-    
-    
 
+    //if((expressionCheck(MyToken,list)) != 0) return PARC_FALSE;
+    parcerPrint("expression" ,MyToken ,PRINT_ON);
+    int status=expressionCheck(MyToken,list);
+    //printf("result:%d %s\n", status, MyToken->data.string);
     //int status;
-    //parcerPrint("expression" ,MyToken ,PRINT_ON);
-    //SCAN_TOKEN;
+    
+    
     return PARC_TRUE;
 }
 int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable){                              //,<expresion><nextExpression>
@@ -697,14 +722,15 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable){            
     if (first(MyToken,initialize)){
         RETURN_ON_ERROR(fc_initialize);
     }
-    
     return PARC_TRUE;
 }
-int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable){                                 //functionCall: identifier(<params>)
-    int status;                                                                      //zatial nie je pouzite(po implementacii symtable pridat do assigne a do define)
+int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable){                                 //functionCall: identifier(<FCparams>)
+    int status;
+  //zatial nie je pouzite(po implementacii symtable pridat do assigne a do define)
     if (MyToken->type==Identifier){
-        parcerPrint("define" ,MyToken ,PRINT_ON);
+        parcerPrint("functionCall" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
+        //kontrola ci definovana funkcia
     }
 
     if (chackStr(MyToken, list, "(")){
@@ -714,16 +740,65 @@ int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable){      
     }
     else return PARC_FALSE;
 
-    if (first(MyToken,params)){
-        RETURN_ON_ERROR(fc_params);
+    if (first(MyToken,FCallparams)){
+        RETURN_ON_ERROR(fc_FCallparams);
     }
-    else return PARC_FALSE;
     
     if (chackStr(MyToken, list, ")")){
         parcerPrint("String" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
+
+    return PARC_TRUE;
+}
+int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable){                         //params: <param><nextParam>
+    int status;
+    if(first(MyToken, FCallparam)){
+        RETURN_ON_ERROR(fc_FCallparam);
+    }
+    else{
+        return PARC_FALSE;
+    }
+
+    if(first(MyToken, FCallnextParam)){
+        RETURN_ON_ERROR(fc_FCallnextParam);
+    }
+
+    /*printf("params: %s\n",MyToken->att);
+    tokenScan(stdin, list, MyToken);*/
+    return PARC_TRUE;
+}
+int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable){                          //param: <expression>
+    int status;
+    //puts("imhere");
+    if(first(MyToken, expression)){
+        parcerPrint("functionCall" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }   
+    else return PARC_FALSE;
+    
+    return PARC_TRUE;
+}
+int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable){                      //nextparam: ,<param><nextparam>
+    int status;
+    if (chackStr(MyToken, list, ",")){
+        SCAN_TOKEN;
+    }
+    else{
+        return PARC_FALSE;
+    }     
+
+    if (first(MyToken, param)){
+        RETURN_ON_ERROR(fc_param);
+    }
+    else{
+        return PARC_FALSE;
+    }
+
+    if (first(MyToken, nextParam)){
+        RETURN_ON_ERROR(fc_nextParam);
+    }
 
     return PARC_TRUE;
 }
@@ -735,12 +810,16 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable){        
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
-
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
-        RETURN_ON_ERROR(fc_expression);
+        if(MyToken->type==Identifier){
+            if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree)){
+                RETURN_ON_ERROR(fc_functionCall);
+            }
+            else RETURN_ON_ERROR(fc_expression);
+        }
+        else RETURN_ON_ERROR(fc_expression);
     }
-    else return PARC_FALSE;
-    
+    else return PARC_FALSE;    
     return PARC_TRUE;
 }
 
@@ -866,6 +945,8 @@ void parcerPrint(char* state ,Token* MyToken ,bool on){
         }
     }
 }
+
+
 
     
 
