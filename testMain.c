@@ -9,12 +9,16 @@ int main(){
     tokenScan(stdin,&list,MyToken);
     int status;
     status = compare(MyToken,&list);
-    if (status != 0){
-        printf("CHYBA\n");
+    if (status == 0){
+        return 0;
+    }
+    else{
+        puts("CHYBA");
         printf("%i", status);
+        return status;
     }
     
-return 0;
+
     
     
 }

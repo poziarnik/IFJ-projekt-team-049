@@ -13,6 +13,8 @@ int main(){
         printf("%d Jozko Vajda",result);
     }
     else if(result==10){
+        printf("my global treeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n");
+        //sym_inorder(mySymtable->sym_globalTree);
         printf("\nkoniec suboru");
     }
 
