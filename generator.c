@@ -16,6 +16,7 @@
 
 /******************** generovanie funkcii ********************/
 
+
 void gen_func_begin(char *id){
     if(strcmp(id, "main") == 0){
         printf("\n LABEL $main\n\
@@ -77,8 +78,35 @@ void gen_then(){
 
 /******************** generovanie vstavanych funkcii ********************/
 
-void gen_builtin_func(){
-//TODO
+void gen_builtin_func(char *nieco){
+    switch(*nieco){
+        case I_READI:
+            gen_read_i();
+            break;
+
+        case I_READS:
+            gen_read_s();
+            break;
+
+        case I_READN:
+            gen_read_n();
+            break;
+
+        case I_WRITE:
+            gen_write();
+            break;
+
+        case I_F2I:
+            gen_f2i();
+            break;
+
+        case I_I2F:
+            gen_i2f();
+            break;
+
+        default:
+            break;
+    }
 }
 
 int gen_read_i(){
@@ -97,7 +125,7 @@ int gen_read_i(){
             \n RETURN\
             \n LABEL $inputi$istrue\
             \n POPFRAME\
-            \n RETURN");   
+            \n RETURN\n");   
 }
 
 int gen_read_s(){
@@ -111,7 +139,7 @@ int gen_read_s(){
             \n MOVE LF@retval1 int@1\
             \n LABEL $inputs$noerr\
             \n POPFRAME\
-            \n RETURN ");
+            \n RETURN\n");
 }
 
 int gen_read_n(){
@@ -130,7 +158,7 @@ int gen_read_n(){
             \n RETURN\
             \n LABEL $inputf$istrue\
             \n POPFRAME\
-            \n RETURN");
+            \n RETURN\n");
 }
 
 void gen_write(){
@@ -142,11 +170,24 @@ void gen_write(){
 void gen_f2i(){
     printf("\n LABEL $float2int\
             \n PUSHFRAME\
+            \n DEFVAR LF@param1\
             \n DEFVAR LF@retval0\
-            \n FLOAT2INT LF@retval0 LF@0\
+            \n FLOAT2INT LF@retval0 LF@param1\
             \n POPFRAME\
-            \n RETURN");
+            \n RETURN\n");
 }
+
+void gen_i2f(){
+    printf("\n LABEL $int2float\
+            \n PUSHFRAME\
+            \n DEFVAR LF@param1\
+            \n DEFVAR LF@retval0\
+            \n INT2FLOAT LF@retval0 LF@param1\
+            \n POPFRAME\
+            \n RETURN\n");
+}
+
+
 
 void gen_substr(){
 //TODO
@@ -160,8 +201,9 @@ void gen_chr(){
 //TODO
 }
 
-int main(){
+int main(){                     //test
     char *e = "ahoj";
     printf("\nLABEL $%s"\
         "\nPUSHFRAME\n", e);
+    gen_i2f();
 }
