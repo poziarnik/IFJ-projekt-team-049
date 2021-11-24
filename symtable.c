@@ -176,9 +176,19 @@ int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){
   symStackPush(myStack, newRoot);
   *sym_subTree= newRoot;
 }
-int symDisposeStackBlock(SymStack* myStack){
+int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){ //odstran vrch stacku a zmen ukazatel na subtree
   if (myStack->head!=NULL){
     SymStackElement* tmp=myStack->head;
-    myStack->head=tmp->next;
+    myStack->head=myStack->head->next;
+    *sym_subTree=myStack->head->root;
   }  
 } 
+int symtableInit(symtable* sym){
+    SymStack *symstack=(SymStack*)malloc(sizeof(SymStack));
+    if(symstack==NULL) return INTERNAL_ERROR;
+    symStackInit(symstack);
+    puts("imhere");
+    sym->sym_stack=symstack;
+    sym->sym_globalTree=NULL;
+    
+}

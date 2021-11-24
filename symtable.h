@@ -43,6 +43,12 @@ typedef struct sym_stack{
     struct sym_stackElement* head;
 }SymStack;
 
+typedef struct symtable{
+    TreeItem *sym_globalTree;
+    SymTreeRoot *sym_subTree;
+    SymStack *sym_stack;
+}symtable;
+
 
 // typedef struct tSymbolTable {
 //     struct tableItem *root;
@@ -66,6 +72,7 @@ void sym_inorder(TreeItem *tree);
 int createSubTree(SymStack* myStack);
 int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
 SymTreeRoot* treeCreateRoot();
-int symDisposeStackBlock(SymStack* myStack);
+int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
+int symtableInit(symtable* sym);
 
 #endif
