@@ -8,7 +8,7 @@ int main(){
     Token* MyToken = tokenCreate();
     tokenScan(stdin,&list,MyToken);
     int status;
-    status = compare(MyToken,&list);
+    status = expressionCheck(MyToken,&list);
     if (status == 0){
         return 0;
     }

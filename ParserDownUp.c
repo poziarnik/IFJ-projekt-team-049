@@ -6,7 +6,7 @@
     if (status==1 ) return 1;
 
 
-int compare(Token* MyToken, TokenList* list){
+int expressionCheck(Token* MyToken, TokenList* list){
     int status = 0;
     int table[9][9]={
 
@@ -37,7 +37,7 @@ int compare(Token* MyToken, TokenList* list){
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken->type)]){
 
         case 'L':
-            puts("op expand");
+            //puts("op expand");
             if(Stack->top->Item == NOTERM){
                 stackHelp = *Stack->top;
                 Stack_pop(Stack);
@@ -57,7 +57,7 @@ int compare(Token* MyToken, TokenList* list){
 
       
         case 'R':
-            puts("op reduce");
+            //puts("op reduce");
             
             status = reduce_by_rule(Stack);
             if (status != 0){
@@ -66,7 +66,7 @@ int compare(Token* MyToken, TokenList* list){
             break;
     
         case 'I':
-            puts("op equals");
+            //puts("op equals");
 
             status = reduce_by_rule(Stack);
             if (status != 0){
@@ -77,7 +77,7 @@ int compare(Token* MyToken, TokenList* list){
             break;
 
         case 'E':
-            puts("op end");
+            //puts("op end");
 
             END = true;
             break;
@@ -86,11 +86,11 @@ int compare(Token* MyToken, TokenList* list){
 
     } while (!END);
     
-    puts("---------------------");
+    /*puts("---------------------");
     puts("");
     printf("%s\n", Stack->top->tree->Data->data.string);
     puts("");
-    puts("---------------------");
+    puts("---------------------");*/
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
         return 0;
     }

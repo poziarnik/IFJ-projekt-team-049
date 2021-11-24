@@ -11,7 +11,7 @@
 
 
 
-int compare(Token* MyToken, TokenList* list);
+int expressionCheck(Token* MyToken, TokenList* list);
 int table_input_symbol(Token_type type);
 int colomn_table(TStack *Stack);
 int stack_operation(TStack *Stack, Token *token, int table[9][9], bool MISS);
