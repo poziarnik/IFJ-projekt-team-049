@@ -263,6 +263,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 break;
             
             case Scanner_state_string_end:
+                ungetc(symbol, stdin);
                 MyToken->type = String;
                 MyToken->data.string = str;
                 END = true;
