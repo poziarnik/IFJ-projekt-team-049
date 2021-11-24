@@ -51,6 +51,8 @@ void gen_write();
 
 void gen_f2i();
 
+void gen_i2f();
+
 void gen_substr();
 
 void gen_ord();

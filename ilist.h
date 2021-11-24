@@ -76,28 +76,30 @@
 #define I_I2C_S           39      // INT TO CHAR
 #define I_S2I_S           40      // STRING TO INT
 
-#define I_READ            41
-#define I_WRITE           42
+#define I_READI           41
+#define I_READS           42
+#define I_READN           43
+#define I_WRITE           44
 
-#define I_CONCAT          43
-#define I_STRLEN          44
-#define I_GETCHAR         45
-#define I_SETCHAR         46
+#define I_CONCAT          45
+#define I_STRLEN          46
+#define I_GETCHAR         47
+#define I_SETCHAR         48
 
-#define I_TYPE            47
+#define I_TYPE            49
 
-#define I_LABEL           48
-#define I_JUMP            49
-#define I_JUMP_IF_EQ      50
-#define I_JUMP_IF_NEQ     51
+#define I_LABEL           50
+#define I_JUMP            51
+#define I_JUMP_IF_EQ      52
+#define I_JUMP_IF_NEQ     53
 
-#define I_JUMP_IF_EQ_S    52
-#define I_JUMP_IF_NEQ_S   53
+#define I_JUMP_IF_EQ_S    54
+#define I_JUMP_IF_NEQ_S   55
 
-#define I_EXIT            54
+#define I_EXIT            56
 
-#define I_BREAK           55
-#define I_DPRINT          56
+#define I_BREAK           57
+#define I_DPRINT          58
 
 
 
