@@ -44,42 +44,42 @@
 #define I_DIV             14
 #define I_DIV_INT         15
 
-#define I_ADD_S           16
+/* #define I_ADD_S           16
 #define I_SUB_S           17
 #define I_MUL_S           18
 #define I_DIV_S           19
-#define I_DIV_INT_S       20
+#define I_DIV_INT_S       20 */
 
 #define I_LT              21
 #define I_GT              22
 #define I_EQ              23
 
-#define I_LT_S            24
+/*#define I_LT_S            24
 #define I_GT_S            25
-#define I_EQ_S            26
+#define I_EQ_S            26 */
 
 #define I_AND             27
 #define I_OR              28
 #define I_NOT             29
 
-#define I_AND_S           30
+/*#define I_AND_S           30
 #define I_OR_S            31
-#define I_NOT_S           32
+#define I_NOT_S           32 */
 
-#define I_I2F             33     // INT TO FLOAT
-#define I_F2I             34    // FLOAT TO INT
+#define tofloat             33     // INT TO FLOAT
+#define tointeger            34    // FLOAT TO INT
 #define I_I2C             35    // INT TO CHAR
 #define I_S2I             36    // STRING TO INT
 
-#define I_I2F_S           37      // INT TO FLOAT
+/* #define I_I2F_S           37      // INT TO FLOAT
 #define I_F2I_S           38      // FLOAT TO INT
 #define I_I2C_S           39      // INT TO CHAR
-#define I_S2I_S           40      // STRING TO INT
+#define I_S2I_S           40      // STRING TO INT */
 
-#define I_READI           41
-#define I_READS           42
-#define I_READN           43
-#define I_WRITE           44
+#define readi           41
+#define reads           42
+#define readn          43
+#define write           44
 
 #define I_CONCAT          45
 #define I_STRLEN          46
