@@ -12,7 +12,7 @@
 #include <malloc.h>
 #include "ilist.h"
 
-void listInit(tListOfInstr *L)
+/*void listInit(tListOfInstr *L)
 {
   L->first  = NULL;
   L->last   = NULL;
@@ -74,4 +74,4 @@ tInstr *listGetData(tListOfInstr *L)
   else return &(L->active->Instruction);
 }
 
-
+*/

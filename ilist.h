@@ -103,7 +103,32 @@
 
 
 
-typedef struct
+typedef struct param {
+  char *id;
+  int *par_num;
+  struct param *next;
+} tParam;
+
+
+typedef struct func{
+  struct param *param;
+  char *start;
+  char *end;
+  char *type;
+  int *retval;
+}tFunc;
+
+
+
+
+
+
+
+
+
+
+
+/*typedef struct
 {
   int instType;  
   void *addr1; 
@@ -132,6 +157,6 @@ void listNext(tListOfInstr *L);
 void listGoto(tListOfInstr *L, void *gotoInstr);
 void *listGetPointerLast(tListOfInstr *L);
 tInstr *listGetData(tListOfInstr *L);
-
+*/
 
 #endif
