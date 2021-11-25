@@ -41,7 +41,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_identifier_2;                                          //identifikator
                 }
-                else if (symbol >= '1' && symbol <= '9')
+                else if (symbol >= '0' && symbol <= '9')
                 {
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_1;                                          //intiger
