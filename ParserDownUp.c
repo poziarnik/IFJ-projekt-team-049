@@ -3,7 +3,8 @@
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    if (status==1 ) return 1;
+    if (status==1 ) return 1; \
+    else if(status == 10) return 0;
 
 
 int expressionCheck(Token* MyToken, TokenList* list){
@@ -20,7 +21,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
         {'R','R','R','R','E','L','R','L','R'}, // #                  A
         {'L','L','L','L','L','L','I','L','E'}, // (                  
         {'R','R','R','R','R','E','R','E','R'}, // )                  C
-        {'R','R','R','R','R','E','R','E','R'}, // i
+        {'R','R','R','R','R','E','R','U','R'}, // i
         {'L','L','L','L','L','L','E','L','E'}  // $                  K
     };
                                                
@@ -35,10 +36,16 @@ int expressionCheck(Token* MyToken, TokenList* list){
     
     do{
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
-
+            
         case 'L':
-            //puts("op expand");
             if(Stack->top->Item == NOTERM){
+                
+                
+                if (table_input_symbol(MyToken) == DATA){
+                    reduce_by_rule(Stack);
+                    return 1;
+                }
+
                 stackHelp = *Stack->top;
                 Stack_pop(Stack);
                 Stack_push(Stack, '<', NULL);
@@ -73,15 +80,26 @@ int expressionCheck(Token* MyToken, TokenList* list){
                 return status;
             }
 
+
             status = tokenScan(stdin, list, MyToken);
             break;
 
         case 'E':
-            //puts("op end");
-
             END = true;
             break;
-        }  
+
+        case 'U':
+            while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
+                reduce_by_rule(Stack);
+            }
+            
+            END = true;
+            break;
+        }
+
+
+
+         
         
 
     } while (!END);
@@ -91,11 +109,13 @@ int expressionCheck(Token* MyToken, TokenList* list){
     printf("%s\n", Stack->top->tree->Data->data.string);
     puts("");
     puts("---------------------");*/
+
+    printf("%s",Stack->top->tree->Data->data.string);
+    
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
-        return 0;
+                return 0;
     }
     return SYNTAX_ERROR;
-    
 }
 
 
