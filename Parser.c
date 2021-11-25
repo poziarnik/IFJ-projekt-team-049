@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
+#define PRINT_ON true //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault
@@ -38,8 +38,10 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         }
     }
     else if(MyNonTerminal==global_scope){
-        if(strcmp(MyToken->data.string, "global")==0){
-            return true;
+        if(MyToken->type==Keyword){
+            if(strcmp(MyToken->data.string, "global")==0){
+                return true;
+            }
         }
     }
     else if(MyNonTerminal==function_iden){
@@ -277,12 +279,10 @@ int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable){          
     if(first(MyToken, prolog)){
         RETURN_ON_ERROR(fc_prolog);
     }
-
     if(first(MyToken, code)){
         RETURN_ON_ERROR(fc_code);
     }
     else return PARC_FALSE;
-    
     
     return PARC_TRUE;
 }
@@ -294,7 +294,6 @@ int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable){             
     else{
         return PARC_FALSE;
     }
-    
     if (first(MyToken, code)){
         RETURN_ON_ERROR(fc_code);
     }
@@ -499,7 +498,7 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){         
     }
     else if (first(MyToken, assigneOrFunctioCall)){
         if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
-            RETURN_ON_ERROR(fc_functionCall);
+             RETURN_ON_ERROR(fc_functionCall);
         }
         else{
             RETURN_ON_ERROR(fc_assigne);
@@ -514,11 +513,9 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){         
     else{
         return PARC_FALSE;
     }
-
     if (first(MyToken, statement)){
-        RETURN_ON_ERROR(fc_statement);  
+       RETURN_ON_ERROR(fc_statement);  
     }
-
     return PARC_TRUE;
 }
 int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable){                                    //loop: while<expression>do<statement>end
@@ -757,20 +754,18 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable){       
     else{
         return PARC_FALSE;
     }
-
     if(first(MyToken, FCallnextParam)){
         RETURN_ON_ERROR(fc_FCallnextParam);
     }
 
-    /*printf("params: %s\n",MyToken->att);
-    tokenScan(stdin, list, MyToken);*/
     return PARC_TRUE;
 }
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable){                          //param: <expression>
     int status;
     if(first(MyToken, expression)){
-        parcerPrint("functionCall" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;
+        RETURN_ON_ERROR(fc_expression);
+        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;*/
     }   
     else return PARC_FALSE;
     
@@ -784,16 +779,15 @@ int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable){    
     else{
         return PARC_FALSE;
     }     
-
-    if (first(MyToken, param)){
-        RETURN_ON_ERROR(fc_param);
+    if (first(MyToken, FCallparam)){
+        RETURN_ON_ERROR(fc_FCallparam);
     }
     else{
         return PARC_FALSE;
     }
 
     if (first(MyToken, nextParam)){
-        RETURN_ON_ERROR(fc_nextParam);
+        RETURN_ON_ERROR(fc_FCallnextParam);
     }
 
     return PARC_TRUE;
@@ -806,10 +800,11 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable){        
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
+
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
             if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree)){
-                RETURN_ON_ERROR(fc_functionCall);
+                 RETURN_ON_ERROR(fc_functionCall);
             }
             else RETURN_ON_ERROR(fc_expression);
         }
@@ -875,7 +870,7 @@ int chackType(Token* MyToken, TokenList* list, Token_type checkType){
 }
 
 bool compareTokenStr(Token* MyToken, char* Str){
-    if((MyToken->type != Number) || (MyToken->type != Integer)){
+    if((MyToken->type != Number) && (MyToken->type != Integer)){
         //printf("kokot %s %s\n", MyToken->data.string, Str);
         if(strcmp(MyToken->data.string, Str)==0){
             //printf("kokot %s %s\n", MyToken->data.string, Str);
@@ -885,7 +880,7 @@ bool compareTokenStr(Token* MyToken, char* Str){
     return false;
 }
 bool chackStr(Token* MyToken, TokenList* list, char* Str){
-    if ((MyToken->type != Number) || (MyToken->type != Integer)){
+    if ((MyToken->type != Number) && (MyToken->type != Integer)){
         
         if (compareTokenStr(MyToken, Str)){
             //printf("StringCheck: %s\n",MyToken->data.string);

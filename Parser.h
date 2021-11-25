@@ -14,7 +14,6 @@
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    printf("status"); \
     if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \
     if (status==10) return 0;
 

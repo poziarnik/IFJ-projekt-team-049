@@ -192,6 +192,9 @@ int symtableInit(symtable* sym){
     
 }
 bool isInbuildFun(char* str){
-    if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0) return true;
+  puts("im hereeeeeee");
+    if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0 \
+    || strcmp(str,"reads")==0 || strcmp(str,"readn")==0 || strcmp(str,"tointeger")==0 \
+    || strcmp(str,"substr")==0 || strcmp(str,"ord")==0 || strcmp(str,"chr")==0) return true;
     else return false;
 }

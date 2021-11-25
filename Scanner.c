@@ -283,7 +283,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                          stringAddChar(&str,isESC, &sizeOfStr, &CharNb);
                     }
                     else{
-                        ungetc(symbol,stdin);
+                        return LEXICAL_ERROR;
                     }   
                     state = Scanner_state_string_start;
                 }
@@ -303,9 +303,10 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
             case Scanner_state_string_3:
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,(escapeInt[0]-48)*100+(escapeInt[1]-48)*10+(symbol-48), &sizeOfStr, &CharNb);
+                    state = Scanner_state_string_start;
                 }
                 else{
-                    state = Scanner_state_string_start;
+                    return LEXICAL_ERROR;
                 }
                 break; 
 
@@ -557,7 +558,7 @@ int isKeyword(char *word){
 int isEscapeSeq(int symbol){
     char sequentions[12] = "abfnrtv\\\"\'z";
 
-    int zhoda = 0;
+    int zhoda = -1;
 
     for (int i = 0; i < 11; i++){
         if (symbol == sequentions[i]){
@@ -567,39 +568,39 @@ int isEscapeSeq(int symbol){
 
     int c=-1;
 
-    if (zhoda != 0){
+    if (zhoda != -1){
         switch (zhoda){
-        case 1:
+        case 0:
             c = 7;
             break;
-        case 2:
+        case 1:
             c = 8;
             break;
-        case 3:
+        case 2:
             c = 12;
             break;
-        case 4:
+        case 3:
             c = 10;
             break;
-        case 5:
+        case 4:
             c = 13;
             break;
-        case 6:
+        case 5:
             c = 9;
             break;
-        case 7:
+        case 6:
             c = 11;
             break;
-        case 8:
+        case 7:
             c = 92;
             break;
-        case 9:
+        case 8:
             c = 34;
             break;
-        case 10:
+        case 9:
             c = 39;
             break;
-        case 11:
+        case 10:
             //TODO SKIP WHITE SPACES \z ...
             break;
         }
