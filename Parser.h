@@ -194,7 +194,12 @@ int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable);
 <<<<<<< HEAD
+<<<<<<< HEAD
 int global_level_root();
+=======
+void printGlobalTree(symtable* mySymtable);
+
+>>>>>>> cca26d0aef72493ed3827e520a744e6fe93f8bb7
 =======
 void printGlobalTree(symtable* mySymtable);
 
