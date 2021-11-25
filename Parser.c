@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON true //ak chces printovat priebeh nastav true ak nie nastav false
+#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault
@@ -13,8 +13,7 @@ int Parse(TokenList* list){
     
     tokenScan(stdin, list, MyToken);
     RETURN_ON_ERROR(fc_program);
-    printf("\nglobal tree:\n");
-    sym_inorder(mySymtable->sym_globalTree);
+    //printGlobalTree(mySymtable);
     return PARC_TRUE;
 }
 bool first(Token* MyToken, NonTerminal MyNonTerminal){
@@ -326,7 +325,7 @@ int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable){       
     }
 
     if (chackStr(MyToken, list, "function")){
-        printf("String: %s\n",MyToken->data.string);
+        parcerPrint("function" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
@@ -408,7 +407,6 @@ int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable){            
 }
 int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable){                          //param: <identifier>:<type>
     int status;
-    puts("imhere");
     if(MyToken->type==Identifier){
         parcerPrint("identifier" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -647,7 +645,6 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable){           
 }
 int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable){                                         //identifier
     int status;
-    //printf("imhere\n");
     if(MyToken->type==Identifier){
         parcerPrint("var" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -784,7 +781,6 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable){       
 }
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable){                          //param: <expression>
     int status;
-    //puts("imhere");
     if(first(MyToken, expression)){
         parcerPrint("functionCall" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -973,6 +969,10 @@ void parcerPrint(char* state ,Token* MyToken ,bool on){
             }
         }
     }
+}
+void printGlobalTree(symtable* mySymtable){
+   printf("\nglobal tree:\n");
+    sym_inorder(mySymtable->sym_globalTree); 
 }
 
 

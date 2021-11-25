@@ -187,12 +187,11 @@ int symtableInit(symtable* sym){
     SymStack *symstack=(SymStack*)malloc(sizeof(SymStack));
     if(symstack==NULL) return INTERNAL_ERROR;
     symStackInit(symstack);
-    puts("imhere");
     sym->sym_stack=symstack;
     sym->sym_globalTree=NULL;
     
 }
 bool isInbuildFun(char* str){
-    if(strcmp(str,"write")==0 || strcmp(str,"read")==0) return true;
+    if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0) return true;
     else return false;
 }
