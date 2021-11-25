@@ -9,26 +9,51 @@
 
 #include "generator.h"
 #include "ilist.h"
+#include "Parser.h"
 
 #include <stdio.h>
 #include <string.h>
 
 //TODO	20,204,230,234
 
-/******************** generovanie funkcii ********************/
-int interpret(tFunc *function){
-    //TODO 
+
+
+int interpret(TRoot *root){
+    printf(".IFJcode21\n");
+    //TODO - statements pred funkciou
+
+
+    if((*(*root).global_state)->function != NULL && (*(*root).global_state)->function->id != NULL ){
+        gen_func_begin(root);
+
+        if((*(*root).global_state)->function->parameter != NULL){
+        //for(int i = 0; i < param_num; i++){
+            //gen_func_def_arg(i);
+            //gen_func_arg(root, i);
+            //}
+        }
+        if((*(*root).global_state)->function->statements != NULL){
+            //TODO
+        }
+        if((*(*root).global_state)->function->return_type != NULL){
+            gen_func_ret(root);
+        }
+        gen_func_end(root);
+    }
+    
 }
 
-void gen_func_begin(tFunc *function){  
-        char *func_name = function->start;          
+/******************** generovanie funkcii ********************/
+
+void gen_func_begin(TRoot *root){  
+        char *func_name = (*(*root).global_state)->function->id;          
         printf("\n LABEL $%s\
                 \n CREATEFRAME\
                 \n PUSHFRAME\n", func_name);
 }
 
-void gen_func_end(tFunc *function){
-        char *func_name = function->start;
+void gen_func_end(TRoot *root){
+        char *func_name = (*(*root).global_state)->function->id;
         printf("\nLABEL $%s$end\
                 \nPOPFRAME\
                 \nRETURN\n", func_name);
@@ -39,19 +64,19 @@ void gen_func_call(char *id){
     printf(" CALL $%s \n", id);
 }
 
-void gen_func_def_arg(tFunc *function){
-    printf(" DEFVAR LF@%ls", function->param->par_num );
+void gen_func_def_arg(int i){
+    printf(" DEFVAR LF@%d", i);
 }
 
-void gen_func_arg(tFunc *function){
-    printf(" MOVE LF@%s", function->param->id);
+void gen_func_arg(TRoot *root, int i){
+    printf(" MOVE LF@%s", (*(*root).global_state)->function->parameter[i]);
 }
 
-void gen_func_ret(tFunc *function){
-    printf(" POPS LF@return%ls \n", function->retval);
+void gen_func_ret(TRoot *root){
+    printf(" POPS LF@return%ls \n", (*(*root).global_state)->function->return_type);
 }
 
-/******************** generovanie operacii ********************/
+/******************** generovanie instrukcii ********************/
 
 void gen_defvar(char *x){
     printf("\n DEFVAR LF@%s", x);

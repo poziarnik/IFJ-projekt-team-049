@@ -103,60 +103,6 @@
 
 
 
-typedef struct param {
-  char *id;
-  int *par_num;
-  struct param *next;
-} tParam;
 
-
-typedef struct func{
-  struct param *param;
-  char *start;
-  char *end;
-  char *type;
-  int *retval;
-}tFunc;
-
-
-
-
-
-
-
-
-
-
-
-/*typedef struct
-{
-  int instType;  
-  void *addr1; 
-  void *addr2; 
-  void *addr3; 
-} tInstr;
-
-typedef struct listItem
-{
-  tInstr Instruction;
-  struct listItem *nextItem;
-} tListItem;
-    
-typedef struct
-{
-  struct listItem *first;  
-  struct listItem *last;   
-  struct listItem *active; 
-} tListOfInstr;
-
-void listInit(tListOfInstr *L);
-void listFree(tListOfInstr *L);
-void listInsertLast(tListOfInstr *L, tInstr I);
-void listFirst(tListOfInstr *L);
-void listNext(tListOfInstr *L);
-void listGoto(tListOfInstr *L, void *gotoInstr);
-void *listGetPointerLast(tListOfInstr *L);
-tInstr *listGetData(tListOfInstr *L);
-*/
 
 #endif
