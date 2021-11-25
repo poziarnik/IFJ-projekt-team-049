@@ -16,6 +16,5 @@ int table_input_symbol(Token *Mytoken);
 int colomn_table(TStack *Stack);
 int stack_operation(TStack *Stack, Token *token, int table[9][9], bool MISS);
 int reduce_by_rule(TStack *Stack);
-int reduce_brackets(TStack *Stack, Token *token);
 
 #endif // !__PARSER__
