@@ -1,13 +1,12 @@
 -- Program 1: Vypocet faktorialu (iterativne)
 require "ifj21" 
-
 function main() -- uzivatelska funkce bez parametru
   local a : integer
   local vysl : integer = 2
-  write("Zadejte cislo pro vypocet faktorialu\n")
+  write("Zadejte cislo pro vypocet faktorialu\n") 
   a = 2
   if a == nil then
-      write("a je nil\n") return 
+      write("a je \010 nil\n") return 
   else
   end
   if a < 0 then
