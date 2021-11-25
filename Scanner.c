@@ -126,7 +126,10 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     END = true;
                     return 10;
                 }
-                else state = Scanner_state_reading;
+                else if (symbol == '\n' || symbol == 32 || symbol == 9){
+                    state = Scanner_state_reading;
+                }
+                else return LEXICAL_ERROR;
                 break;
 
             case Scanner_state_identifier_1: 

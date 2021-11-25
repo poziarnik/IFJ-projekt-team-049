@@ -20,34 +20,36 @@
 /////////////////////
 
 typedef struct root{
-    union statement **global_state;
+    struct state **global_state;
 }TRoot;
 
-union statement{
-    struct function_tree *function;
-    struct if_tree *if_loop; 
-    struct while_tree *while_loop;
-    struct assign_tree *assignment;
-    struct definition_tree *definiton;
-    struct functioncall_tree *functioncall;
-}TStatement;
+typedef struct state{
+    union statement{
+        struct function_tree *function;
+        struct if_tree *if_loop; 
+        struct while_tree *while_loop;
+        struct assign_tree *assignment;
+        struct definition_tree *definiton;
+        struct functioncall_tree *functioncall;
+    }TStatement;
+}Tstate;
 
 typedef struct function_tree{
-    char *id;
-    char **parameter;
-    char **return_type;
-    union statement **statements;
+    char *id;                       //token->data.string??
+    char **parameter;               //token->data.string??
+    char **return_type;             //token->data.string??
+    struct state **statements;
 }TFunction_tree;
 
 typedef struct if_tree{
     Tree *expression;
-    union statement **then_statement;
-    union statement **else_statement;
+    struct state **then_statement;
+    struct state **else_statement;
 }TIf_tree;
 
 typedef struct while_tree{
     Tree *expression;
-    union statement **do_statement;
+    struct state **do_statement;
 }TWhile_tree;
 
 typedef struct assign_tree{
@@ -187,4 +189,5 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable);
+int global_level_root();
 #endif

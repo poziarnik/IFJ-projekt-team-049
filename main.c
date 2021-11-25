@@ -21,6 +21,7 @@ int main(){
     listInit(&list);
     int end=0;
     while(end!=10){
+
         Token* mytoken = tokenCreate();
         if(mytoken == NULL){
             return 10;
@@ -35,6 +36,10 @@ int main(){
                 printf("atribut: %s\ntyp: %i\n",mytoken->data.string, mytoken->type);
             }
 
+        }
+        else if (end == 1){
+            puts("chyba");
+            break;
         }
         // else if (end == LEXICAL_ERROR){
         //     printf("----------------------------------------------------------\n");
