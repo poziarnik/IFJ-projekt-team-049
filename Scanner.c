@@ -1,6 +1,7 @@
 
 #include "Scanner.h"
 #include "error.h"
+#include <string.h>
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //ak konci komentarom nevypne sa
@@ -113,7 +114,6 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     MyToken->data.string=str;
                     END = true;
                 }
-
                 else if (symbol == ','){
                     stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
                     MyToken->type = Comma;
@@ -126,7 +126,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     END = true;
                     return 10;
                 }
-                else state = Scanner_state_reading;
+                else if(isspace(symbol)!=0) state = Scanner_state_reading;
+                else return LEXICAL_ERROR;
+                //else state = Scanner_state_reading;
                 break;
 
             case Scanner_state_identifier_1: 

@@ -307,19 +307,6 @@ int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable){             
 }
 int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable){              //functionDec: <global_scope>function<function_iden>(<params><returntypes>)<statement>end
     int status;
-    /*if (first(MyToken,global_scope)){
-        tokenScan(stdin, list, MyToken);
-        printf("%s\n",MyToken->att);
-        return fc_global_scope(MyToken, list) && \
-        chackStr(MyToken, list, "function") && fc_functionIden(MyToken, list) && \
-        chackType(MyToken, list, L_bracket) && fc_params(MyToken, list) && \
-        chackType (MyToken, list, Colon) && fc_returnTypes(MyToken, list) && \
-        chackType(MyToken, list, R_bracket);     
-        return true;                       
-    }
-    else{
-        return false;
-    }*/
     if (first(MyToken,global_scope)){
         RETURN_ON_ERROR(fc_global_scope);
     }

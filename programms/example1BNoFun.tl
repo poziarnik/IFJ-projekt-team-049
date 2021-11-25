@@ -1,5 +1,5 @@
 -- Program 1: Vypocet faktorialu (iterativne)
-afdsasdfn.arewa753asdfrequire "ifj21" 
+require "ifj21" 
 
 function main() -- uzivatelska funkce bez parametru
   local a : integer
@@ -7,7 +7,7 @@ function main() -- uzivatelska funkce bez parametru
   write("Zadejte cislo pro vypocet faktorialu\n")
   a = 2
   if a == nil then
-      write("a je nil\n") return
+      write("a je nil\n") return 
   else
   end
   if a < 0 then
@@ -15,7 +15,7 @@ function main() -- uzivatelska funkce bez parametru
   else
     vysl = 1
     while a > 0 do
-      vysl = vysl * a a = a - 1 -- dva prikazy
+      vysl = vysl * a a = a - 1 -- dva prikazy 
     end
     --[[write("Vysledek je:  ", vysl, "\n")]]
     main() 

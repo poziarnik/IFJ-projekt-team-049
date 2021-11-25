@@ -1,5 +1,5 @@
-#ifndef ERROR
-#define ERROR
+#ifndef _ERROR
+#define _ERROR
 
 #define PROGRAM_OK  0
 #define LEXICAL_ERROR  1
