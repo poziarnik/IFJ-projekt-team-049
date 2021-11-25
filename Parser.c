@@ -89,13 +89,16 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         if (first(MyToken, condition)){
             return true;
         }
-        if (first(MyToken, loop)){
+        else if (first(MyToken, loop)){
             return true;
         }
         else if(first(MyToken, define)){
             return true;
         }
-        if (first(MyToken, assigneOrFunctioCall)){
+        else if (first(MyToken, assigneOrFunctioCall)){
+            return true;
+        }
+        else if(first(MyToken, FCreturn)){
             return true;
         }
         else{
@@ -245,8 +248,16 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         if (MyToken->type==Comma){
             return true;
         }
+        else return false;        
+    }
+    else if(MyNonTerminal == FCreturn){
+        if(MyToken->type==Keyword){
+            if (strcmp(MyToken->data.string,"return")==0){
+                return true;
+            }
+            else return false;
+        }
         else return false;
-        
     }
     
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!dorobit nejake first
@@ -512,15 +523,17 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable){         
     else if (first(MyToken, define)){
         RETURN_ON_ERROR(fc_define);
     }
+    else if (first(MyToken, FCreturn)){
+        RETURN_ON_ERROR(fc_FCreturn);
+    }
     else{
         return PARC_FALSE;
     }
+
     if (first(MyToken, statement)){
         RETURN_ON_ERROR(fc_statement);  
     }
-    /*else if (first(MyToken, functionCall)){
-        RETURN_ON_ERROR(fc_functionCall);
-    }*/    
+
     return PARC_TRUE;
 }
 int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable){                                    //loop: while<expression>do<statement>end
@@ -749,7 +762,7 @@ int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable){      
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
-
+    
     return PARC_TRUE;
 }
 int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable){                         //params: <param><nextParam>
@@ -845,6 +858,22 @@ int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable){
 
     return PARC_TRUE;
 }
+int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable){          //FCreturn: return (<FCparams>)
+    int status;
+    if (MyToken->type==Keyword){
+        if (chackStr(MyToken, list, "return")){
+            parcerPrint("Return" ,MyToken ,PRINT_ON);
+            SCAN_TOKEN;
+        }
+        else return PARC_FALSE;
+    }
+    else return PARC_FALSE;
+
+    if (first(MyToken,FCallparams)){
+        RETURN_ON_ERROR(fc_FCallparams);
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

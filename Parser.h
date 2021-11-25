@@ -100,7 +100,8 @@ typedef enum{
     functionCall,
     FCallparams,
     FCallparam,
-    FCallnextParam
+    FCallnextParam,
+    FCreturn,
 }NonTerminal;
 
 int Parse(TokenList* list);
@@ -136,4 +137,5 @@ int chackType(Token* MyToken, TokenList* list, Token_type checkType);
 int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
+int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable);
 #endif
