@@ -661,8 +661,7 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable){        
     //if((expressionCheck(MyToken,list)) != 0) return PARC_FALSE;
     parcerPrint("expression" ,MyToken ,PRINT_ON);
     int status=expressionCheck(MyToken,list);
-    //printf("result:%d %s\n", status, MyToken->data.string);
-    //int status;
+    if (status!=0) return status;
     
     
     return PARC_TRUE;
@@ -850,6 +849,8 @@ int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable){          
     if (first(MyToken,FCallparams)){
         RETURN_ON_ERROR(fc_FCallparams);
     }
+
+    return PARC_TRUE;
 }
 
 

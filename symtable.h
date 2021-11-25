@@ -69,7 +69,7 @@ bool isFunDeclared(char* key, TreeItem* globalTree);
 int sym_saveVar(TreeItem **sym_subtree,char* key);
 bool isVarDeclared(SymStack* myStack, char* key);
 void sym_inorder(TreeItem *tree);
-int createSubTree(SymStack* myStack);
+//int createSubTree(SymStack* myStack);
 int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
 SymTreeRoot* treeCreateRoot();
 int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree);
