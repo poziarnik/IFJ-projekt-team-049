@@ -22,3 +22,5 @@ precedence:
 
 symtable:
 	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) testSymtableMain.c
+main:
+	$(CC) -std=c99 -o $(NEWFILE) $(FILES) MainMain.c

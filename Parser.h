@@ -7,16 +7,20 @@
 #include "symtable.h"
 
 #define PARC_TRUE 0
-#define PARC_FALSE -1
+#define PARC_FALSE 2
 
 #define RETURN_ON_ERROR(_function) \
     if ((status = _function(MyToken, list, mySymtable)) != PARC_TRUE) return status
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    if (status==1) return 1; \
+    printf("status"); \
+    if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \
     if (status==10) return 0;
 
+/*status = tokenScan(stdin, list, MyToken); \
+    if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \
+    if (status==10) return 0;*/
 /////////////////////
 
 typedef struct root{
@@ -187,4 +191,6 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
 int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable);
+void printGlobalTree(symtable* mySymtable);
+
 #endif
