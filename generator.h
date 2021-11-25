@@ -13,19 +13,44 @@
 #include "symtable.h"
 #include "ilist.h"
 
+
+int interpret(tFunc *function);
+
 /******************** generovanie funkcii ********************/
 
-void gen_func_begin(char *id);
+void gen_func_begin(tFunc *function);
 
-void gen_func_end();
+void gen_func_end(tFunc *function);
 
 void gen_func_call(char *id);
 
-void gen_func_def_arg(/*TODO*/);
+void gen_func_def_arg(tFunc *function);
 
-void gen_func_move_arg(/*TODO*/);
+void gen_func_move_arg(tFunc *function);
 
-void gen_func_ret(int ret);
+void gen_func_ret(tFunc *function);
+
+/******************** generovanie operacii ********************/
+
+void gen_defvar(char *x);
+
+void gen_move(char *x);
+
+void gen_add(char *x);
+
+void gen_sub(char *x);
+
+void gen_mul(char *x);
+
+void gen_div(char *x);
+
+void gen_idiv(char *x);
+
+void gen_LT(char *x);
+
+void gen_GT(char *x);
+    
+void gen_EQ(char *x);
 
 /******************** generovanie cyklov ********************/
 
