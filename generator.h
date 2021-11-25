@@ -14,23 +14,23 @@
 #include "ilist.h"
 
 
-int interpret(tFunc *function);
+int interpret(TRoot *root);
 
 /******************** generovanie funkcii ********************/
 
-void gen_func_begin(tFunc *function);
+void gen_func_begin(TRoot *root);
 
-void gen_func_end(tFunc *function);
+void gen_func_end(TRoot *root);
 
 void gen_func_call(char *id);
 
-void gen_func_def_arg(tFunc *function);
+void gen_func_def_arg(int i);
 
-void gen_func_move_arg(tFunc *function);
+void gen_func_move_arg(TRoot *root, int i);
 
-void gen_func_ret(tFunc *function);
+void gen_func_ret(TRoot *root);
 
-/******************** generovanie operacii ********************/
+/******************** generovanie instrukcii ********************/
 
 void gen_defvar(char *x);
 

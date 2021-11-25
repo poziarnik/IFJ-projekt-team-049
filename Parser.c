@@ -963,6 +963,21 @@ void printGlobalTree(symtable* mySymtable){
 }
 
 
-
+int global_level_root(){
+    Tstate *global = (Tstate*)malloc(sizeof(Tstate));
+    if (global == NULL){
+        return INTERNAL_ERROR;
+    }
+    global = NULL;
+    return PROGRAM_OK;
+}
     
-
+int global_level_function(Tstate *global){
+    TFunction_tree *new_global = (TFunction_tree*)malloc(sizeof(TFunction_tree));
+    if (new_global == NULL){
+        return INTERNAL_ERROR;
+    }
+    //hodit niake informacie do toho globalu;
+    global->TStatement.function = new_global;
+    return PROGRAM_OK;
+}

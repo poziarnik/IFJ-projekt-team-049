@@ -21,6 +21,7 @@ int main(){
     listInit(&list);
     int end=0;
     while(end!=10){
+
         Token* mytoken = tokenCreate();
         if(mytoken == NULL){
             return 10;
