@@ -86,21 +86,11 @@ int expressionCheck(Token* MyToken, TokenList* list){
 
     } while (!END);
     
-<<<<<<< HEAD
-    // puts("---------------------");
-    // puts("");
-    // printf("%s\n", Stack->top->tree->attr.binary.left->Data->data.string);
-    // printf("%s\n", Stack->top->tree->Data->data.string);
-    // printf("%s\n", Stack->top->tree->attr.binary.right->Data->data.string);
-    // puts("");
-    // puts("---------------------");
-=======
     /*puts("---------------------");
     puts("");
     printf("%s\n", Stack->top->tree->Data->data.string);
     puts("");
     puts("---------------------");*/
->>>>>>> 37a55b6ed32f56c1a0761d263ab68feacba705f7
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
         return 0;
     }
