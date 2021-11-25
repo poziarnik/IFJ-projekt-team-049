@@ -56,7 +56,7 @@ bool sym_search(TreeItem *tree, char* key) {
       }
     }
   }
-  //return false;
+  return false;
 }
 
 void symStackPop(SymStack *myStack){
@@ -111,11 +111,11 @@ SymTreeRoot* treeCreateRoot(){
 void sym_treeInit(TreeItem *newTree){
     newTree=NULL;
 }
-int createSubTree(SymStack* myStack){                        //pri volani funkcie cyklu atd...
-    TreeItem* newtree;
-    treeCreate(newtree);
-    //stackPush(myStack, newtree);
-}
+/*int createSubTree(SymStack* myStack){                        //pri volani funkcie cyklu atd...
+    TreeItem* newtree=treeCreate();
+    symStackPush(myStack, newtree);
+    return 0;
+}*/
 //funkcia na vyhladavanie identifikatora
 //funkcia na ulozenie identifikatora<funkcia na vyhladavanie identifikatora
 int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* myStack, char* key){
@@ -128,13 +128,14 @@ int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* 
   
   newItem->subtree=treeCreateRoot();                                //vytvor na newitem vetvu pre subtree
   if (newItem->subtree==NULL) return INTERNAL_ERROR;
-  newItem->subtree->tree==NULL;                                     //koren musi ukazovat na null
+  //newItem->subtree->tree==NULL;                                     //koren musi ukazovat na null
 
   *sym_subTree=newItem->subtree;                                    //vonkajsi ukazatel ukazuje na posledno vytvoreny subtree 
   symStackPush(myStack, newItem->subtree);                          //pushni na symstack
 
   newItem->data=data;
   bst_insert(sym_globalTree, key, newItem);                       //vloz item do global tree
+  return 0;
 }
 
 int sym_saveVar(TreeItem **sym_subtree,char* key){
@@ -147,7 +148,7 @@ int sym_saveVar(TreeItem **sym_subtree,char* key){
   newItem->data=data;
   
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
-  
+  return 0;
 }
 void sym_inorder(TreeItem *tree) {
   if (tree != NULL){
@@ -175,13 +176,15 @@ int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){
   if(newRoot==NULL) return INTERNAL_ERROR;
   symStackPush(myStack, newRoot);
   *sym_subTree= newRoot;
+  return 0;
 }
 int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){ //odstran vrch stacku a zmen ukazatel na subtree
   if (myStack->head!=NULL){
     SymStackElement* tmp=myStack->head;
     myStack->head=myStack->head->next;
-    *sym_subTree=myStack->head->root;
-  }  
+    *sym_subTree=tmp->root;//myStack->head->root;
+  }
+  return 0;  
 } 
 int symtableInit(symtable* sym){
     SymStack *symstack=(SymStack*)malloc(sizeof(SymStack));
@@ -189,7 +192,7 @@ int symtableInit(symtable* sym){
     symStackInit(symstack);
     sym->sym_stack=symstack;
     sym->sym_globalTree=NULL;
-    
+    return 0;
 }
 bool isInbuildFun(char* str){
   puts("im hereeeeeee");

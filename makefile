@@ -5,6 +5,7 @@ MAIN =testParserMain.c
 NEWFILE = test
 PRECEDENCE = Scanner.c Scanner.h Mystack.c MyStackTree.h ParserDownUp.c ParserDownUp.h symtable.c symtable.h 
 
+
 advanced: 
 	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) $(MAIN)
 
@@ -22,5 +23,6 @@ precedence:
 
 symtable:
 	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) testSymtableMain.c
+
 main:
-	$(CC) -std=c99 -o $(NEWFILE) $(FILES) MainMain.c
+	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) MainMain.c
