@@ -89,9 +89,12 @@ int expressionCheck(Token* MyToken, TokenList* list){
             break;
 
         case 'U':
+            while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
+                reduce_by_rule(Stack);
+            }
             
-            reduce_by_rule(Stack);
             END = true;
+            break;
         }
 
 
@@ -107,7 +110,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
     puts("");
     puts("---------------------");*/
 
-    printf("%i",Stack->top->tree->Data->data.integer);
+    printf("%s",Stack->top->tree->Data->data.string);
     
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
                 return 0;
