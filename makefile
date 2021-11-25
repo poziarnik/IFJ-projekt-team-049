@@ -12,7 +12,7 @@ primitive:
 	$(CC) -std=c99 	-o $(NEWFILE) $(FILES) $(MAIN)
 
 scanner:
-	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) main.c
+	$(CC) -std=c99 -o $(NEWFILE) $(FILES) main.c
 
 parser:
 	$(CC) -std=c99 -o $(NEWFILE) $(FILES) testParserMain.c

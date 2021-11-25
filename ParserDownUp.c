@@ -34,7 +34,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
     TElement stackHelp;
     
     do{
-        switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken->type)]){
+        switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
 
         case 'L':
             //puts("op expand");
@@ -43,11 +43,11 @@ int expressionCheck(Token* MyToken, TokenList* list){
                 Stack_pop(Stack);
                 Stack_push(Stack, '<', NULL);
                 Stack_push(Stack, NOTERM, (&stackHelp)->tree->Data);
-                Stack_push(Stack, table_input_symbol(MyToken->type), MyToken);
+                Stack_push(Stack, table_input_symbol(MyToken), MyToken);
             }
             else{
                 Stack_push(Stack, '<', NULL);
-                Stack_push(Stack, table_input_symbol(MyToken->type), MyToken);
+                Stack_push(Stack, table_input_symbol(MyToken), MyToken);
             }
             
             
@@ -86,11 +86,21 @@ int expressionCheck(Token* MyToken, TokenList* list){
 
     } while (!END);
     
+<<<<<<< HEAD
+    // puts("---------------------");
+    // puts("");
+    // printf("%s\n", Stack->top->tree->attr.binary.left->Data->data.string);
+    // printf("%s\n", Stack->top->tree->Data->data.string);
+    // printf("%s\n", Stack->top->tree->attr.binary.right->Data->data.string);
+    // puts("");
+    // puts("---------------------");
+=======
     /*puts("---------------------");
     puts("");
     printf("%s\n", Stack->top->tree->Data->data.string);
     puts("");
     puts("---------------------");*/
+>>>>>>> 37a55b6ed32f56c1a0761d263ab68feacba705f7
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
         return 0;
     }
@@ -99,8 +109,14 @@ int expressionCheck(Token* MyToken, TokenList* list){
 }
 
 
-int table_input_symbol(Token_type type){
-    switch (type){
+int table_input_symbol(Token *MyToken){
+    if (MyToken->type == Keyword){
+        if (strcmp(MyToken->data.string, "nil") == 0){
+            return DATA;
+        }  
+    }
+
+    switch (MyToken->type){
 
         case Less:
         case Less_equal:

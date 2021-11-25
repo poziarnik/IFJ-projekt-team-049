@@ -17,60 +17,109 @@
     if (status==1) return 1; \
     if (status==10) return 0;
 
+/////////////////////
 
-typedef struct st_program{
-    struct st_statment** blocks;
-    int nb_blocks; 
-}AT_program;
+typedef struct root{
+    union statement **global_state;
+}TRoot;
 
-typedef struct st_statement{     
+union statement{
+    struct function_tree *function;
+    struct if_tree *if_loop; 
+    struct while_tree *while_loop;
+    struct assign_tree *assignment;
+    struct definition_tree *definiton;
+    struct functioncall_tree *functioncall;
+}TStatement;
+
+typedef struct function_tree{
+    char *id;
+    char **parameter;
+    char **return_type;
+    union statement **statements;
+}TFunction_tree;
+
+typedef struct if_tree{
+    Tree *expression;
+    union statement **then_statement;
+    union statement **else_statement;
+}TIf_tree;
+
+typedef struct while_tree{
+    Tree *expression;
+    union statement **do_statement;
+}TWhile_tree;
+
+typedef struct assign_tree{
+    //TODO
+}TAssign_tree;
+
+typedef struct definition_tree{
+   char *id;
+   char **data_type;
+   char **value;
+}TDefinition_tree;
+
+typedef struct functioncall{
+    //TODO
+}TFunctioncall;
+
+
+//////////////////////////
+
+// typedef struct st_program{
+//     struct st_statment** blocks;
+//     int nb_blocks; 
+// }AT_program;
+
+// typedef struct st_statement{     
     
-    union{
-        struct st_loop* loop;  
-        struct st_condition* condition;
-    }data;
+//     union{
+//         struct st_loop* loop;  
+//         struct st_condition* condition;
+//     }data;
                   
-}AT_statement;
+// }AT_statement;
 
-typedef struct st_loop{      
+// typedef struct st_loop{      
 
-    struct st_expression* expr;
-    struct st_statement** blocks;
-    int nb_blocks;
+//     struct st_expression* expr;
+//     struct st_statement** blocks;
+//     int nb_blocks;
                   
-}AT_loop;
+// }AT_loop;
 
-typedef struct st_condition{        
+// typedef struct st_condition{        
 
-    struct st_expression* expr;
-    struct st_statement** blocks;
-    int nb_blocks;
-}AT_condition;
+//     struct st_expression* expr;
+//     struct st_statement** blocks;
+//     int nb_blocks;
+// }AT_condition;
 
-typedef struct st_expression
-{
-    struct st_expression* expr;        //expession tree
-    struct st_statement** blocks;
-    int nb_blocks;
+// typedef struct st_expression
+// {
+//     struct st_expression* expr;        //expession tree
+//     struct st_statement** blocks;
+//     int nb_blocks;
 
-}AT_expression;
+// }AT_expression;
 
-typedef struct st_define{       
+// typedef struct st_define{       
 
-    struct st_expression* expr;
-    struct st_statement** blocks;
-    int nb_blocks;
+//     struct st_expression* expr;
+//     struct st_statement** blocks;
+//     int nb_blocks;
         
-}AT_define;
+// }AT_define;
 
-typedef struct st_assigne{        
+// typedef struct st_assigne{        
 
-    struct st_expression* expr;
-    struct st_statement** blocks;
-    int nb_blocks;
-}AT_assigne;
+//     struct st_expression* expr;
+//     struct st_statement** blocks;
+//     int nb_blocks;
+// }AT_assigne;
 
-
+//////////////////////////////////////////////////
 
 typedef enum{
     program,

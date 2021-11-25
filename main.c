@@ -29,7 +29,7 @@ int main(){
         if (end == 0){
             printf("----------------------------------------------------------\n");
             if ((mytoken->type == Integer) || (mytoken->type == Number)){
-                printf("atribut: %f\ntyp: %i\n",mytoken->data.number, mytoken->type);
+                printf("atribut: %d\ntyp: %i\n",mytoken->data.integer, mytoken->type);
             }
             else{
                 printf("atribut: %s\ntyp: %i\n",mytoken->data.string, mytoken->type);
