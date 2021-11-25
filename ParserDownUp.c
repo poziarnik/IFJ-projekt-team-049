@@ -109,8 +109,6 @@ int expressionCheck(Token* MyToken, TokenList* list){
     printf("%s\n", Stack->top->tree->Data->data.string);
     puts("");
     puts("---------------------");*/
-
-    printf("%s",Stack->top->tree->Data->data.string);
     
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
                 return 0;
