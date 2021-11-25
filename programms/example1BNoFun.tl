@@ -7,7 +7,7 @@ function main() -- uzivatelska funkce bez parametru
   write("Zadejte cislo pro vypocet faktorialu\n")
   a = e
   if a == 2 then
-      write("a je nil\n") 
+      write("a je nil\n") return
   else
   end
   if a < 0 then
@@ -18,7 +18,7 @@ function main() -- uzivatelska funkce bez parametru
       vysl = vysl * a a = a - 1 -- dva prikazy
     end
     --[[write("Vysledek je:  ", vysl, "\n")]]
-    main();
+    main() ;
   end
 end
 
