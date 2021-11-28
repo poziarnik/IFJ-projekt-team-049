@@ -10,7 +10,9 @@ int main(){
     int status;
     status = expressionCheck(MyToken,&list);
     if (status == 0){
+        puts("PROMGRAM_OK");
         return 0;
+        
     }
     else{
         puts("CHYBA");
