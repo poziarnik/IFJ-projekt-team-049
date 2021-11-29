@@ -10,9 +10,7 @@
 #include "symtable.h"
 #include <stdio.h>
 #include <stdbool.h>
-
-void bst_insert(TreeItem **tree, char* key, TreeItem *new){
-  
+void bst_insert(TreeItem **tree, char* key, TreeItem *new){ 
   if ((*tree) == NULL){
     new->key = key;
     (*tree) = new;
@@ -37,7 +35,6 @@ void TreeItemInit(TreeItem *treeitem){
   treeitem->data = NULL;
   treeitem->subtree=NULL;
 }
-
 bool sym_search(TreeItem *tree, char* key) {
   if (tree == NULL){
     return false;
@@ -58,7 +55,6 @@ bool sym_search(TreeItem *tree, char* key) {
   }
   return false;
 }
-
 void symStackPop(SymStack *myStack){
     SymStackElement* tmp;
     if (myStack->head!=NULL){
@@ -67,7 +63,6 @@ void symStackPop(SymStack *myStack){
         free(tmp);
     }
 }
- 
 int symStackPush(SymStack* myStack, SymTreeRoot* tree){
     SymStackElement* newSymbol=(SymStackElement*)malloc(sizeof(SymStackElement));
     if (newSymbol==NULL) return INTERNAL_ERROR;
@@ -83,7 +78,6 @@ int symStackPush(SymStack* myStack, SymTreeRoot* tree){
     }
     return 0;
 }
-
 void symStackTop(SymStack* myStack, SymTreeRoot* tree){
     if (myStack->head!=NULL){
         tree=myStack->head->root;
@@ -111,13 +105,6 @@ SymTreeRoot* treeCreateRoot(){
 void sym_treeInit(TreeItem *newTree){
     newTree=NULL;
 }
-/*int createSubTree(SymStack* myStack){                        //pri volani funkcie cyklu atd...
-    TreeItem* newtree=treeCreate();
-    symStackPush(myStack, newtree);
-    return 0;
-}*/
-//funkcia na vyhladavanie identifikatora
-//funkcia na ulozenie identifikatora<funkcia na vyhladavanie identifikatora
 int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* myStack, char* key){
   tData* data=(tData*)malloc(sizeof(tData));                    //vytvor data
   data->varType=0;
@@ -137,7 +124,6 @@ int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* 
   bst_insert(sym_globalTree, key, newItem);                       //vloz item do global tree
   return 0;
 }
-
 int sym_saveVar(TreeItem **sym_subtree,char* key){
   tData* data=(tData*)malloc(sizeof(tData));                    //vytvor data
   data->varType=1;
@@ -150,6 +136,11 @@ int sym_saveVar(TreeItem **sym_subtree,char* key){
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
   return 0;
 }
+/**
+ * @brief Vypise zadany strom inorder na stdout
+ * 
+ * @param tree 
+ */
 void sym_inorder(TreeItem *tree) {
   if (tree != NULL){
     sym_inorder(tree->lptr);
@@ -187,17 +178,16 @@ int symDisposeStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){ //odstra
   return 0;  
 } 
 int symtableInit(symtable* sym){
-    SymStack *symstack=(SymStack*)malloc(sizeof(SymStack));
-    if(symstack==NULL) return INTERNAL_ERROR;
-    symStackInit(symstack);
-    sym->sym_stack=symstack;
-    sym->sym_globalTree=NULL;
-    return 0;
+  SymStack *symstack=(SymStack*)malloc(sizeof(SymStack));
+  if(symstack==NULL) return INTERNAL_ERROR;
+  symStackInit(symstack);
+  sym->sym_stack=symstack;
+  sym->sym_globalTree=NULL;
+  return 0;
 }
 bool isInbuildFun(char* str){
-  puts("im hereeeeeee");
-    if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0 \
-    || strcmp(str,"reads")==0 || strcmp(str,"readn")==0 || strcmp(str,"tointeger")==0 \
-    || strcmp(str,"substr")==0 || strcmp(str,"ord")==0 || strcmp(str,"chr")==0) return true;
-    else return false;
+  if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0 \
+  || strcmp(str,"reads")==0 || strcmp(str,"readn")==0 || strcmp(str,"tointeger")==0 \
+  || strcmp(str,"substr")==0 || strcmp(str,"ord")==0 || strcmp(str,"chr")==0) return true;
+  else return false;
 }
