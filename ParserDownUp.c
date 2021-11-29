@@ -1,10 +1,10 @@
 #include "ParserDownUp.h"
-#define NUMBER_OF_RULES 4
+
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    if (status==1 ) return 1; \
-    else if(status == 10) return 0;
+    if (status==LEXICAL_ERROR ) return LEXICAL_ERROR; \
+    if(status == 10) return PROGRAM_OK;
 
 
 int expressionCheck(Token* MyToken, TokenList* list){
@@ -58,8 +58,8 @@ int expressionCheck(Token* MyToken, TokenList* list){
             }
             
             
-            status = tokenScan(stdin, list, MyToken);
-            
+            SCAN_TOKEN
+
             break;
 
       
@@ -80,17 +80,22 @@ int expressionCheck(Token* MyToken, TokenList* list){
                 return status;
             }
 
+            SCAN_TOKEN;
 
-            status = tokenScan(stdin, list, MyToken);
             break;
 
         case 'E':
+            //puts("op end");
             END = true;
             break;
 
         case 'U':
             while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
-                reduce_by_rule(Stack);
+                status = reduce_by_rule(Stack);
+
+            }
+            if (status != 0){
+                return status;
             }
             
             END = true;
@@ -111,7 +116,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
     puts("---------------------");*/
     
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
-                return 0;
+        return PROGRAM_OK;
     }
     return SYNTAX_ERROR;
 }

@@ -3,8 +3,7 @@
 #include "error.h"
 #include <string.h>
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//ak konci komentarom nevypne sa
+
 /*
     getToken() - stavovy automat
     Funkcia postupne cita char zo stdin a rozoduje co bude vo vystupnom tokene podla stavoveho automatu
@@ -25,7 +24,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     int CharNb = 0;
     char* str= stringCreate();              //hlavny string
     int escapeInt [3];
-    
+    int finalnumber;
     
     while(END != true)
     {
@@ -128,7 +127,6 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 else if(isspace(symbol)!=0) state = Scanner_state_reading;
                 else return LEXICAL_ERROR;
-                //else state = Scanner_state_reading;
                 break;
 
             case Scanner_state_identifier_1: 
@@ -297,11 +295,17 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else{
                     return LEXICAL_ERROR;
                 }
-                
                 break;
 
             case Scanner_state_string_3:
                 if (symbol >= '0' && symbol <= '9'){
+                    
+                    finalnumber = (escapeInt[0]-48)*100+(escapeInt[1]-48)*10+(symbol-48);
+                    
+                    if (finalnumber < 001 || finalnumber >255){
+                        return LEXICAL_ERROR;
+                    }
+    
                     stringAddChar(&str,(escapeInt[0]-48)*100+(escapeInt[1]-48)*10+(symbol-48), &sizeOfStr, &CharNb);
                     state = Scanner_state_string_start;
                 }
