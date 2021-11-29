@@ -408,7 +408,7 @@ int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable){             
         return PARC_FALSE;
     } 
 
-    if(isTokenType(MyToken)){
+    if(isTokenxDataType(MyToken)){
         int status;
         parcerPrint("param" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -452,7 +452,7 @@ int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable){       
         return PARC_FALSE;
     } 
 
-    if (isTokenType(MyToken)){
+    if (isTokenxDataType(MyToken)){
         //printf("Type: %s\n",MyToken->att);
         SCAN_TOKEN;
     }
@@ -474,7 +474,7 @@ int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable){          
     }
     else return PARC_FALSE;
 
-    if (isTokenType(MyToken)){
+    if (isTokenxDataType(MyToken)){
         parcerPrint("type" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -706,7 +706,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable){            
         SCAN_TOKEN;
     }
 
-    if(isTokenType(MyToken)){
+    if(isTokenxDataType(MyToken)){
         parcerPrint("define" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -872,9 +872,7 @@ int chackType(Token* MyToken, TokenList* list, Token_type checkType){
 
 bool compareTokenStr(Token* MyToken, char* Str){
     if((MyToken->type != Number) && (MyToken->type != Integer)){
-        //printf("kokot %s %s\n", MyToken->data.string, Str);
         if(strcmp(MyToken->data.string, Str)==0){
-            //printf("kokot %s %s\n", MyToken->data.string, Str);
             return true;
         }
     }
@@ -901,7 +899,7 @@ bool chackStr(Token* MyToken, TokenList* list, char* Str){
 /*
     je identifikator
 */
-bool isTokenType(Token* MyToken){
+bool isTokenDataType(Token* MyToken){
     if(compareTokenStr(MyToken, "integer")){
         return true;
     }

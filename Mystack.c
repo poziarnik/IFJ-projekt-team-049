@@ -29,8 +29,6 @@ int Stack_push(TStack *Stack, int newItem, Token *token){
         newTree->Data = NULL; 
     }
     
-    
-    
     new->Item = newItem;
     new->tree = newTree;
     new->next = Stack->top;
@@ -51,11 +49,8 @@ void Stack_pop_till_bracket(TStack *Stack){
     }
     if (Stack->top->Item == '<'){
         Stack_pop(Stack);
-    }
-    
-    
+    }    
 }
-
 
 int Stack_first_nonterm(TStack *stack){
     for (TElement *tmp = stack->top; tmp != NULL; tmp = tmp->next){
@@ -66,7 +61,6 @@ int Stack_first_nonterm(TStack *stack){
     return 0;
 }
 
-
 void Stack_push_beforeNonterm(TStack *stack){
     TElement *tmp;
     tmp = stack->top;
@@ -75,8 +69,6 @@ void Stack_push_beforeNonterm(TStack *stack){
     Stack_push(stack, tmp->Item, tmp->tree->Data);
     tmp = NULL;
 }
-
-
 
 void treeInit(Tree **tree){
     *tree = NULL;
