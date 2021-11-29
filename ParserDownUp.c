@@ -3,8 +3,7 @@
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    if (status==LEXICAL_ERROR ) return LEXICAL_ERROR; \
-    if(status == 10) return PROGRAM_OK;
+    if (status==LEXICAL_ERROR ) return LEXICAL_ERROR;
 
 
 int expressionCheck(Token* MyToken, TokenList* list){
@@ -38,6 +37,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
             
         case 'L':
+            puts("op expand");
             if(Stack->top->Item == NOTERM){
                 
                 
@@ -64,7 +64,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
 
       
         case 'R':
-            //puts("op reduce");
+            puts("op reduce");
             
             status = reduce_by_rule(Stack);
             if (status != 0){
@@ -73,7 +73,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
             break;
     
         case 'I':
-            //puts("op equals");
+            puts("op equals");
 
             status = reduce_by_rule(Stack);
             if (status != 0){
@@ -85,7 +85,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
             break;
 
         case 'E':
-            //puts("op end");
+            puts("op end");
             END = true;
             break;
 
@@ -109,11 +109,14 @@ int expressionCheck(Token* MyToken, TokenList* list){
 
     } while (!END);
     
-    /*puts("---------------------");
+    puts("---------------------");
     puts("");
     printf("%s\n", Stack->top->tree->Data->data.string);
+    printf("%s\n", Stack->top->tree->attr.binary.right->Data->data.string);
     puts("");
-    puts("---------------------");*/
+    puts("---------------------");
+    
+
     
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
         return PROGRAM_OK;
@@ -281,5 +284,3 @@ int reduce_by_rule(TStack *Stack){
     }
     return 0;
 }
-
-
