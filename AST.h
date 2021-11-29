@@ -25,9 +25,9 @@ typedef struct state{
         struct function_tree *function;
         struct if_tree *if_loop; 
         struct while_tree *while_loop;
-        //struct assign_tree *assignment;
+        struct assign_tree *assignment;
         struct definition_tree *definiton;
-        //struct functioncall_tree *functioncall;
+        struct functioncall_tree *functioncall;
     }TStatement;
 }Tstate;
 
@@ -49,9 +49,10 @@ typedef struct while_tree{
     struct state **do_statement;
 }TWhile_tree;
 
-/*typedef struct assign_tree{
-    //TODO
-}TAssign_tree;*/
+typedef struct assign_tree{
+    char **ID;
+    Tree **expressions;
+}TAssign_tree;
 
 typedef struct definition_tree{
    char *id;
@@ -59,7 +60,11 @@ typedef struct definition_tree{
    char **value;
 }TDefinition_tree;
 
-
+typedef struct functioncall_tree{
+    char **ID;  //podla mna to musi byt pole, lebo ID moze byt viac
+    char *functionName;
+    char **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+}TFunctioncall_tree;
 
 
 
