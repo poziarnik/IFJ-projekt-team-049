@@ -32,9 +32,9 @@ typedef struct state{
         struct function_tree *function;
         struct if_tree *if_loop; 
         struct while_tree *while_loop;
-        //struct assign_tree *assignment;
+        struct assign_tree *assignment;
         struct definition_tree *definiton;
-        //struct functioncall_tree *functioncall;
+        struct functioncall_tree *functioncall;
         struct global* root;
     }TStatement;
 }Tstate;
@@ -62,9 +62,10 @@ typedef struct while_tree{
     int* nbStatements;
 }TWhile_tree;
 
-/*typedef struct assign_tree{
-    //TODO
-}TAssign_tree;*/
+typedef struct assign_tree{
+    char **ID;
+    Tree **expressions;
+}TAssign_tree;
 
 typedef struct definition_tree{
    char *id;
@@ -80,6 +81,11 @@ typedef struct ast_stackElement{
     struct state *statement;
     struct ast_stackElement* next; 
 }ASTstackElement;
+typedef struct functioncall_tree{
+    char **ID;  //podla mna to musi byt pole, lebo ID moze byt viac
+    char *functionName;
+    char **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+}TFunctioncall_tree;
 
 int ASTStackPush(ASTstack* myStack, Tstate* newStatement);
 int ASTaddFCToTree(ASTstack* myStack);
