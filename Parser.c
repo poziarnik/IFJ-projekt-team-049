@@ -661,7 +661,7 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable){        
     //if((expressionCheck(MyToken,list)) != 0) return PARC_FALSE;
     parcerPrint("expression" ,MyToken ,PRINT_ON);
     int status=expressionCheck(MyToken,list);
-    puts("asasfafdsa");  
+    
     if (status!=0) return status;
     
     
