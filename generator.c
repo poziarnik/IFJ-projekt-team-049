@@ -59,7 +59,7 @@ int interpret(root *root){
             }
             else if(root->statements[i]->type == ASTdefine){
                 gen_defvar(root);
-                if((*root->statements)->TStatement.definiton->expression->Data != NULL){
+                if((*root->statements)->TStatement.definiton->expression != NULL){
                     //maybe zavolat assign
                 }
             }
@@ -372,4 +372,6 @@ void gen_chr(){
     gen_EQ(x);
 }*/
 
-
+int main(){
+    
+}

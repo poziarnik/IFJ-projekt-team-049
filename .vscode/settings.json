@@ -14,6 +14,7 @@
         "utility": "c",
         "mystacktree.h": "c",
         "stdbool.h": "c",
-        "symtable.h": "c"
+        "symtable.h": "c",
+        "string.h": "c"
     }
 }
