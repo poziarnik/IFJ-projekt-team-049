@@ -40,7 +40,7 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
             
         case 'L':
-            puts("op expand");
+            // puts("op expand");
             if(Stack->top->Item == NOTERM){
                 
                 if (table_input_symbol(MyToken) == DATA){
@@ -75,7 +75,7 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
 
       
         case 'R':
-            puts("op reduce");
+            // puts("op reduce");
             
             status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
@@ -86,7 +86,7 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
     
             break;
         case 'I':
-            puts("op equals");
+            // puts("op equals");
 
             status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
@@ -98,7 +98,7 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             break;
 
         case 'E':
-            puts("op end");
+            // puts("op end");
             END = true;
             break;
 
