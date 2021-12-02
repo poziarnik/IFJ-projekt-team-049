@@ -21,4 +21,4 @@ function main() -- uzivatelska funkce bez parametru
   end
 end
 
---main()  
+main()  

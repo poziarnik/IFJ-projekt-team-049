@@ -91,6 +91,7 @@ int ASTaddDefineToTree(ASTstack* myStack){
     if (newStatement==NULL){
         return INTERNAL_ERROR;
     }
+    
     //pridaj do stromu na statements na vrchu stacku
     ASTaddToStatements(ASTreturnFastST(myStack), ASTreturnFastNB(myStack), newStatement);
     //pridaj na vrch stacku
@@ -143,7 +144,7 @@ int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newState
 
     if(*nbStatements == (sizeOfArray)-1){           //-2 aby bol posledny znak vzdy null
         *statements = (Tstate**)realloc(*statements, sizeof(Tstate*)*(sizeOfArray+50));
-        printf("imhere %d",sizeOfArray);
+        //printf("imhere %d",sizeOfArray);
         if (*statements == NULL){
             return INTERNAL_ERROR;
         }
@@ -154,7 +155,7 @@ int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newState
     return 0;
 }
 Tree** ASTcreateExpressions(int* nbExpressions){
-    printf("imhere");
+    //printf("imhere");
     Tree** espressions=(Tree**)malloc(50*sizeof(Tree*));
     for (int i = 0; i < 49; i++){
         espressions[i]=NULL;
@@ -182,7 +183,7 @@ int ASTaddToExpressions(Tree*** espressions, int* nbExpressions, Tree* newExpres
 
     if(*nbExpressions == (sizeOfArray)-1){           //-2 aby bol posledny znak vzdy null
         *espressions = (Tree**)realloc(*espressions, sizeof(Tree*)*(sizeOfArray+50));
-        printf("imhere %d",sizeOfArray);
+        //printf("imhere %d",sizeOfArray);
         if (*espressions == NULL){
             return INTERNAL_ERROR;
         }
@@ -196,7 +197,7 @@ Token** ASTcreateTokenArray(int* nbTokens){
     //printf("imhere");
     Token** array=(Token**)malloc(50*sizeof(Token*));
     for (int i = 0; i < 49; i++){
-        array[i]=NULL;
+        array[i]=(Token*)malloc(sizeof(Token));
     }
     *nbTokens=0;
 
@@ -210,20 +211,18 @@ int ASTaddToTokenArray(Token*** array, int* nbTokens, Token* newToken){
     else{
         sizeOfArray=50*((*nbTokens / 50) + 1);
     }
-
     if(*nbTokens == (sizeOfArray)-1){           
         *array = (Token**)realloc(*array, sizeof(Token*)*(sizeOfArray+50));
-        printf("imhere %d",sizeOfArray);
-        if (*array == NULL){
-            return INTERNAL_ERROR;
+        //printf("imhere %d",sizeOfArray);
+        for (int i = *nbTokens; i < (*nbTokens+50); i++)
+        {
+            (*array)[i]=(Token*)malloc(sizeof(Token));
         }
     }
-    
-    (*array)[*nbTokens]=newToken;
+    *(*array)[*nbTokens]=*newToken;
     *nbTokens = *nbTokens +1;               //pridam newstatement na nove miesto v poli
     return 0;
 }
-/*(stackpop) dorobit uvolnovanie veci ak bude cas*/
 void ASTendStatement(ASTstack *myStack){
     ASTstackElement* tmp;
     if (myStack->head!=NULL){
@@ -341,25 +340,25 @@ int ASTsaveToken(ASTstack* myStack, Token* myToken, saveType type){
     }
     else if(type==functionID){
         if(myStack->head->statement->type==ASTfunction){
-            myStack->head->statement->TStatement.function->id=myToken;
+            *(myStack->head->statement->TStatement.function->id)=*myToken;
         }
     }
     else if(type==definitionID){
         if(myStack->head->statement->type==ASTdefine){
-            myStack->head->statement->TStatement.definiton->id=myToken;
+            *(myStack->head->statement->TStatement.definiton->id)=*myToken;
         }
     }
     else if(type==definitionDataType){
         if(myStack->head->statement->type==ASTdefine){
-            myStack->head->statement->TStatement.definiton->data_type=myToken;
+            *(myStack->head->statement->TStatement.definiton->data_type)=*myToken;
         }
     }
     else if(type==functionCallName){
         if(myStack->head->statement->type==ASTfunctionCall){
-            myStack->head->statement->TStatement.functioncall->functionName=myToken;
+            *(myStack->head->statement->TStatement.functioncall->functionName)=*myToken;
         }
     }
-
+        
     return 0;
 }
 /**
@@ -406,10 +405,30 @@ int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
     return NULL;
 }
 void ASTprintStatement(Tstate* statement){
+    //printf("imhere %d\n",statement->type);
     if(statement->type==ASTglobal) printf("root\n");
-    else if(statement->type==ASTfunction) printf("function\n");
+    else if(statement->type==ASTfunction){
+        printf("\033[1;33m");
+        printf("function: %s\n", statement->TStatement.function->id->data.string);
+        printf("\033[0m");
+        if(*(statement->TStatement.function->nbParameters)!=0){
+            for (int i = 0; i < *(statement->TStatement.function->nbParameters); i++){
+                printf("    %d parameter: %s\n",i, statement->TStatement.function->parameters[i]->data.string);
+            }
+        }
+        if(*(statement->TStatement.function->nbReturntypes)!=0){
+            for (int i = 0; i < *(statement->TStatement.function->nbReturntypes); i++){
+                printf("    %d returntype: %s\n",i, statement->TStatement.function->returnTypes[i]->data.string);
+            }
+        }
+    }
     else if(statement->type==ASTcycle) printf("loop\n");
-    else if(statement->type==ASTdefine) printf("define\n");
+    else if(statement->type==ASTdefine) {
+        printf("define\n");
+        printf("    id: %s\n", statement->TStatement.definiton->id->data.string);
+        printf("    dataType: %s\n", statement->TStatement.definiton->data_type->data.string);
+        printf("    expresion: ...\n");
+    }
     else if(statement->type==ASTassigne) printf("assigment\n");
     else if(statement->type==ASTfunctionCall) printf("functionCall\n");
     int nb=0;
@@ -424,12 +443,15 @@ void ASTprintStatement(Tstate* statement){
         else if (statement->type==ASTcycle){
             tmp=statement->TStatement.while_loop->do_statement[nb];
         }
+        else if (statement->type==ASTdefine){
+            tmp=NULL;
+        }
         nb=nb+1;
         if (tmp==NULL) break;
         ASTprintStatement(tmp);
     }
     if(statement->type==ASTglobal) printf("root end\n");
-    else if(statement->type==ASTfunction) printf("function end\n");
+    else if(statement->type==ASTfunction) {printf("\033[1;33m"); printf("function end\n\n"); printf("\033[0m");}
     else if(statement->type==ASTcycle) printf("loop end\n");
     else if(statement->type==ASTdefine) printf("define end\n");
     else if(statement->type==ASTassigne) printf("assigment end\n");

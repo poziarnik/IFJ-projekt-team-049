@@ -46,10 +46,10 @@ bool sym_search(TreeItem *tree, char* key) {
     }
     else{
       if (strcmp(key, tree->key)<0){
-        sym_search(tree->lptr, key);
+        return sym_search(tree->lptr, key);
       }
       else{
-        sym_search(tree->rptr, key);
+        return sym_search(tree->rptr, key);
       }
     }
   }

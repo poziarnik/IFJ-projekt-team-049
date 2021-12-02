@@ -92,6 +92,7 @@ typedef struct definition_tree{
    Token *id;
    Token *data_type;
    Tree *expression;
+   //dorobit volanie funkcie
 }TDefinition_tree;
 
 typedef struct aststack{

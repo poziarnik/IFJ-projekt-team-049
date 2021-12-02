@@ -4,8 +4,11 @@ int main(){
     //printf("Meky Zbirka\n");
     TokenList *list=(TokenList*)malloc(sizeof(TokenList));
     listInit(list);
-    int result=Parse(list);
+    ASTtree* abstractTree = ASTtreeCreate();
+    int result=Parse(list, abstractTree);
     if(result==PARC_TRUE){
+        printf("ASTtree:\n\n");
+        ASTprintStatement(abstractTree->tree);
         printf("Meky Zbirka jubilejny koncert\n");
     }
     else if (result==PARC_FALSE){

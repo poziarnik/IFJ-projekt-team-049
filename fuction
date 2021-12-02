@@ -1,2 +1,2 @@
 global function factorial ( n : integer, a : number) : integer , number 
-while e do vysl = e end if e then a = e end 
+while e do vysl = e a = e end if e then a = e end 
