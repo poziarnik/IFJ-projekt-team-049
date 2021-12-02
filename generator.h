@@ -12,29 +12,36 @@
 
 #include "symtable.h"
 #include "ilist.h"
+#include "AST.h"
 
 
-int interpret(TRoot *root);
+int interpret(root *root);
 
 /******************** generovanie funkcii ********************/
 
-void gen_func_begin(TRoot *root);
+void gen_func_begin(root *root);
 
-void gen_func_end(TRoot *root);
+void gen_func_end(root *root);
 
-void gen_func_call(char *id);
+void gen_func_call(root *root);
 
 void gen_func_def_arg(int i);
 
-void gen_func_move_arg(TRoot *root, int i);
+void gen_func_move_arg(root *root, int i);
 
-void gen_func_ret(TRoot *root);
+void gen_func_ret(root *root, int i);
 
 /******************** generovanie instrukcii ********************/
 
-void gen_defvar(char *x);
+void gen_defvar(root *root);
 
-void gen_move(char *x);
+void gen_move_int(root *root, int a);
+
+void gen_move_string(root *root, int a);
+
+void gen_move_number(root *root, int a);
+
+void gen_move_in_func_call(root *root);
 
 void gen_add(char *x);
 

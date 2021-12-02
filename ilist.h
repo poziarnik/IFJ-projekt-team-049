@@ -11,6 +11,16 @@
 #ifndef _ILIST_H_
 #define _ILIST_H_
 
+typedef enum{
+    readi,
+    reads,
+    readn,
+    write,
+    tointeger,
+    ord,
+    substr,
+    chr
+}inbuild;
 
 /*
 #define I_STOP    0
@@ -25,7 +35,7 @@
 #define I_GOTO    9
 */
 
-
+/*
 #define I_MOVE            1
 #define I_CRETE_F         2
 #define I_PUSH_F          3
@@ -48,7 +58,7 @@
 #define I_SUB_S           17
 #define I_MUL_S           18
 #define I_DIV_S           19
-#define I_DIV_INT_S       20 */
+#define I_DIV_INT_S       20 
 
 #define I_LT              21
 #define I_GT              22
@@ -56,7 +66,7 @@
 
 /*#define I_LT_S            24
 #define I_GT_S            25
-#define I_EQ_S            26 */
+#define I_EQ_S            26 
 
 #define I_AND             27
 #define I_OR              28
@@ -64,7 +74,7 @@
 
 /*#define I_AND_S           30
 #define I_OR_S            31
-#define I_NOT_S           32 */
+#define I_NOT_S           32 
 
 #define tofloat             33     // INT TO FLOAT
 #define tointeger            34    // FLOAT TO INT
@@ -74,7 +84,7 @@
 /* #define I_I2F_S           37      // INT TO FLOAT
 #define I_F2I_S           38      // FLOAT TO INT
 #define I_I2C_S           39      // INT TO CHAR
-#define I_S2I_S           40      // STRING TO INT */
+#define I_S2I_S           40      // STRING TO INT 
 
 #define readi           41
 #define reads           42
@@ -101,8 +111,9 @@
 #define I_BREAK           57
 #define I_DPRINT          58
 
+#define substr 59
+#define ord 60
+#define chr 61
 
-
-
-
+*/
 #endif
