@@ -10,7 +10,7 @@
 
 
 
-
+void printTree(Tree *exprtree);
 int expressionCheck(Token* MyToken, TokenList* list, Tree *expression);
 int table_input_symbol(Token *Mytoken);
 int colomn_table(TStack *Stack);

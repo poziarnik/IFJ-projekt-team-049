@@ -283,3 +283,41 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
     
     return PROGRAM_OK;
 }
+
+void printTree(Tree *exprtree){
+    if (exprtree->Data->type == Integer){
+        printf("%i ", exprtree->Data->data.integer);
+    }
+    else if (exprtree->Data->type == Number){
+        printf("%f ", exprtree->Data->data.number);
+    }
+    else if (exprtree->Data->type == String){
+        printf("%s ", exprtree->Data->data.string);
+    }
+
+    else if (exprtree->Data->type == Identifier){
+        printf("%s ", exprtree->Data->data.string);
+    }
+
+    else if (exprtree->Data->type == Sizeof){
+        printf("%s ", exprtree->Data->data.string);
+        printTree(exprtree->attr.unary.child);
+    } 
+
+    else if (exprtree->Data->type == Plus || \
+            exprtree->Data->type == Minus || \
+            exprtree->Data->type == Multiplication || \
+            exprtree->Data->type == Division_integer || \
+            exprtree->Data->type == Division || \
+            exprtree->Data->type == Concatenation || \
+            exprtree->Data->type == Less || \
+            exprtree->Data->type == More || \
+            exprtree->Data->type == Less_equal || \
+            exprtree->Data->type == More_equal || \
+            exprtree->Data->type == Not_equal || \
+            exprtree->Data->type == Assign){
+        printTree(exprtree->attr.binary.left);
+        printf("%s ", exprtree->Data->data.string);
+        printTree(exprtree->attr.binary.right);
+    }
+}
