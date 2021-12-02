@@ -6,7 +6,7 @@
     if (status==LEXICAL_ERROR ) return LEXICAL_ERROR;
 
 
-int expressionCheck(Token* MyToken, TokenList* list){
+int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
     int status = 0;
     int table[9][9]={
 
@@ -20,7 +20,7 @@ int expressionCheck(Token* MyToken, TokenList* list){
         {'R','R','R','R','E','L','R','L','R'}, // #                  A
         {'L','L','L','L','L','L','I','L','E'}, // (                  
         {'R','R','R','R','R','E','R','E','R'}, // )                  C
-        {'R','R','R','R','R','E','R','U','R'}, // i
+        {'R','R','R','R','R','E','R','E','R'}, // i
         {'L','L','L','L','L','L','E','L','E'}  // $                  K
     };
                                                
@@ -30,8 +30,11 @@ int expressionCheck(Token* MyToken, TokenList* list){
     }
     Stack_init(Stack);
     bool END = false;
+    
     Stack_push(Stack, ELSE, NULL);
-    TElement stackHelp;
+    
+    TElement *stackHelp;
+    
     
     do{
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
@@ -40,48 +43,58 @@ int expressionCheck(Token* MyToken, TokenList* list){
             puts("op expand");
             if(Stack->top->Item == NOTERM){
                 
-                
                 if (table_input_symbol(MyToken) == DATA){
-                    reduce_by_rule(Stack);
+                    reduce_by_rule(Stack, MyToken);
                     return 1;
                 }
 
-                stackHelp = *Stack->top;
-                Stack_pop(Stack);
+                
+                stackHelp = stack_pop_nofree(Stack);
                 Stack_push(Stack, '<', NULL);
-                Stack_push(Stack, NOTERM, (&stackHelp)->tree->Data);
+                stackHelp->Item = NOTERM;
+                Stack_Push_Element(Stack, stackHelp);
                 Stack_push(Stack, table_input_symbol(MyToken), MyToken);
+                
             }
             else{
                 Stack_push(Stack, '<', NULL);
                 Stack_push(Stack, table_input_symbol(MyToken), MyToken);
             }
             
+
+            // if (Stack->top->tree->Data->type == Plus){
+            //     printf("%s\n", Stack->top->tree->Data->data.string);
+            // }
+            // else if (Stack->top->tree->Data->type == Integer){
+            //     printf("%i\n", Stack->top->tree->Data->data.integer);
+            // }
+            
             
             SCAN_TOKEN
-
             break;
 
       
         case 'R':
             puts("op reduce");
             
-            status = reduce_by_rule(Stack);
+            status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
                 return status;
             }
-            break;
+
+            
     
+            break;
         case 'I':
             puts("op equals");
 
-            status = reduce_by_rule(Stack);
+            status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
                 return status;
             }
-
+            
             SCAN_TOKEN;
-
+            
             break;
 
         case 'E':
@@ -91,34 +104,23 @@ int expressionCheck(Token* MyToken, TokenList* list){
 
         case 'U':
             while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
-                status = reduce_by_rule(Stack);
-
+                status = reduce_by_rule(Stack, MyToken);
             }
             if (status != 0){
                 return status;
             }
-            
             END = true;
             break;
-        }
-
-
-
-         
-        
+        } 
 
     } while (!END);
     
-    puts("---------------------");
-    puts("");
-    printf("%s\n", Stack->top->tree->Data->data.string);
-    printf("%s\n", Stack->top->tree->attr.binary.right->Data->data.string);
-    puts("");
-    puts("---------------------");
+    
     
 
     
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
+        *expression = *Stack->top->tree;
         return PROGRAM_OK;
     }
     return SYNTAX_ERROR;
@@ -174,113 +176,106 @@ int table_input_symbol(Token *MyToken){
     }
 }
 
-int reduce_by_rule(TStack *Stack){
-    TElement stack_1;
-    TElement stack_2;
-    TElement stack_3;
+int reduce_by_rule(TStack *Stack, Token *MyToken){
 
+    TElement *main, *left, *right, *bracket, *child;
+    
+    //Pravidlo |<i -> E|
     if (Stack_first_nonterm(Stack) == DATA){
-        stack_1 = *Stack->top;
-        Tree *newTree = (Tree*)malloc(sizeof(Tree));
-        if (newTree == NULL){
-            return INTERNAL_ERROR;
-        }
-        
-        newTree->Data = stack_1.tree->Data;
-        Stack_pop(Stack);
-        Stack->top->Item = NOTERM;
-        *Stack->top->tree = *newTree;
+        main = stack_pop_nofree(Stack);
+        main->Item = NOTERM;
+        Stack_pop(Stack);  // potom vyhodim pomocnu zatvorku <
+       
+        Stack_Push_Element(Stack, main);
+        main = NULL;
     }
 
 
+
+    // pravidlo |<E + E -> E|
     else if (Stack_first_nonterm(Stack) == PLUS_MINUS ||  \
         (Stack_first_nonterm(Stack) == MULTIPLICATION_DIVISION_INTDIV)  || \
         (Stack_first_nonterm(Stack) == LESS_MORE_EQUAL_NOTEQUAL) || \
         (Stack_first_nonterm(Stack) == CONCATENATION)){
+            //ak je na stacku prvy TERM plus, minus, krat, deleno, ...
+            //kontrolujem ci prvy na stacku je NETRMINAL
+
+
+
+        right = stack_pop_nofree(Stack);
+        if (right->Item != NOTERM){  //ak na vrchole nie je E 
+            return SYNTAX_ERROR;
+        }
+
+        main = stack_pop_nofree(Stack);
+        if (main->Item != PLUS_MINUS && main->Item != MULTIPLICATION_DIVISION_INTDIV && \
+            main->Item != LESS_MORE_EQUAL_NOTEQUAL && main->Item != Concatenation){
+            // po NETERMINALY musi prist binarny operator
+            return SYNTAX_ERROR;
+        }
             
-            if (Stack->top->Item != NOTERM){
-                return SYNTAX_ERROR;
-            }
-            stack_1 = *Stack->top;
-            Stack_pop(Stack);
+        left = stack_pop_nofree(Stack);
+        if (left->Item != NOTERM){  //ak na vrchole nie je E 
+            return SYNTAX_ERROR;
+        }
 
+        //vyhodim < zo stacku
+        Stack_pop(Stack);
 
-            if (Stack->top->Item != PLUS_MINUS && \
-                Stack->top->Item != MULTIPLICATION_DIVISION_INTDIV && \
-                Stack->top->Item != LESS_MORE_EQUAL_NOTEQUAL && \
-                Stack->top->Item != CONCATENATION){
-                return SYNTAX_ERROR;
-            }
-            stack_2 = *Stack->top;
-            Stack_pop(Stack);
-
+        //ako hlavny koren necham Element s binarnym operatorom, ale zmenim jeho nazov na NOTERM
+        main->Item = NOTERM;
             
-            if (Stack->top->Item != NOTERM){
-                return SYNTAX_ERROR;
-            }
-            stack_3 = *Stack->top;
-            Stack_pop(Stack);
-            
+        //alokujem jeho podstromy a priradim donho NETERMINALY
+        main->tree->attr.binary.left = (Tree*)malloc(sizeof(Tree));
+        main->tree->attr.binary.left = left->tree;
 
-            if (Stack->top->Item != '<'){
-                return SYNTAX_ERROR;
-            }
-            Tree *newTree = (Tree*)malloc(sizeof(Tree));
-            if (newTree == NULL){
-                return INTERNAL_ERROR;
-            }
-            newTree->Data = stack_2.tree->Data;
-            newTree->attr.binary.right = stack_1.tree;
-            newTree->attr.binary.left = stack_3.tree;
+        main->tree->attr.binary.right = (Tree*)malloc(sizeof(Tree));
+        main->tree->attr.binary.right = right->tree;
 
-            Stack->top->Item = NOTERM;
-            Stack->top->tree = newTree;
+        //pushnem na Stack koren
+        Stack_Push_Element(Stack, main);
+
+        free(right);
+        free(left);   
     }
-
 
     else if (Stack_first_nonterm(Stack) == LEFTBRACKET){
-        stack_1 = *Stack->top;
-        if (Stack->top->Item != NOTERM){
-            return INTERNAL_ERROR;
+        bracket = stack_pop_nofree(Stack);
+
+        if (bracket->Item != NOTERM){
+            return SYNTAX_ERROR;
         }
         Stack_pop(Stack);
-
-
-        if (Stack->top->Item != LEFTBRACKET){
-            return INTERNAL_ERROR;
-        }
         Stack_pop(Stack);
 
-
-        Stack->top->Item = NOTERM;
-        Stack->top->tree = stack_1.tree;  
+        Stack_Push_Element(Stack, bracket);
     }
-
 
     else if (Stack_first_nonterm(Stack) == SIZEOF){
-        if (Stack->top->Item != NOTERM){
+        child = stack_pop_nofree(Stack);
+        if (child->Item != NOTERM){
             return SYNTAX_ERROR;
         }
-        stack_1 = *Stack->top;
-        Stack_pop(Stack);
 
-
-        if (Stack->top->Item != SIZEOF){
+        main = stack_pop_nofree(Stack);
+        if (main->Item != SIZEOF){
             return SYNTAX_ERROR;
         }
-        stack_2 = *Stack->top;
+
         Stack_pop(Stack);
 
-        Tree *newTree = (Tree*)malloc(sizeof(Tree));
-        if(newTree == NULL){
-            return INTERNAL_ERROR;
-        }
+        main->tree->attr.unary.child = (Tree*)malloc(sizeof(Tree));
+        main->tree->attr.unary.child = child->tree;
+        
+        main->Item = NOTERM;
 
-        newTree->Data = stack_2.tree->Data;
-        newTree->attr.unary.child = stack_1.tree;
-
-        Stack->top->Item = NOTERM;
-        Stack->top->tree = newTree;
+        Stack_Push_Element(Stack, main);
     }
-    return 0;
+
+    
+        
+
+
+    
+    return PROGRAM_OK;
 }

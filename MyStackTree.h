@@ -48,11 +48,14 @@ typedef struct Stack{
 
 void Stack_init(TStack *Stack);
 int Stack_push(TStack *Stack, int newItem, Token *token);
+void Stack_Push_Element(TStack *Stack, TElement *Element);
 void Stack_pop(TStack *Stack);
-void Stack_pop_till_bracket(TStack *Stack);
+TElement *stack_pop_nofree(TStack *stack);
 int Stack_first_nonterm(TStack *stack);
 void Stack_push_beforeNonterm(TStack *stack);
 void Stack_print(TStack *stack);
+TElement Stack_top(TStack *stack);
+
 
 
 

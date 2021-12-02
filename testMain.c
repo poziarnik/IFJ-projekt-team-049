@@ -8,11 +8,19 @@ int main(){
     Token* MyToken = tokenCreate();
     tokenScan(stdin,&list,MyToken);
     int status;
-    status = expressionCheck(MyToken,&list);
+    Tree *exprTree;
+    status = expressionCheck(MyToken,&list, exprTree);
     if (status == 0){
-        puts("PROMGRAM_OK");
-        return 0;
+        puts("---------------------");
+        puts("");
+
         
+        
+        puts("");
+        puts("---------------------");
+
+        
+        return 0;
     }
     else{
         puts("CHYBA");

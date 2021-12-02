@@ -6,51 +6,64 @@ void Stack_init(TStack *Stack){
 }
 
 int Stack_push(TStack *Stack, int newItem, Token *token){
+    
     TElement *new = (TElement*)malloc(sizeof(TElement));
     if (new == NULL){
         return INTERNAL_ERROR;
     }
 
-    Tree *newTree = (Tree*)malloc(sizeof(Tree)); 
-    if (newTree == NULL){
+    new->tree = (Tree*)malloc(sizeof(Tree)); 
+    if (new->tree == NULL){
         return INTERNAL_ERROR;
     }
 
     if(token != NULL){
-        Token *newToken = (Token*)malloc(sizeof(Token));
-        if (newToken == NULL){
+        new->tree->Data = (Token*)malloc(sizeof(Token));
+        if (new->tree->Data == NULL){
             return INTERNAL_ERROR;
         }
-        *newToken = *token;
-        newTree->Data = newToken; 
-        
+        *new->tree->Data = *token; 
     }
     else{
-        newTree->Data = NULL; 
+        new->tree->Data = NULL; 
     }
-    
+
+    TElement *tmp = Stack->top; 
     new->Item = newItem;
-    new->tree = newTree;
-    new->next = Stack->top;
+    new->next = tmp;
     Stack->top = new;
+
+
+
+    
     return 0;
 }
 
+void Stack_Push_Element(TStack *Stack, TElement *Element){
+    TElement *tmp = Stack->top;
+    //printf("push element tmp --> %p\n", tmp);
+    Stack->top = Element;
+    Stack->top->next = tmp;
+    //printf("push element top next --> %p\n", Stack->top->next);
+}
+
+
+TElement *stack_pop_nofree(TStack *stack){
+    // kontrola ci je stack prazdny
+    if(stack->top == NULL) return NULL;
+
+    TElement *tmp = stack->top; // do tmp ulozim top
+    stack->top = tmp->next; // novy top bude tmp->next
+    //tmp->next = NULL; // z tmp zrusis odkaz na dalsi prvok 
+    return tmp; // vratis ukazatel na tmp
+}
 
 void Stack_pop(TStack *Stack){
     TElement *tmp = Stack->top;
     Stack->top = Stack->top->next;
-    free(tmp);
+    //tmp->next = NULL;
 }
 
-void Stack_pop_till_bracket(TStack *Stack){
-    while (Stack->top->Item != '<'){
-        Stack_pop(Stack);
-    }
-    if (Stack->top->Item == '<'){
-        Stack_pop(Stack);
-    }    
-}
 
 int Stack_first_nonterm(TStack *stack){
     for (TElement *tmp = stack->top; tmp != NULL; tmp = tmp->next){
@@ -58,7 +71,7 @@ int Stack_first_nonterm(TStack *stack){
             return tmp->Item;
         }
     }
-    return 0;
+    return -1;
 }
 
 void Stack_push_beforeNonterm(TStack *stack){
@@ -74,35 +87,6 @@ void treeInit(Tree **tree){
     *tree = NULL;
 }
 
-
-/*
-Tree *treeInsert_BinaryOperator(Tree **tree, TElement *Operator, TElement *Data1, TElement *Data2){
-    Tree *newTree = (Tree*)malloc(sizeof(Tree));
-    if (newTree == NULL){
-        return NULL; //TODO
-    }
-    
-    newTree->Data = Operator->token;
-    newTree->attr.binary.left->Data = Data1->token;
-    newTree->attr.binary.right->Data = Data2->token;
-
-    return newTree;
+TElement Stack_top(TStack *stack){
+    return *stack->top;
 }
-*/
-
-/*
-Tree *tree_insert_UnaryOperator(Tree **tree, TElement *Operator, TElement *Data){
-    Tree *newTree = (Tree*)malloc(sizeof(Tree));
-    if (newTree == NULL){
-        return NULL; //TODO
-    }
-    
-    
-    newTree->Data = Operator->token;
-    newTree->attr.unary.child->Data = Data->token;
-
-    printf("%i", (*tree)->Data->data.integer);
-
-    return newTree;
-}
-*/
