@@ -20,7 +20,7 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
         {'R','R','R','R','E','L','R','L','R'}, // #                  A
         {'L','L','L','L','L','L','I','L','E'}, // (                  
         {'R','R','R','R','R','E','R','E','R'}, // )                  C
-        {'R','R','R','R','R','E','R','E','R'}, // i
+        {'R','R','R','R','R','E','R','U','R'}, // i
         {'L','L','L','L','L','L','E','L','E'}  // $                  K
     };
                                                
@@ -41,11 +41,15 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             
         case 'L':
             // puts("op expand");
-            if(Stack->top->Item == NOTERM){
+            if (Stack->top->Item == NOTERM && table_input_symbol(MyToken) == DATA && Stack_first_nonterm(Stack) == ELSE){
+                END = true;
+            }
+            
+
+            else if(Stack->top->Item == NOTERM){
                 
                 if (table_input_symbol(MyToken) == DATA){
                     reduce_by_rule(Stack, MyToken);
-                    return 1;
                 }
 
                 
