@@ -657,11 +657,11 @@ int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable){           
     return PARC_TRUE;
 }
 int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable){                                  //Martin Huba
-
+    Tree* newExpression=(Tree*)malloc(sizeof(Tree));
     //if((expressionCheck(MyToken,list)) != 0) return PARC_FALSE;
     parcerPrint("expression" ,MyToken ,PRINT_ON);
-    int status=expressionCheck(MyToken,list);
-    
+    int status=expressionCheck(MyToken,list,newExpression);
+    puts("imhere");
     if (status!=0) return status;
     
     
