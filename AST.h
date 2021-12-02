@@ -12,11 +12,27 @@ typedef enum{
     ASTfunction,
     ASTcondition,
     ASTcycle,
-    ASTdefinition,
+    ASTdefine,
     ASTassigne,
     ASTfunctionCall
 }statementType;
 
+typedef enum{
+    functionParams,
+    functionID,
+    functionReturnTypes,
+    assigneIDs,
+    definitionID,
+    definitionDataType,
+    functionCallIDs,
+    functionCallName,
+    functionCallParams
+}saveType;
+
+typedef struct AST{
+    struct state* tree;
+    struct aststack* ASTStack;
+}ASTtree;
 /*typedef struct root{
     struct state **global_state;
 }TRoot;*/
@@ -41,20 +57,23 @@ typedef struct state{
 
 
 typedef struct function_tree{
-    char *id;                       //token->data.string??
-    char **parameter;               //token->data.string??
-    char **return_type;             //token->data.string??
+   Token *id;                       //token->data.string??
+    Token **parameters;               //token->data.string??
+    int* nbParameters;
+    Token **returnTypes;             //token->data.string??
+    int* nbReturntypes;
     struct state **statements;
     int* nbStatements;
 }TFunction_tree;
 
 typedef struct if_tree{
     Tree *expression;
-    struct state **then_statement;
+    struct state **if_statement;
     int* nbThenStatements;
     struct state **else_statement;
     int* nbElseStatements;
 }TIf_tree;
+
 
 typedef struct while_tree{
     Tree *expression;
@@ -63,14 +82,16 @@ typedef struct while_tree{
 }TWhile_tree;
 
 typedef struct assign_tree{
-    char **ID;
+    Token **IDs;
+    int* nbID;
     Tree **expressions;
+    int* nbexpressions;
 }TAssign_tree;
 
 typedef struct definition_tree{
-   char *id;
-   char **data_type;
-   char **value;
+   Token *id;
+   Token *data_type;
+   Tree *expression;
 }TDefinition_tree;
 
 typedef struct aststack{
@@ -81,24 +102,100 @@ typedef struct ast_stackElement{
     struct state *statement;
     struct ast_stackElement* next; 
 }ASTstackElement;
+
 typedef struct functioncall_tree{
-    char **ID;  //podla mna to musi byt pole, lebo ID moze byt viac
-    char *functionName;
-    char **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+    Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
+    int* nbID;
+    Token *functionName;
+    Token **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+    int* nbParameters;
 }TFunctioncall_tree;
 
+//!!!!! za kazdym define assigne FCcall musi ist po naplneni parametrov end
+ASTtree* ASTtreeCreate();
 int ASTStackPush(ASTstack* myStack, Tstate* newStatement);
 int ASTaddFCToTree(ASTstack* myStack);
-int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);
+int ASTaddCycleToTree(ASTstack* myStack);
+int ASTaddDefineToTree(ASTstack* myStack);
+int ASTaddAssigmentToTree(ASTstack* myStack);
+int ASTaddFCcallToTree(ASTstack* myStack);
+
 Tstate** ASTcreateStatements(int* nbStatements);
+int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);
+Tree** ASTcreateExpressions(int* nbExpressions);
+int ASTaddToExpressions(Tree*** espressions, int* nbExpressions, Tree* newExpression);
 Tstate*** ASTreturnFastST(ASTstack* myStack);
 int* ASTreturnFastNB(ASTstack* myStack);
+
+/**
+ * @brief prida zadany Token do zadaneho pola tokenov
+ * 
+ * @param array 
+ * @param nbTokens 
+ * @param newToken 
+ * @return int 
+ */
+Token** ASTcreateTokenArray(int* nbTokens);
+int ASTaddToTokenArray(Token*** array, int* nbTokens, Token* newToken);
+/**
+ * @brief ukonci sucasne upravovany statement na vrchu staku("stackPop"). Musi nasledovat za kazdym assigment a define a vsetkym proste
+ * 
+ * @param myStack 
+ */
 void ASTendStatement(ASTstack *myStack);
 int ASTnewElementInit(Tstate* newElement, statementType Type);
 //void ASTprintTree(TRoot* tree);
-void ASTprintStatement(Tstate* statement);
 void ASTstackInit(ASTstack* myStack);
+
+/**
+ * @brief vytvori prazdny list zadaneho typu Tstate v AST a alokuje vstky jeho casti
+ * 
+ * @param type 
+ * @return Tstate* 
+ */
 Tstate* ASTcreateLeaf(statementType type);
+
+/**
+ * @brief ulozi Token do AST vyber si z enum savetype co chces ukladat(uklada tokeny a polia tokenov) vracanie INTEGRALERROR
+ * 
+ * @param myStack 
+ * @param myToken 
+ * @param type 
+ * @return int 
+ */
+int ASTsaveToken(ASTstack* myStack, Token* myToken, saveType type);
+
+/**
+ * @brief vrati cestu stackom k velkosti pola tokenov v danom type unie Tstate(len na zkratenie zapisu) 
+ * 
+ * @param myStack 
+ * @param type 
+ * @return Token*** 
+ */
+int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type);
+
+/**
+ * @brief vrati cestu stackom k polu tokenov v danom type unie Tstate(len na zkratenie zapisu) 
+ * 
+ * @param myStack 
+ * @param type 
+ * @return Token*** 
+ */
+Token*** ASTreturnFastArray(ASTstack* myStack, saveType type);
+
+/**
+ * @brief vypis obsah AST stromu 
+ * 
+ * 
+ * @param statement 
+ */
+void ASTprintStatement(Tstate* statement);
+
+/**
+ * @brief vypis obsah stacku
+ * 
+ * @param myStack 
+ */
 void ASTprintStack(ASTstack* myStack);
 
 #endif 

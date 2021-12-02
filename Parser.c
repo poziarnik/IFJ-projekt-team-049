@@ -408,7 +408,7 @@ int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable){             
         return PARC_FALSE;
     } 
 
-    if(isTokenxDataType(MyToken)){
+    if(isTokenDataType(MyToken)){
         int status;
         parcerPrint("param" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -452,7 +452,7 @@ int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable){       
         return PARC_FALSE;
     } 
 
-    if (isTokenxDataType(MyToken)){
+    if (isTokenDataType(MyToken)){
         //printf("Type: %s\n",MyToken->att);
         SCAN_TOKEN;
     }
@@ -474,7 +474,7 @@ int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable){          
     }
     else return PARC_FALSE;
 
-    if (isTokenxDataType(MyToken)){
+    if (isTokenDataType(MyToken)){
         parcerPrint("type" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -616,7 +616,7 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable){           
     }
     else return PARC_FALSE;
 
-    if (first(MyToken, expression)){
+    if (first(MyToken, expression)){// or fccall + cash(Token** cash)ked sa rozhodne ci assigne alebo funkcia prida do vytvorenej struktury 
         RETURN_ON_ERROR(fc_expression);
     }
     else return PARC_FALSE;
@@ -661,6 +661,7 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable){        
     //if((expressionCheck(MyToken,list)) != 0) return PARC_FALSE;
     parcerPrint("expression" ,MyToken ,PRINT_ON);
     int status=expressionCheck(MyToken,list);
+    
     if (status!=0) return status;
     
     
@@ -706,7 +707,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable){            
         SCAN_TOKEN;
     }
 
-    if(isTokenxDataType(MyToken)){
+    if(isTokenDataType(MyToken)){
         parcerPrint("define" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -799,7 +800,6 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable){        
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
-
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
             if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree)){
@@ -809,7 +809,8 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable){        
         }
         else RETURN_ON_ERROR(fc_expression);
     }
-    else return PARC_FALSE;    
+    else return PARC_FALSE;
+  
     return PARC_TRUE;
 }
 
