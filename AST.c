@@ -163,6 +163,14 @@ Tree** ASTcreateExpressions(int* nbExpressions){
 
     return espressions;
 }
+/**
+ * @brief vlozi zadane expression do zadaneho pola expressions
+ * 
+ * @param espressions 
+ * @param nbExpressions 
+ * @param newExpression 
+ * @return int 
+ */
 int ASTaddToExpressions(Tree*** espressions, int* nbExpressions, Tree* newExpression){
     int sizeOfArray=0;                    //odvozdujem velkost pola
     if (*nbExpressions<50){
@@ -224,7 +232,6 @@ void ASTendStatement(ASTstack *myStack){
         free(tmp);
     }
 }
-
 Tstate* ASTcreateLeaf(statementType type){
     Tstate* newLeaf=(Tstate*)malloc(sizeof(Tstate));
     if(type==ASTglobal){
@@ -280,7 +287,7 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.assignment->nbexpressions = (int*)malloc(sizeof(int));
         *(newLeaf->TStatement.assignment->nbID)=0;
         *(newLeaf->TStatement.assignment->nbexpressions)=0;
-        newLeaf->TStatement.assignment->ID = ASTcreateTokenArray(newLeaf->TStatement.assignment->nbID);
+        newLeaf->TStatement.assignment->IDs = ASTcreateTokenArray(newLeaf->TStatement.assignment->nbID);
         newLeaf->TStatement.assignment->expressions = ASTcreateExpressions(newLeaf->TStatement.assignment->nbexpressions);
     }
     else if (type==ASTfunctionCall){
@@ -291,17 +298,112 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.functioncall->functionName = (Token*)malloc(sizeof(Token));
         newLeaf->TStatement.functioncall->nbID = (int*)malloc(sizeof(int));
         newLeaf->TStatement.functioncall->nbParameters = (int*)malloc(sizeof(int));
-        newLeaf->TStatement.functioncall->ID = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbID);
+        newLeaf->TStatement.functioncall->IDs = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbID);
         newLeaf->TStatement.functioncall->parameters = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbParameters);
 
 
     }
     else if (type==ASTcondition){
     }
-    
-    
-    return newLeaf;
-    
+
+    return newLeaf;    
+}
+int ASTsaveToken(ASTstack* myStack, Token* myToken, saveType type){
+    if (type==functionParams){
+        if (myStack->head->statement->type==ASTfunction){
+            ASTaddToTokenArray(ASTreturnFastArray(myStack,functionParams), ASTreturnFastArrayNB(myStack,functionParams), myToken);
+        }
+        else return INTERNAL_ERROR;
+    }
+    else if (type==functionReturnTypes){
+        if (myStack->head->statement->type==ASTfunction){
+            ASTaddToTokenArray(ASTreturnFastArray(myStack,functionReturnTypes), ASTreturnFastArrayNB(myStack,functionReturnTypes), myToken);
+        }
+        else return INTERNAL_ERROR;
+    }
+    else if (type==assigneIDs){
+        if (myStack->head->statement->type==ASTassigne){
+            ASTaddToTokenArray(ASTreturnFastArray(myStack,assigneIDs), ASTreturnFastArrayNB(myStack,assigneIDs), myToken);
+        }
+        else return INTERNAL_ERROR;
+    }
+    else if (type==functionCallParams){
+        if (myStack->head->statement->type==ASTfunctionCall){
+            ASTaddToTokenArray(ASTreturnFastArray(myStack,functionCallParams), ASTreturnFastArrayNB(myStack,functionCallParams), myToken);
+        }
+        else return INTERNAL_ERROR;
+    }
+    else if (type==functionCallIDs){
+        if (myStack->head->statement->type==ASTfunctionCall){
+            ASTaddToTokenArray(ASTreturnFastArray(myStack,functionCallIDs), ASTreturnFastArrayNB(myStack,functionCallIDs), myToken);
+        }
+        else return INTERNAL_ERROR;
+    }
+    else if(type==functionID){
+        if(myStack->head->statement->type==ASTfunction){
+            myStack->head->statement->TStatement.function->id=myToken;
+        }
+    }
+    else if(type==definitionID){
+        if(myStack->head->statement->type==ASTdefine){
+            myStack->head->statement->TStatement.definiton->id=myToken;
+        }
+    }
+    else if(type==definitionDataType){
+        if(myStack->head->statement->type==ASTdefine){
+            myStack->head->statement->TStatement.definiton->data_type=myToken;
+        }
+    }
+    else if(type==functionCallName){
+        if(myStack->head->statement->type==ASTfunctionCall){
+            myStack->head->statement->TStatement.functioncall->functionName=myToken;
+        }
+    }
+
+    return 0;
+}
+/**
+ * @brief vrati cestu stackom k polu tokenov v danom type unie Tstate(len na zkratenie zapisu) 
+ * 
+ * @param myStack 
+ * @param type 
+ * @return Token*** 
+ */
+Token*** ASTreturnFastArray(ASTstack* myStack, saveType type){
+    if(type==functionParams){
+        return &(myStack->head->statement->TStatement.function->parameters);
+    }
+    else if(type==functionReturnTypes){
+        return &(myStack->head->statement->TStatement.function->returnTypes);
+    }
+    else if(type==assigneIDs){
+        return &(myStack->head->statement->TStatement.assignment->IDs);
+    }
+    else if(type==functionCallIDs){
+        return &(myStack->head->statement->TStatement.functioncall->IDs);
+    }
+    else if(type==functionCallParams){
+        return &(myStack->head->statement->TStatement.functioncall->parameters);
+    }
+    return NULL;
+}
+int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
+    if(type==functionParams){
+        return myStack->head->statement->TStatement.function->nbParameters;
+    }
+    else if(type==functionReturnTypes){
+        return myStack->head->statement->TStatement.function->nbReturntypes;
+    }
+    else if(type==assigneIDs){
+        return myStack->head->statement->TStatement.assignment->nbID;
+    }
+    else if(type==functionCallIDs){
+        return myStack->head->statement->TStatement.functioncall->nbID;
+    }
+    else if(type==functionCallParams){
+        return myStack->head->statement->TStatement.functioncall->nbParameters;
+    }
+    return NULL;
 }
 void ASTprintStatement(Tstate* statement){
     if(statement->type==ASTglobal) printf("root\n");

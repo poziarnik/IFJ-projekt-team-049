@@ -616,7 +616,7 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable){           
     }
     else return PARC_FALSE;
 
-    if (first(MyToken, expression)){
+    if (first(MyToken, expression)){// or fccall + cash(Token** cash)ked sa rozhodne ci assigne alebo funkcia prida do vytvorenej struktury 
         RETURN_ON_ERROR(fc_expression);
     }
     else return PARC_FALSE;

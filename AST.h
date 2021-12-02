@@ -17,6 +17,18 @@ typedef enum{
     ASTfunctionCall
 }statementType;
 
+typedef enum{
+    functionParams,
+    functionID,
+    functionReturnTypes,
+    assigneIDs,
+    definitionID,
+    definitionDataType,
+    functionCallIDs,
+    functionCallName,
+    functionCallParams
+}saveType;
+
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
@@ -70,7 +82,7 @@ typedef struct while_tree{
 }TWhile_tree;
 
 typedef struct assign_tree{
-    Token **ID;
+    Token **IDs;
     int* nbID;
     Tree **expressions;
     int* nbexpressions;
@@ -92,7 +104,7 @@ typedef struct ast_stackElement{
 }ASTstackElement;
 
 typedef struct functioncall_tree{
-    Token **ID;  //podla mna to musi byt pole, lebo ID moze byt viac
+    Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
     int* nbID;
     Token *functionName;
     Token **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
@@ -114,12 +126,76 @@ Tree** ASTcreateExpressions(int* nbExpressions);
 int ASTaddToExpressions(Tree*** espressions, int* nbExpressions, Tree* newExpression);
 Tstate*** ASTreturnFastST(ASTstack* myStack);
 int* ASTreturnFastNB(ASTstack* myStack);
+
+/**
+ * @brief prida zadany Token do zadaneho pola tokenov
+ * 
+ * @param array 
+ * @param nbTokens 
+ * @param newToken 
+ * @return int 
+ */
+Token** ASTcreateTokenArray(int* nbTokens);
+int ASTaddToTokenArray(Token*** array, int* nbTokens, Token* newToken);
+/**
+ * @brief ukonci sucasne upravovany statement na vrchu staku("stackPop"). Musi nasledovat za kazdym assigment a define a vsetkym proste
+ * 
+ * @param myStack 
+ */
 void ASTendStatement(ASTstack *myStack);
 int ASTnewElementInit(Tstate* newElement, statementType Type);
 //void ASTprintTree(TRoot* tree);
-void ASTprintStatement(Tstate* statement);
 void ASTstackInit(ASTstack* myStack);
+
+/**
+ * @brief vytvori prazdny list zadaneho typu Tstate v AST a alokuje vstky jeho casti
+ * 
+ * @param type 
+ * @return Tstate* 
+ */
 Tstate* ASTcreateLeaf(statementType type);
+
+/**
+ * @brief ulozi Token do AST vyber si z enum savetype co chces ukladat(uklada tokeny a polia tokenov) vracanie INTEGRALERROR
+ * 
+ * @param myStack 
+ * @param myToken 
+ * @param type 
+ * @return int 
+ */
+int ASTsaveToken(ASTstack* myStack, Token* myToken, saveType type);
+
+/**
+ * @brief vrati cestu stackom k velkosti pola tokenov v danom type unie Tstate(len na zkratenie zapisu) 
+ * 
+ * @param myStack 
+ * @param type 
+ * @return Token*** 
+ */
+int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type);
+
+/**
+ * @brief vrati cestu stackom k polu tokenov v danom type unie Tstate(len na zkratenie zapisu) 
+ * 
+ * @param myStack 
+ * @param type 
+ * @return Token*** 
+ */
+Token*** ASTreturnFastArray(ASTstack* myStack, saveType type);
+
+/**
+ * @brief vypis obsah AST stromu 
+ * 
+ * 
+ * @param statement 
+ */
+void ASTprintStatement(Tstate* statement);
+
+/**
+ * @brief vypis obsah stacku
+ * 
+ * @param myStack 
+ */
 void ASTprintStack(ASTstack* myStack);
 
 #endif 

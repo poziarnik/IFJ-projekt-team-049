@@ -8,19 +8,19 @@ int main(){
     ASTtree* abstractTree = ASTtreeCreate();
     
     ASTaddFCToTree(abstractTree->ASTStack);
-
+    
     //ASTendStatement(myStack);
-    for (int i = 0; i < 200; i++)
+    /*for (int i = 0; i < 200; i++)
     {
         ASTaddCycleToTree(abstractTree->ASTStack);
         ASTendStatement(abstractTree->ASTStack);
         ASTaddAssigmentToTree(abstractTree->ASTStack);
         ASTendStatement(abstractTree->ASTStack);
     }
-    //ASTendStatement(abstractTree->ASTStack);
+    
     ASTaddFCToTree(abstractTree->ASTStack);
-    ASTendStatement(abstractTree->ASTStack);
-    //ASTaddFCToTree(myStack);
+    ASTendStatement(abstractTree->ASTStack);*/
+    
 
 
 
