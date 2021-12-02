@@ -5,12 +5,13 @@
 #include "ParserDownUp.h"
 #include "error.h"
 #include "symtable.h"
+#include "AST.h"
 
 #define PARC_TRUE 0
 #define PARC_FALSE 2
 
 #define RETURN_ON_ERROR(_function) \
-    if ((status = _function(MyToken, list, mySymtable)) != PARC_TRUE) return status
+    if ((status = _function(MyToken, list, mySymtable, abstractTree)) != PARC_TRUE) return status
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
@@ -22,7 +23,7 @@
     if (status==10) return 0;*/
 /////////////////////
 
-typedef struct root{
+/*typedef struct root{
     struct state **global_state;
 }TRoot;
 
@@ -57,7 +58,7 @@ typedef struct while_tree{
 
 /*typedef struct assign_tree{
     //TODO
-}TAssign_tree;*/
+}TAssign_tree;
 
 typedef struct definition_tree{
    char *id;
@@ -65,7 +66,7 @@ typedef struct definition_tree{
    char **value;
 }TDefinition_tree;
 
-/*typedef struct functioncall{
+typedef struct functioncall{
     //TODO
 }TFunctioncall;*/
 
@@ -123,7 +124,6 @@ typedef struct definition_tree{
 //     struct st_statement** blocks;
 //     int nb_blocks;
 // }AT_assigne;
-
 //////////////////////////////////////////////////
 
 typedef enum{
@@ -160,35 +160,35 @@ typedef enum{
 
 int Parse(TokenList* list);
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
-int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable);
-int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable);
-int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_nextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_condition(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable);
+int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_condition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
 bool chackStr(Token* MyToken, TokenList* list, char* checkType);
-int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable);
-int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable);
+int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
