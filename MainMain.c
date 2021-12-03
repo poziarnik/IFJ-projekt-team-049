@@ -4,6 +4,6 @@ int main(){
     TokenList *list=(TokenList*)malloc(sizeof(TokenList));
     listInit(list);
     //int result=Parse(list);
-    printf("%d",result);
-    return result;
+    //printf("%d",result);
+    //return result;
 }

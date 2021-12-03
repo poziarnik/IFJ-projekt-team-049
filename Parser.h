@@ -13,6 +13,9 @@
 #define RETURN_ON_ERROR(_function) \
     if ((status = _function(MyToken, list, mySymtable, abstractTree)) != PARC_TRUE) return status
 
+#define RETURN_ON_ERROR_FCCALL(_withIDs) \
+    if ((status = fc_functionCall(MyToken, list, mySymtable, abstractTree, _withIDs)) != PARC_TRUE) return status
+
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
     if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \
@@ -181,7 +184,7 @@ int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtr
 int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);
 int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
 bool chackStr(Token* MyToken, TokenList* list, char* checkType);

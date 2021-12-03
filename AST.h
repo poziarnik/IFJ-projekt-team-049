@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "Scanner.h"
 #include "MyStackTree.h"
+#include "ParserDownUp.h"
 
 typedef enum{
     ASTglobal,
@@ -120,6 +121,11 @@ int ASTaddCycleToTree(ASTstack* myStack);
 int ASTaddDefineToTree(ASTstack* myStack);
 int ASTaddAssigmentToTree(ASTstack* myStack);
 int ASTaddFCcallToTree(ASTstack* myStack);
+/**
+ * @brief Vyuziva sa pri urcovani ci ide o fccall alebo assigment, vytvori novy FCcall odstrani assigment a vsetky jeho ids vlozi do fccall ids
+ * 
+ */
+int ASTswitchAssigneFCcall(ASTstack* myStack);
 
 Tstate** ASTcreateStatements(int* nbStatements);
 int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);
