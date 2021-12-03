@@ -96,10 +96,14 @@ typedef struct assign_tree{
 }TAssign_tree;
 
 typedef struct definition_tree{
-   Token *id;
-   Token *data_type;
-   Tree *expression;
-   //dorobit volanie funkcie
+    bool* ExOrFCcall;
+    Token *id;
+    Token *data_type;
+    union exfc
+    {
+        Tree *expression;
+        Tstate* FCcall;
+    }ExFc;
 }TDefinition_tree;
 
 typedef struct aststack{
@@ -111,6 +115,10 @@ typedef struct ast_stackElement{
     struct ast_stackElement* next; 
 }ASTstackElement;
 
+/**
+ * @brief struktura leafu FCcall k stromu AST  
+ * 
+ */
 typedef struct functioncall_tree{
     Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
     int* nbID;
@@ -120,6 +128,7 @@ typedef struct functioncall_tree{
 }TFunctioncall_tree;
 
 //!!!!! za kazdym define assigne FCcall musi ist po naplneni parametrov end
+
 ASTtree* ASTtreeCreate();
 int ASTStackPush(ASTstack* myStack, Tstate* newStatement);
 int ASTaddFCToTree(ASTstack* myStack);

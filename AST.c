@@ -489,7 +489,7 @@ int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
 }
 void ASTprintStatement(Tstate* statement){
     //printf("imhere %d\n",statement->type);
-    if(statement->type==ASTglobal) {printf("root\n"); puts("wtf");}
+    if(statement->type==ASTglobal) printf("root\n");
     else if(statement->type==ASTfunction){
         printf("\033[1;33m");
         printf("function: %s\n", statement->TStatement.function->id->data.string);
@@ -539,6 +539,7 @@ void ASTprintStatement(Tstate* statement){
         printf("\033[0;32m");
         printf("    functionCall\n");
         printf("\033[0m");
+        printf("        name: %s\n", statement->TStatement.functioncall->functionName->data.string);
         if(*(statement->TStatement.functioncall->nbID)!=0){
             printf("        IDs: ");//vypis vsetky variables
             for (int i = 0; i < *statement->TStatement.functioncall->nbID; i++){
@@ -598,6 +599,10 @@ void ASTprintStatement(Tstate* statement){
         else if (statement->type==ASTassigne){
             tmp=NULL;
         }
+        else if (statement->type==ASTfunctionCall){
+            tmp=NULL;
+        }
+        
         
         nb=nb+1;
         

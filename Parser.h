@@ -6,6 +6,7 @@
 #include "error.h"
 #include "symtable.h"
 #include "AST.h"
+#include "generator.h"
 
 #define PARC_TRUE 0
 #define PARC_FALSE 2

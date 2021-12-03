@@ -811,7 +811,9 @@ int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtre
     //printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Type %d", abstractTree->ASTStack->head->statement->type);
     
     if (!withIDs) ASTaddFCcallToTree(abstractTree->ASTStack); 
+
     if (MyToken->type==Identifier){
+        abstractTree->ASTStack->head->statement->TStatement.functioncall->functionName->data.string = MyToken->data.string;
         parcerPrint("functionCall" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
         //kontrola ci definovana funkcia

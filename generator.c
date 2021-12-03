@@ -23,28 +23,34 @@ int interpret(root *Root){
             for(int i = 0; i < *Root->nbStatements; i++){
                 if(Root->statements[i]->type == ASTfunction){   
                     gen_func_begin(Root, i);
-                    if(Root->statements[i]->TStatement.function->parameters != NULL){
-                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters ; a++){  
-                            gen_func_def_arg(a);
+                    
+                    if(Root->statements[i]->TStatement.function->nbParameters != NULL){
+                        
+                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters+1 ; a++){  
+                            gen_func_def_arg(a+1);
                         }
-                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters ; a++){  
+                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters+1 ; a++){  
                             gen_func_move_arg(Root,i,a);
                         }
                     }
                     if(*Root->statements[i]->TStatement.function->statements != NULL){   
-                        root funcRoot;
+                        puts("ahoj");
+            
+                        Tstate *funcRoot = ASTcreateLeaf(ASTglobal);
                         for(int b = 0; b < *Root->statements[i]->TStatement.function->nbStatements; b++){
-                            funcRoot.statements[b] = Root->statements[i]->TStatement.function->statements[b];
+                            puts("ahoj2");
+                            funcRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.function->statements[b];
+                            puts("ahoj3");
                         }
-                        funcRoot.nbStatements = Root->statements[i]->TStatement.function->nbStatements;
-                        interpret(&funcRoot);
+                        funcRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.function->nbStatements;
+                        interpret(funcRoot->TStatement.root);
                     }
                     for(int a = 0; a < *Root->statements[i]->TStatement.function->nbReturntypes; a++){
                         gen_func_ret(Root,i, a); 
                     }
                     gen_func_end(Root, i);
                 }
-                else if(Root->statements[i]->type == ASTcondition){
+                /*else if(Root->statements[i]->type == ASTcondition){
                     //TODO
                 }
                 else if(Root->statements[i]->type == ASTcycle){
@@ -74,10 +80,12 @@ int interpret(root *Root){
                         
                     }
                 }
-                // maybe DONE
+                // maybe DONE */
                 else if(Root->statements[i]->type == ASTfunctionCall){
-                    if(isInbuildFun((*Root->statements)->TStatement.functioncall->functionName->data.string) == 1){
-                        gen_builtin_func(Root,i);
+                    puts("ahoj4");
+                    if(isInbuildFun(Root->statements[i]->TStatement.functioncall->functionName->data.string) == true){
+                        gen_read_i();
+                        //gen_builtin_func(Root,i);
                         if((*Root->statements)->TStatement.functioncall->nbID != 0){
                             for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
                                 gen_move_in_func_call(Root, i, a);
@@ -85,8 +93,9 @@ int interpret(root *Root){
                         }
                     }
                     else{
+                        //puts("ahoj5");
                         gen_func_call(Root, i);                                                                        //prepisat
-                        if( Root->statements[i]->TStatement.functioncall->nbID != 0){  
+                        if( *Root->statements[i]->TStatement.functioncall->nbID != 0){  
                            for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
                                 gen_move_in_func_call(Root, i, a);
                             }
@@ -391,9 +400,9 @@ void gen_chr(){
     gen_EQ(x);
 }*/
 
-int main(root *test){
+/*int main(root *test){
     
     int a  = interpret(test);
     
     
-}
+}*/
