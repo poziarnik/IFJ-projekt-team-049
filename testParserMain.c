@@ -10,7 +10,7 @@ int main(){
         printf("\nASTtree---------------------------------------------------\n\n");
         
         ASTprintStatement(abstractTree->tree);
-        interpret(abstractTree->tree->TStatement.root);
+        //interpret(abstractTree->tree->TStatement.root);
         printf("Meky Zbirka jubilejny koncert\n");
     }
     else if (result==PARC_FALSE){

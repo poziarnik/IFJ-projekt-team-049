@@ -742,6 +742,15 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
     else if(abstractTree->ASTStack->head->statement->type==ASTcondition){
         *abstractTree->ASTStack->head->statement->TStatement.if_loop->expression=*newExpression;
     }
+    else if (abstractTree->ASTStack->head->statement->type==ASTdefine)
+    {
+        abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression=(Tree*)malloc(sizeof(Tree));//vo ExFc allokujem pamat pre expression
+        if(abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression==NULL) return INTERNAL_ERROR;
+        *abstractTree->ASTStack->head->statement->TStatement.definiton->state=Expression;//uloz info o tom ze define obsahuje espression
+        puts("hiiiiiiiiiiiiiiiiiiiiiii");
+        *abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression=*newExpression;//uloz nove expression
+    }
+    
     
     
     
@@ -801,6 +810,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     if (first(MyToken,initialize)){
         RETURN_ON_ERROR(fc_initialize);
     }
+
     ASTendStatement(abstractTree->ASTStack);
     return PARC_TRUE;
 }

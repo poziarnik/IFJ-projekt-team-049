@@ -35,6 +35,12 @@ typedef enum{
     ElseStatement
 }ifOrElse;
 
+typedef enum{
+    Empty,
+    Expression,
+    FCcall
+}defineState;
+
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
@@ -96,13 +102,12 @@ typedef struct assign_tree{
 }TAssign_tree;
 
 typedef struct definition_tree{
-    bool* ExOrFCcall;
+    defineState* state;
     Token *id;
     Token *data_type;
-    union exfc
-    {
+    union exfc{
         Tree *expression;
-        Tstate* FCcall;
+        struct state* FCcall;
     }ExFc;
 }TDefinition_tree;
 

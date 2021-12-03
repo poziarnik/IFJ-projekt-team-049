@@ -140,9 +140,17 @@ int ASTaddFCcallToTree(ASTstack* myStack){
     if (newStatement==NULL){
         return INTERNAL_ERROR;
     }
-    puts("\nnefunguje podla mna koli condition a koli define");
+
+    if (myStack->head->statement->type==ASTdefine)
+    {
+        myStack->head->statement->TStatement.definiton->ExFc.FCcall=(Tstate*)malloc(sizeof(Tstate));
+        if(myStack->head->statement->TStatement.definiton->ExFc.FCcall==NULL) return INTERNAL_ERROR;
+        *myStack->head->statement->TStatement.definiton->state=FCcall;//uloz info o tom ze v definition zapisany fcCall
+        *myStack->head->statement->TStatement.definiton->ExFc.FCcall = *newStatement;//uloz new statement do define na vrchu stromu
+    }
+    else ASTaddToStatements(ASTreturnFastST(myStack), ASTreturnFastNB(myStack), newStatement);
+    
     //pridaj do stromu na statements na vrchu stacku
-    ASTaddToStatements(ASTreturnFastST(myStack), ASTreturnFastNB(myStack), newStatement);
     //pridaj na vrch stacku
     ASTStackPush(myStack, newStatement);
 
@@ -346,9 +354,11 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->type=ASTdefine;
         newLeaf->TStatement.definiton = (TDefinition_tree*)malloc(sizeof(TDefinition_tree));
         //--alokovat priestor pre Tokeny
+        newLeaf->TStatement.definiton->state=(defineState*)malloc(sizeof(defineState));
+        *newLeaf->TStatement.definiton->state=Empty;
         newLeaf->TStatement.definiton->id=(Token*)malloc(sizeof(Token));
         newLeaf->TStatement.definiton->data_type=(Token*)malloc(sizeof(Token));
-        newLeaf->TStatement.definiton->expression=(Tree*)malloc(sizeof(Tree));
+        //newLeaf->TStatement.definiton->ExFc=(exfc*)malloc(sizeof(exfc));
     }
     else if (type==ASTassigne){
         //-alokovat strukturu
@@ -517,9 +527,17 @@ void ASTprintStatement(Tstate* statement){
         printf("\033[0;34m");
         printf("    define\n");
         printf("\033[0m");
-        printf("       id: %s\n", statement->TStatement.definiton->id->data.string);
-        printf("       dataType: %s\n", statement->TStatement.definiton->data_type->data.string);
-        printf("       expresion: ...\n");
+        printf("        id: %s\n", statement->TStatement.definiton->id->data.string);
+        printf("        dataType: %s\n", statement->TStatement.definiton->data_type->data.string);
+        if (*(statement->TStatement.definiton->state)==Expression){
+        
+            printf("        expression: ");
+            printExpressionTree(statement->TStatement.definiton->ExFc.expression);
+            printf("\n");
+        }
+        else if(*(statement->TStatement.definiton->state)==FCcall){
+            ASTprintStatement(statement->TStatement.definiton->ExFc.FCcall);
+        }
     }
     else if(statement->type==ASTassigne){
         printf("\033[0;31m");
