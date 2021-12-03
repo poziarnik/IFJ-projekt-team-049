@@ -90,3 +90,17 @@ void treeInit(Tree **tree){
 TElement Stack_top(TStack *stack){
     return *stack->top;
 }
+
+void freeExprTree(Tree *exprTree){
+    if (exprTree->Data->type == Integer || exprTree->Data->type == String || exprTree->Data->type == Number){
+        free(exprTree->Data);
+        free(exprTree);
+    }
+    else if (exprTree->Data->type == Plus){
+        freeExprTree(exprTree->attr.binary.right);
+        freeExprTree(exprTree->attr.binary.left);
+    }
+    else if (exprTree->Data->type == Sizeof){
+        freeExprTree(exprTree->attr.unary.child);
+    }
+}

@@ -1,5 +1,5 @@
-#ifndef _scanner
-#define _scanner 
+#ifndef _SCANNER_
+#define _SCANNER_ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -74,7 +74,7 @@ typedef enum{
  * 
  */
 typedef struct MyToken {        //token
-    Token_type type;                   //typ tokenu
+    Token_type type;            //typ tokenu
     
     union{
         int integer;
@@ -98,16 +98,48 @@ typedef struct list{
     4 - operator
 */
 
+/**
+ * @brief Funkcia, ktora vrati token
+ * 
+ * @param Myfile 
+ * @param list 
+ * @param MyToken 
+ * @return int 
+ */
 int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken);
+
+
 Token* tokenCreate();
+
+
 void tokenInit(Token* MyToken);
+
+
 void tokenFullup(Token* MyToken, Token_type type, char* att);
+
+
 char* stringCreate();
+
+
 char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
+
+/**
+ * @brief funkcia kontrolujuca ci je zadany retazec keyword
+ * 
+ * @param word 
+ * @return int 
+ */
 int isKeyword(char *word);
+
+/**
+ * @brief funkcia kontrolujuca ci je zadana sekvencia validna
+ * 
+ * @param symbol 
+ * @return int 
+ */
 int isEscapeSeq(int symbol);
 void listInit(TokenList* list);
 void listAddToken(TokenList* list, Token* NewToken);
 void listFree(TokenList* list);
 
-#endif
+#endif //_SCANNER_

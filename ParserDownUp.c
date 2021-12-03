@@ -213,7 +213,7 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
 
         main = stack_pop_nofree(Stack);
         if (main->Item != PLUS_MINUS && main->Item != MULTIPLICATION_DIVISION_INTDIV && \
-            main->Item != LESS_MORE_EQUAL_NOTEQUAL && main->Item != Concatenation){
+            main->Item != LESS_MORE_EQUAL_NOTEQUAL && main->Item != CONCATENATION){
             // po NETERMINALY musi prist binarny operator
             return SYNTAX_ERROR;
         }
@@ -231,56 +231,70 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
             
         //alokujem jeho podstromy a priradim donho NETERMINALY
         main->tree->attr.binary.left = (Tree*)malloc(sizeof(Tree));
+        if (main->tree->attr.binary.left == NULL){
+            return INTERNAL_ERROR;
+        }
         main->tree->attr.binary.left = left->tree;
 
         main->tree->attr.binary.right = (Tree*)malloc(sizeof(Tree));
+        if (main->tree->attr.binary.right == NULL){
+            return INTERNAL_ERROR;
+        }
         main->tree->attr.binary.right = right->tree;
 
         //pushnem na Stack koren
         Stack_Push_Element(Stack, main);
 
+        //uvolnujem Stack Elementy
         free(right);
         free(left);   
     }
 
+    //Pravidlo | <(E) -> E |
     else if (Stack_first_nonterm(Stack) == LEFTBRACKET){
+        // prava zatvorka ')' nieje ulozena na stacku, ale do Stack elementu bracket si ulozim
+        // NETERMINAL E
         bracket = stack_pop_nofree(Stack);
 
-        if (bracket->Item != NOTERM){
+
+        if (bracket->Item != NOTERM){  //pozeram ci mam v Stack Elemente skutocne neterminal
             return SYNTAX_ERROR;
         }
-        Stack_pop(Stack);
-        Stack_pop(Stack);
+        Stack_pop(Stack); // vyhadzujem zo stacku pravu zatvorku '('
+        Stack_pop(Stack); // vyhadzujem aj zarazku '<'
 
-        Stack_Push_Element(Stack, bracket);
+        Stack_Push_Element(Stack, bracket); // na stack nasledne pushnem neterminal 'E'
     }
 
+    //Pravidlo |<#E -> E|
     else if (Stack_first_nonterm(Stack) == SIZEOF){
-        child = stack_pop_nofree(Stack);
-        if (child->Item != NOTERM){
+        child = stack_pop_nofree(Stack); // do stack Elementu child ulozim NETERMINAL 'E'
+        if (child->Item != NOTERM){  // kontrolujem ci je skutocne NETERMINAL
             return SYNTAX_ERROR;
         }
 
-        main = stack_pop_nofree(Stack);
-        if (main->Item != SIZEOF){
+        main = stack_pop_nofree(Stack); // do stack Elementu main ulozim unarny operator
+        if (main->Item != SIZEOF){ // kontrolujem ci je to skutocne unarny operator
             return SYNTAX_ERROR;
         }
 
-        Stack_pop(Stack);
+        Stack_pop(Stack); //vyhadzujem zarazku '<'
 
-        main->tree->attr.unary.child = (Tree*)malloc(sizeof(Tree));
-        main->tree->attr.unary.child = child->tree;
+        //alokujem poduzol unarneho operatora
+        main->tree->attr.unary.child = (Tree*)malloc(sizeof(Tree)); //ako hlavny uzol zvolim Element s operatorom
+        if (main->tree->attr.unary.child == NULL){
+            return INTERNAL_ERROR;
+        }
+        main->tree->attr.unary.child = child->tree; //do poduzla nahram hodnotu
         
-        main->Item = NOTERM;
+        main->Item = NOTERM; //zmenim nazov na NOTERM
 
-        Stack_Push_Element(Stack, main);
+        Stack_Push_Element(Stack, main); //pushnem upraveny uzol na stack
+
+        //uvolnim stack element
+        free(child);
     }
 
-    
-        
-
-
-    
     return PROGRAM_OK;
 }
 
