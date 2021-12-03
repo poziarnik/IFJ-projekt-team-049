@@ -9,26 +9,13 @@
 
 
 
-<<<<<<< HEAD
 /**
  * @brief Print expression stromu
  * 
  * @param exprtree -strom
  */
-void printTree(Tree *exprtree);
-
-/**
- * @brief hlavna funkcia, ktora vytvara vyraz
- * 
- * @param MyToken 
- * @param list 
- * @param expression 
- * @return int 
- */
-=======
 
 void printExpressionTree(Tree *exprtree);
->>>>>>> a545a838b6a4c24a0af205fc5b91a841b7da7001
 int expressionCheck(Token* MyToken, TokenList* list, Tree *expression);
 
 /**
