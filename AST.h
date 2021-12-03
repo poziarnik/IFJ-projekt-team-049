@@ -30,6 +30,11 @@ typedef enum{
     functionCallParams
 }saveType;
 
+typedef enum{
+    IfStatement,
+    ElseStatement
+}ifOrElse;
+
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
@@ -68,10 +73,11 @@ typedef struct function_tree{
 }TFunction_tree;
 
 typedef struct if_tree{
+    bool* hasElse;
     Tree *expression;
-    struct state **if_statement;
-    int* nbThenStatements;
-    struct state **else_statement;
+    struct state **if_statements;
+    int* nbIfStatements;
+    struct state **else_statements;
     int* nbElseStatements;
 }TIf_tree;
 
@@ -121,11 +127,20 @@ int ASTaddCycleToTree(ASTstack* myStack);
 int ASTaddDefineToTree(ASTstack* myStack);
 int ASTaddAssigmentToTree(ASTstack* myStack);
 int ASTaddFCcallToTree(ASTstack* myStack);
+int ASTaddConditionToTree(ASTstack* myStack);
+int ASTaddElseToCondition(ASTstack* myStack);
+int ASTallocateSpaceForElse(ASTstack* myStack);
 /**
  * @brief Vyuziva sa pri urcovani ci ide o fccall alebo assigment, vytvori novy FCcall odstrani assigment a vsetky jeho ids vlozi do fccall ids
  * 
  */
 int ASTswitchAssigneFCcall(ASTstack* myStack);
+/**
+ * @brief znizi pocet statementov v nadradenom statemente takze najblizsie zapisovany leaf sa zapise na jeho miesto
+ * 
+ * @param myStack 
+ */
+void ASTdeleteLastFromTree(ASTstack* myStack);
 
 Tstate** ASTcreateStatements(int* nbStatements);
 int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);

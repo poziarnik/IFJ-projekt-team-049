@@ -7,8 +7,10 @@ int main(){
     ASTtree* abstractTree = ASTtreeCreate();
     int result=Parse(list, abstractTree);
     if(result==PARC_TRUE){
-        printf("ASTtree:\n\n");
+        printf("\nASTtree---------------------------------------------------\n\n");
+        
         ASTprintStatement(abstractTree->tree);
+        
         printf("Meky Zbirka jubilejny koncert\n");
     }
     else if (result==PARC_FALSE){

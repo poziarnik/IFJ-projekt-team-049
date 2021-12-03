@@ -159,12 +159,14 @@ typedef enum{
     FCallparam,
     FCallnextParam,
     FCreturn,
+    statementOutOfFc
 }NonTerminal;
 
 int Parse(TokenList* list, ASTtree* abstractTree);
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
 int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_statementOutOfFc(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);

@@ -1,2 +1,3 @@
 global function factorial ( n : integer, a : number) : integer , number 
-while 2 + 7 do vysl = 5 a = 5 end if 5 then a = 5 end a, b ,c = write() end
+while 2 + 7 do vysl = 5 end if 5+7 then a = 5 end end 
+factorial()
