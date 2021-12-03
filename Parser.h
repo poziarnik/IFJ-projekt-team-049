@@ -6,12 +6,16 @@
 #include "error.h"
 #include "symtable.h"
 #include "AST.h"
+#include "generator.h"
 
 #define PARC_TRUE 0
 #define PARC_FALSE 2
 
 #define RETURN_ON_ERROR(_function) \
     if ((status = _function(MyToken, list, mySymtable, abstractTree)) != PARC_TRUE) return status
+
+#define RETURN_ON_ERROR_FCCALL(_withIDs) \
+    if ((status = fc_functionCall(MyToken, list, mySymtable, abstractTree, _withIDs)) != PARC_TRUE) return status
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
@@ -156,12 +160,14 @@ typedef enum{
     FCallparam,
     FCallnextParam,
     FCreturn,
+    statementOutOfFc
 }NonTerminal;
 
 int Parse(TokenList* list, ASTtree* abstractTree);
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
 int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_statementOutOfFc(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
@@ -181,7 +187,7 @@ int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtr
 int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);
 int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
 bool chackStr(Token* MyToken, TokenList* list, char* checkType);

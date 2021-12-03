@@ -1,2 +1,6 @@
 global function factorial ( n : integer, a : number) : integer , number 
-while e do vysl = e a = e end if e then a = e end 
+readi()
+local a : integer = 2+2
+end 
+
+ 

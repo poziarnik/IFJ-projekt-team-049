@@ -298,7 +298,7 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
     return PROGRAM_OK;
 }
 
-void printTree(Tree *exprtree){
+void printExpressionTree(Tree *exprtree){
     if (exprtree->Data->type == Integer){
         printf("%i ", exprtree->Data->data.integer);
     }
@@ -315,7 +315,7 @@ void printTree(Tree *exprtree){
 
     else if (exprtree->Data->type == Sizeof){
         printf("%s ", exprtree->Data->data.string);
-        printTree(exprtree->attr.unary.child);
+        printExpressionTree(exprtree->attr.unary.child);
     } 
 
     else if (exprtree->Data->type == Plus || \
@@ -330,8 +330,8 @@ void printTree(Tree *exprtree){
             exprtree->Data->type == More_equal || \
             exprtree->Data->type == Not_equal || \
             exprtree->Data->type == Assign){
-        printTree(exprtree->attr.binary.left);
+        printExpressionTree(exprtree->attr.binary.left);
         printf("%s ", exprtree->Data->data.string);
-        printTree(exprtree->attr.binary.right);
+        printExpressionTree(exprtree->attr.binary.right);
     }
 }

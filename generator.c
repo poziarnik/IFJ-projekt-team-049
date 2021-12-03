@@ -16,126 +16,154 @@
 #include <string.h>
 
 
-int interpret(root *root){
+int interpret(root *Root){
     printf(".IFJcode21\n");
-    if(root->statements != NULL){
-        for(int i = 0; i < *root->nbStatements; i++){
-            if(root->statements[i]->type == ASTfunction){
-                gen_func_begin(root);
-                if((*(*root).statements)->TStatement.function->parameters != NULL){
-                    for(int a = 0; a < (*(*root->statements)->TStatement.function->nbParameters); a++){
-                        gen_func_def_arg(a);
-                        gen_func_move_arg(root,a);
+    if(Root != NULL){
+        if(*Root->statements != NULL && Root->nbStatements != NULL){
+            for(int i = 0; i < *Root->nbStatements; i++){
+                if(Root->statements[i]->type == ASTfunction){   
+                    gen_func_begin(Root, i);
+                    
+                    if(Root->statements[i]->TStatement.function->nbParameters != NULL){
+                        
+                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters+1 ; a++){  
+                            gen_func_def_arg(a+1);
+                        }
+                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters+1 ; a++){  
+                            gen_func_move_arg(Root,i,a);
+                        }
                     }
+                    if(*Root->statements[i]->TStatement.function->statements != NULL){   
+                        puts("ahoj");
+            
+                        Tstate *funcRoot = ASTcreateLeaf(ASTglobal);
+                        for(int b = 0; b < *Root->statements[i]->TStatement.function->nbStatements; b++){
+                            puts("ahoj2");
+                            funcRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.function->statements[b];
+                            puts("ahoj3");
+                        }
+                        funcRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.function->nbStatements;
+                        interpret(funcRoot->TStatement.root);
+                    }
+                    for(int a = 0; a < *Root->statements[i]->TStatement.function->nbReturntypes; a++){
+                        gen_func_ret(Root,i, a); 
+                    }
+                    gen_func_end(Root, i);
                 }
-                if((*(*root).statements)->TStatement.function->statements != NULL){
+                /*else if(Root->statements[i]->type == ASTcondition){
                     //TODO
                 }
-                for(int a = 0; a < (*(*root->statements)->TStatement.function->nbReturntypes); a++){
-                    gen_func_ret(root, a); 
+                else if(Root->statements[i]->type == ASTcycle){
+                    //TODO
                 }
-                gen_func_end(root);
-            }
-            else if(root->statements[i]->type == ASTcondition){
-                //TODO
-            }
-            else if(root->statements[i]->type == ASTcycle){
-                //TODO
-            }
-            // priradenie cisla / stringu DONE - operacie nie 
-            else if(root->statements[i]->type == ASTassigne){
-                for(int a = 0; a < (*(*root->statements)->TStatement.assignment->nbID); a++ ){
-                    if((*(*root->statements)->TStatement.assignment->expressions)->Data->type == Integer){
-                        gen_move_int(root, a);
+                // priradenie cisla / stringu DONE - operacie nie 
+                else if(Root->statements[i]->type == ASTassigne){
+                    if(Root->statements[i]->TStatement.assignment->nbID == Root->statements[i]->TStatement.assignment->nbexpressions){
+                        for(int a = 0; a < *Root->statements[i]->TStatement.assignment->nbID; a++ ){ 
+                            if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Integer){    
+                                gen_move_int(Root,i, a);
+                            }
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Number){
+                                gen_move_number(Root,i, a);
+                            }
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == String){
+                                gen_move_string(Root,i, a);
+                            }
+                        }
                     }
-                    if((*(*root->statements)->TStatement.assignment->expressions)->Data->type == Number){
-                        gen_move_number(root, a);
-                    }
-                    if((*(*root->statements)->TStatement.assignment->expressions)->Data->type == String){
-                        gen_move_string(root, a);
-                    }
+                        
                 }
-
-            }
-            else if(root->statements[i]->type == ASTdefine){
-                gen_defvar(root);
-                if((*root->statements)->TStatement.definiton->expression->Data != NULL){
-                    //maybe zavolat assign
-                }
-            }
-            // maybe DONE
-            else if(root->statements[i]->type == ASTfunctionCall){
-                if(isInbuildFun((*root->statements)->TStatement.functioncall->functionName->data.string) == 1){
-                    gen_builtin_func(root);
-                    if((*root->statements)->TStatement.functioncall->nbID != 0){
-                        gen_move_in_func_call(root);
+                else if(Root->statements[i]->type == ASTdefine){
+                    gen_defvar(Root, i);
+                    if(Root->statements[i]->TStatement.definiton->expression != NULL){   
+                        // assign
+                        
                     }
                 }
-                else{
-                    gen_func_call(root);
-                    if((*root->statements)->TStatement.functioncall->nbID != 0){
-                        gen_move_in_func_call(root);
+                // maybe DONE */
+                else if(Root->statements[i]->type == ASTfunctionCall){
+                    puts("ahoj4");
+                    if(isInbuildFun(Root->statements[i]->TStatement.functioncall->functionName->data.string) == true){
+                        gen_read_i();
+                        //gen_builtin_func(Root,i);
+                        if((*Root->statements)->TStatement.functioncall->nbID != 0){
+                            for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
+                                gen_move_in_func_call(Root, i, a);
+                            }
+                        }
+                    }
+                    else{
+                        //puts("ahoj5");
+                        gen_func_call(Root, i);                                                                        //prepisat
+                        if( *Root->statements[i]->TStatement.functioncall->nbID != 0){  
+                           for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
+                                gen_move_in_func_call(Root, i, a);
+                            }
+                        }
                     }
                 }
             }
         }
     }
-    
 }
 
 /******************** generovanie funkcii ********************/
 
-void gen_func_begin(root *root){  
-        char *func_name = (*(*root).statements)->TStatement.function->id->data.string;          
+void gen_func_begin(root *root, int i){  
+        char *func_name = root->statements[i]->TStatement.function->id->data.string;       
         printf("\n LABEL $%s\
                 \n CREATEFRAME\
                 \n PUSHFRAME\n", func_name);
 }
 
-void gen_func_end(root *root){
-        char *func_name = (*(*root).statements)->TStatement.function->id->data.string;
+void gen_func_end(root *root, int i){
+        char *func_name = root->statements[i]->TStatement.function->id->data.string;
         printf("\nLABEL $%s$end\
                 \nPOPFRAME\
                 \nRETURN\n", func_name);
 }
  
 
-void gen_func_call(root *root){
-    printf(" CALL $%d \n", (*(*root->statements)->TStatement.functioncall->functionName->data.string));
+void gen_func_call(root *root, int i){
+    printf(" CALL $%s \n", root->statements[i]->TStatement.functioncall->functionName->data.string);
+    
 }
 
 void gen_func_def_arg(int i){
     printf(" DEFVAR LF@%d", i);
 }
 
-void gen_func_move_arg(root *root, int i){
-    printf(" MOVE LF@%s", (*(*root).statements)->TStatement.function->parameters[i]->data.string);
+void gen_func_move_arg(root *root, int i, int a){
+    printf(" MOVE LF@%s", root->statements[i]->TStatement.function->parameters[a]->data.string );
+    
 }
 
-void gen_func_ret(root *root, int i){
-    printf(" POPS LF@return%s \n", (*(*root).statements)->TStatement.function->returnTypes[i]->data.string);
-}
+void gen_func_ret(root *root, int i, int a){
+    printf(" POPS LF@return%s \n", root->statements[i]->TStatement.function->returnTypes[a]->data.string);
+} 
 
 /******************** generovanie instrukcii ********************/
 
-void gen_defvar(root *root){
-    printf("\n DEFVAR LF@%s", (*(*root).statements)->TStatement.definiton->id->data.string);
+void gen_defvar(root *root, int i){
+    printf("\n DEFVAR LF@%s", root->statements[i]->TStatement.definiton->id->data.string);
+    
 }
 
-void gen_move_int(root *root, int a){ 
-    printf(" \n MOVE LF@%d LF@%d", *(*root->statements)->TStatement.assignment->IDs[a]->data.string, (*root->statements)->TStatement.assignment->expressions[a]->Data->data.integer );
+void gen_move_int(root *root,int i, int a){ 
+    printf(" \n MOVE LF@%s LF@%d", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.integer );
+    
 }
 
-void gen_move_string(root *root, int a){ 
-    printf(" \n MOVE LF@%d LF@%s", *(*root->statements)->TStatement.assignment->IDs[a]->data.string, (*root->statements)->TStatement.assignment->expressions[a]->Data->data.string );
+void gen_move_string(root *root, int i, int a){ 
+    printf(" \n MOVE LF@%s LF@%s", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.string );
 }
 
-void gen_move_number(root *root, int a){ 
-    printf(" \n MOVE LF@%d LF@%f", *(*root->statements)->TStatement.assignment->IDs[a]->data.string, (*root->statements)->TStatement.assignment->expressions[a]->Data->data.number );
+void gen_move_number(root *root,int i,  int a){ 
+    printf(" \n MOVE LF@%s LF@%f", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.number);
 }
 
-void gen_move_in_func_call(root *root){                             
-    printf("\n MOVE  LF@%s TF@retval" , (*(*root->statements)->TStatement.functioncall->IDs)->data.string);                   
+void gen_move_in_func_call(root *root, int i, int a){                             
+    printf("\n MOVE  LF@%s TF@retval" , root->statements[i]->TStatement.functioncall->IDs[a]->data.string );   
 }
 
 
@@ -191,8 +219,8 @@ void gen_then(){
 
 /******************** generovanie vstavanych funkcii ********************/
 
-void gen_builtin_func(root *root){
-    switch(*(*root->statements)->TStatement.functioncall->functionName->data.string){
+void gen_builtin_func(root *root, int i){
+    switch(*root->statements[i]->TStatement.functioncall->functionName->data.string){ 
         case readi:
             
             gen_read_i();
@@ -372,4 +400,9 @@ void gen_chr(){
     gen_EQ(x);
 }*/
 
-
+/*int main(root *test){
+    
+    int a  = interpret(test);
+    
+    
+}*/

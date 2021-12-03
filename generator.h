@@ -19,29 +19,29 @@ int interpret(root *root);
 
 /******************** generovanie funkcii ********************/
 
-void gen_func_begin(root *root);
+void gen_func_begin(root *root, int i);
 
-void gen_func_end(root *root);
+void gen_func_end(root *root, int i);
 
-void gen_func_call(root *root);
+void gen_func_call(root *root, int i);
 
 void gen_func_def_arg(int i);
 
-void gen_func_move_arg(root *root, int i);
+void gen_func_move_arg(root *root, int i, int j);
 
-void gen_func_ret(root *root, int i);
+void gen_func_ret(root *root, int i, int j);
 
 /******************** generovanie instrukcii ********************/
 
-void gen_defvar(root *root);
+void gen_defvar(root *root, int i);
 
-void gen_move_int(root *root, int a);
+void gen_move_int(root *root, int i, int a);
 
-void gen_move_string(root *root, int a);
+void gen_move_string(root *root, int i, int a);
 
-void gen_move_number(root *root, int a);
+void gen_move_number(root *root, int i, int a);
 
-void gen_move_in_func_call(root *root);
+void gen_move_in_func_call(root *root, int i, int a);
 
 void gen_add(char *x);
 
@@ -71,7 +71,7 @@ void gen_then();
 
 /******************** generovanie vstavanych funkcii ********************/
 
-void gen_builtin_func();
+void gen_builtin_func(root *root, int i);
 
 int gen_read_i();
 

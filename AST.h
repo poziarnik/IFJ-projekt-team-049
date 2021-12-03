@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "Scanner.h"
 #include "MyStackTree.h"
+#include "ParserDownUp.h"
 
 typedef enum{
     ASTglobal,
@@ -28,6 +29,17 @@ typedef enum{
     functionCallName,
     functionCallParams
 }saveType;
+
+typedef enum{
+    IfStatement,
+    ElseStatement
+}ifOrElse;
+
+typedef enum{
+    Empty,
+    Expression,
+    FCcall
+}defineState;
 
 typedef struct AST{
     struct state* tree;
@@ -67,10 +79,11 @@ typedef struct function_tree{
 }TFunction_tree;
 
 typedef struct if_tree{
+    bool* hasElse;
     Tree *expression;
-    struct state **if_statement;
-    int* nbThenStatements;
-    struct state **else_statement;
+    struct state **if_statements;
+    int* nbIfStatements;
+    struct state **else_statements;
     int* nbElseStatements;
 }TIf_tree;
 
@@ -89,10 +102,13 @@ typedef struct assign_tree{
 }TAssign_tree;
 
 typedef struct definition_tree{
-   Token *id;
-   Token *data_type;
-   Tree *expression;
-   //dorobit volanie funkcie
+    defineState* state;
+    Token *id;
+    Token *data_type;
+    union exfc{
+        Tree *expression;
+        struct state* FCcall;
+    }ExFc;
 }TDefinition_tree;
 
 typedef struct aststack{
@@ -104,6 +120,10 @@ typedef struct ast_stackElement{
     struct ast_stackElement* next; 
 }ASTstackElement;
 
+/**
+ * @brief struktura leafu FCcall k stromu AST  
+ * 
+ */
 typedef struct functioncall_tree{
     Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
     int* nbID;
@@ -113,6 +133,7 @@ typedef struct functioncall_tree{
 }TFunctioncall_tree;
 
 //!!!!! za kazdym define assigne FCcall musi ist po naplneni parametrov end
+
 ASTtree* ASTtreeCreate();
 int ASTStackPush(ASTstack* myStack, Tstate* newStatement);
 int ASTaddFCToTree(ASTstack* myStack);
@@ -120,6 +141,20 @@ int ASTaddCycleToTree(ASTstack* myStack);
 int ASTaddDefineToTree(ASTstack* myStack);
 int ASTaddAssigmentToTree(ASTstack* myStack);
 int ASTaddFCcallToTree(ASTstack* myStack);
+int ASTaddConditionToTree(ASTstack* myStack);
+int ASTaddElseToCondition(ASTstack* myStack);
+int ASTallocateSpaceForElse(ASTstack* myStack);
+/**
+ * @brief Vyuziva sa pri urcovani ci ide o fccall alebo assigment, vytvori novy FCcall odstrani assigment a vsetky jeho ids vlozi do fccall ids
+ * 
+ */
+int ASTswitchAssigneFCcall(ASTstack* myStack);
+/**
+ * @brief znizi pocet statementov v nadradenom statemente takze najblizsie zapisovany leaf sa zapise na jeho miesto
+ * 
+ * @param myStack 
+ */
+void ASTdeleteLastFromTree(ASTstack* myStack);
 
 Tstate** ASTcreateStatements(int* nbStatements);
 int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);

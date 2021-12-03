@@ -9,6 +9,7 @@
 
 
 
+<<<<<<< HEAD
 /**
  * @brief Print expression stromu
  * 
@@ -24,6 +25,10 @@ void printTree(Tree *exprtree);
  * @param expression 
  * @return int 
  */
+=======
+
+void printExpressionTree(Tree *exprtree);
+>>>>>>> a545a838b6a4c24a0af205fc5b91a841b7da7001
 int expressionCheck(Token* MyToken, TokenList* list, Tree *expression);
 
 /**
