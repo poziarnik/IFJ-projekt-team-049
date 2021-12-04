@@ -30,10 +30,16 @@ void bst_insert(TreeItem **tree, char* key, TreeItem *new){
   }
 }
 void TreeItemInit(TreeItem *treeitem){
+  treeitem->key = NULL;//(char*)malloc(sizeof(char));
   treeitem->lptr = NULL;
   treeitem->rptr = NULL;
-  treeitem->data = NULL;
   treeitem->subtree=NULL;
+  if (treeitem->type==function){
+    treeitem->ForV.Fdata = (funData*)malloc(sizeof(funData));
+  }
+  else if (treeitem->type==variable){
+    treeitem->ForV.VData;
+  }  
 }
 bool sym_search(TreeItem *tree, char* key) {
   if (tree == NULL){
@@ -106,9 +112,9 @@ void sym_treeInit(TreeItem *newTree){
     newTree=NULL;
 }
 int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* myStack, char* key){
-  tData* data=(tData*)malloc(sizeof(tData));                    //vytvor data
+  funData* data=(funData*)malloc(sizeof(funData));                    //vytvor data
   data->varType=0;
-
+  
   TreeItem *newItem = (TreeItem*)malloc(sizeof(TreeItem));          //vytvor novy item
   if(newItem==NULL) return INTERNAL_ERROR;
   TreeItemInit(newItem);
@@ -116,22 +122,23 @@ int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* 
   newItem->subtree=treeCreateRoot();                                //vytvor na newitem vetvu pre subtree
   if (newItem->subtree==NULL) return INTERNAL_ERROR;
   //newItem->subtree->tree==NULL;                                     //koren musi ukazovat na null
-
+  
   *sym_subTree=newItem->subtree;                                    //vonkajsi ukazatel ukazuje na posledno vytvoreny subtree 
   symStackPush(myStack, newItem->subtree);                          //pushni na symstack
-
-  newItem->data=data;
+  
+  *newItem->ForV.Fdata=*data;                                       //neviem ci treba kopirovat 
+  puts("hello");
   bst_insert(sym_globalTree, key, newItem);                       //vloz item do global tree
   return 0;
 }
 int sym_saveVar(TreeItem **sym_subtree,char* key){
-  tData* data=(tData*)malloc(sizeof(tData));                    //vytvor data
+  varData* data=(varData*)malloc(sizeof(varData));                    //vytvor data
   data->varType=1;
   
   TreeItem *newItem = (TreeItem*)malloc(sizeof(TreeItem));          //vytvor novy item
   if(newItem==NULL) return INTERNAL_ERROR;
   TreeItemInit(newItem);
-  newItem->data=data;
+  newItem->ForV.VData=data;
   
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
   return 0;
