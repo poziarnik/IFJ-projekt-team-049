@@ -2,7 +2,7 @@
 /**
  *
  * @file symtable.h
- * @author Daniel Zalezak
+ * @author Juraj Hatala
  * @brief Header of symtable
  * @date 
  *
@@ -17,27 +17,42 @@
 #include <string.h>
 #include <stdbool.h>
 
+typedef enum{
+    function,
+    variable
+}leafType;
+
 typedef struct {
     int varType;
-}tData;
+}varData;
+
+typedef struct {
+    int varType;
+    
+}funData;
 
 typedef struct tableItem {
     char* key;
-    tData* data;
+    leafType type;
     struct tableItem *lptr;
     struct tableItem *rptr;
-    struct sym_treeRoot *subtree;    
+    struct sym_treeRoot *subtree;
+    union{
+        varData *VData;
+        funData *Fdata;
+    }ForV;
+        
 }TreeItem;
+
+typedef struct sym_treeRoot{
+    struct tableItem *tree;
+}SymTreeRoot;
 
 typedef struct sym_stackElement{
     
     struct sym_stackElement *next;
     struct sym_treeRoot *root;
 }SymStackElement;
-
-typedef struct sym_treeRoot{
-    struct tableItem *tree;
-}SymTreeRoot;
 
 typedef struct sym_stack{
     struct sym_stackElement* head;

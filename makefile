@@ -22,7 +22,7 @@ precedence:
 	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) testMain.c
 
 symtable:
-	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) testSymtableMain.c
+	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) symtableTestMain.c
 
 AST:
 	$(CC) $(CFLAGS) -o $(NEWFILE) AST.c AST.h ASTtestMain.c
