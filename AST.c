@@ -37,7 +37,6 @@ Tstate*** ASTreturnFastST(ASTstack* myStack){
             return &(myStack->head->statement->TStatement.if_loop->if_statements);
         }
         else{//ak som pod elsom, pridavam do else statements
-            puts("imhereee3\n");
             return &(myStack->head->statement->TStatement.if_loop->else_statements);
         }
     }
@@ -65,7 +64,6 @@ int* ASTreturnFastNB(ASTstack* myStack){
             return myStack->head->statement->TStatement.if_loop->nbIfStatements;
         }
         else{
-            puts("imhereee3\n");
             return myStack->head->statement->TStatement.if_loop->nbElseStatements;
         }
     }
@@ -182,7 +180,6 @@ int ASTallocateSpaceForElse(ASTstack* myStack){
     myStack->head->statement->TStatement.if_loop->else_statements = ASTcreateStatements(myStack->head->statement->TStatement.if_loop->nbElseStatements); 
     if(myStack->head->statement->TStatement.if_loop->else_statements==NULL) return INTERNAL_ERROR;
     
-    printf("hello");
     return 0;
 }
 int ASTswitchAssigneFCcall(ASTstack* myStack){
@@ -202,7 +199,6 @@ int ASTswitchAssigneFCcall(ASTstack* myStack){
     return 0;
 }
 Tstate** ASTcreateStatements(int* nbStatements){
-    //printf("imhere");
     Tstate** statements=(Tstate**)malloc(50*sizeof(Tstate*));
     for (int i = 0; i < 49; i++){
         statements[i]=(Tstate*)malloc(sizeof(Tstate));
@@ -222,7 +218,6 @@ int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newState
 
     if(*nbStatements == (sizeOfArray)-1){           //-2 aby bol posledny znak vzdy null
         *statements = (Tstate**)realloc(*statements, sizeof(Tstate*)*(sizeOfArray+50));
-        //printf("imhere %d",sizeOfArray);
         if (*statements == NULL){
             return INTERNAL_ERROR;
         }
@@ -230,14 +225,12 @@ int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newState
             (*statements)[i]=(Tstate*)malloc(sizeof(Tstate));
         }
     }
-    puts("imhereee4");
-    printf("%d",*nbStatements);
+    //printf("%d",*nbStatements);
     *(*statements)[*nbStatements]=*newStatement;
     *nbStatements = *nbStatements +1;               //pridam newstatement na nove miesto v poli
     return 0;
 }
 Tree** ASTcreateExpressions(int* nbExpressions){
-    //printf("imhere");
     Tree** espressions=(Tree**)malloc(50*sizeof(Tree*));
     for (int i = 0; i < 49; i++){
         espressions[i]=(Tree*)malloc(sizeof(Tree));
@@ -276,7 +269,6 @@ int ASTaddToExpressions(Tree*** expressions, int* nbExpressions, Tree* newExpres
     return 0;
 }
 Token** ASTcreateTokenArray(int* nbTokens){
-    //printf("imhere");
     Token** array=(Token**)malloc(50*sizeof(Token*));
     if(array==NULL) return NULL;
     for (int i = 0; i < 49; i++){
@@ -499,7 +491,6 @@ int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
     return NULL;
 }
 void ASTprintStatement(Tstate* statement){
-    //printf("imhere %d\n",statement->type);
     if(statement->type==ASTglobal) printf("root\n");
     else if(statement->type==ASTfunction){
         printf("\033[1;33m");

@@ -5,13 +5,22 @@ int main(){
     TokenList *list=(TokenList*)malloc(sizeof(TokenList));
     listInit(list);
     ASTtree* abstractTree = ASTtreeCreate();
-    int result=Parse(list, abstractTree);
+
+    symtable* mySymtable=(symtable*)malloc(sizeof(symtable));
+    if (mySymtable == NULL) return INTERNAL_ERROR;
+    symtableInit(mySymtable); 
+
+    int result=Parse(list, abstractTree, mySymtable);
     if(result==PARC_TRUE){
         printf("\nASTtree---------------------------------------------------\n\n");
         
         ASTprintStatement(abstractTree->tree);
+
+        printf("\nSymTable---------------------------------------------------\n\n");
+
+        sym_inorderGlobal(mySymtable->sym_globalTree);
         //interpret(abstractTree->tree->TStatement.root);
-        printf("Meky Zbirka jubilejny koncert\n");
+        printf("\nMeky Zbirka jubilejny koncert\n");
     }
     else if (result==PARC_FALSE){
         
@@ -20,6 +29,9 @@ int main(){
     else if (result==LEXICAL_ERROR)
     {
         printf("%d Marika Gombitova",result);
+    }
+    else if (result==SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+        printf("%d nesmrtelny Kaja",result);
     }
     
     else if(result==10){

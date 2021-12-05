@@ -163,7 +163,7 @@ typedef enum{
     statementOutOfFc
 }NonTerminal;
 
-int Parse(TokenList* list, ASTtree* abstractTree);
+int Parse(TokenList* list, ASTtree* abstractTree, symtable* mySymtable);
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
 int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);

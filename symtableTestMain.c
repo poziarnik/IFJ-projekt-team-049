@@ -39,14 +39,14 @@ int main(){
                     sym_saveVar((&sym_subTree->tree),"n");
                     sym_saveVar((&sym_subTree->tree),"p");
 
-                    if (isVarDeclared(sym_stack, "f")){
+                    if (isVarDeclared(sym_stack, "x")){
                         printf("\ntrue\n");
                     }
                     else{
                         printf("\nfalse\n");
                     }
 
-                    symDisposeStackBlock(sym_stack, &sym_subTree);
+                    
                     symDisposeStackBlock(sym_stack, &sym_subTree);
 
                     
