@@ -46,6 +46,7 @@ typedef struct tableItem {
 
 typedef struct sym_treeRoot{
     struct tableItem *tree;
+    struct sym_treeRoot *lowerTree;
 }SymTreeRoot;
 
 typedef struct sym_stackElement{
@@ -218,5 +219,16 @@ int symtableInit(symtable* sym);
  * @return false 
  */
 bool isInbuildFun(char* str);
+/**
+ * @brief ak je stack prazny vracia NULL;
+ * 
+ * @param myStack 
+ * @return true 
+ * @return false 
+ */
+bool symSatckIsEmpty(SymStack* myStack);
+
+void sym_inorderGlobal(TreeItem *tree);
+void printStack(SymStack *myStack);
 
 #endif

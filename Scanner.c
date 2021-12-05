@@ -554,7 +554,7 @@ char* stringCreate(){
     param charNb - terajsie miesto charakteru v stringu
 */
 char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb){
-    char charValue = newCharacter ;
+    char charValue = newCharacter;
     if(*charNb == (*sizeOfStr)-1){
         *sizeOfStr = *sizeOfStr + 50;
         *MyString = (char*)realloc(*MyString, sizeof(char)*(*sizeOfStr));
