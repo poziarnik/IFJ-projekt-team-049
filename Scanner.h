@@ -50,6 +50,7 @@ typedef enum{
     Scanner_state_number_3,
     Scanner_state_number_4,
     Scanner_state_number_5,
+    Scanner_state_number_6,
     Scanner_state_string_start,
     Scanner_state_string_end,
     Scanner_state_string_1,
@@ -89,14 +90,6 @@ typedef struct list{
     Token* Head;
 }TokenList;
 
-/*
-    typy tokenov
-    0 - key word
-    1 - integer
-    2 - number
-    3 - sting
-    4 - operator
-*/
 
 /**
  * @brief Funkcia, ktora vrati token

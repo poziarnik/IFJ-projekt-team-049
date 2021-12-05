@@ -31,10 +31,12 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
     Stack_init(Stack);
     bool END = false;
     
-    Stack_push(Stack, ELSE, NULL);
+    status = Stack_push(Stack, ELSE, NULL);
+    if (status != PROGRAM_OK){
+        return INTERNAL_ERROR;
+    }
     
-    TElement *stackHelp;
-    
+    TElement *stackHelp = NULL;
     
     do{
         switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
@@ -49,22 +51,36 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             else if(Stack->top->Item == NOTERM){
                 
                 if (table_input_symbol(MyToken) == DATA){
-                    reduce_by_rule(Stack, MyToken);
+                    status = reduce_by_rule(Stack, MyToken);
+                    if (status != PROGRAM_OK){
+                        return INTERNAL_ERROR;
+                    }
+                    
                 }
-
                 
                 stackHelp = stack_pop_nofree(Stack);
-                Stack_push(Stack, '<', NULL);
+                status = Stack_push(Stack, '<', NULL);
+                if (status != PROGRAM_OK){
+                    return status;
+                }
+                
                 stackHelp->Item = NOTERM;
                 Stack_Push_Element(Stack, stackHelp);
-                Stack_push(Stack, table_input_symbol(MyToken), MyToken);
+
+                status = Stack_push(Stack, table_input_symbol(MyToken), MyToken);
+                if (status != PROGRAM_OK){
+                    return status;
+                }
                 
             }
             else{
-                Stack_push(Stack, '<', NULL);
+                status = Stack_push(Stack, '<', NULL);
+                if (status != PROGRAM_OK){
+                    return status;
+                }
+
                 Stack_push(Stack, table_input_symbol(MyToken), MyToken);
             }
-            
 
             // if (Stack->top->tree->Data->type == Plus){
             //     printf("%s\n", Stack->top->tree->Data->data.string);
@@ -72,7 +88,6 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             // else if (Stack->top->tree->Data->type == Integer){
             //     printf("%i\n", Stack->top->tree->Data->data.integer);
             // }
-            
             
             SCAN_TOKEN
             break;
@@ -191,7 +206,6 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
         Stack_pop(Stack);  // potom vyhodim pomocnu zatvorku <
        
         Stack_Push_Element(Stack, main);
-        main = NULL;
     }
 
 
@@ -316,6 +330,10 @@ void printExpressionTree(Tree *exprtree){
     else if (exprtree->Data->type == Sizeof){
         printf("%s ", exprtree->Data->data.string);
         printExpressionTree(exprtree->attr.unary.child);
+    }
+
+    else if (strcmp(exprtree->Data->data.string, "nil") == 0){
+        printf("nil ");
     } 
 
     else if (exprtree->Data->type == Plus || \

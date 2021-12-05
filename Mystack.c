@@ -74,15 +74,6 @@ int Stack_first_nonterm(TStack *stack){
     return -1;
 }
 
-void Stack_push_beforeNonterm(TStack *stack){
-    TElement *tmp;
-    tmp = stack->top;
-    stack->top->Item = '<';
-    stack->top->tree->Data = NULL;
-    Stack_push(stack, tmp->Item, tmp->tree->Data);
-    tmp = NULL;
-}
-
 void treeInit(Tree **tree){
     *tree = NULL;
 }

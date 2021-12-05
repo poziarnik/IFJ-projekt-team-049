@@ -298,6 +298,7 @@ int ASTaddToTokenArray(Token*** array, int* nbTokens, Token* newToken){
         *array = (Token**)realloc(*array, sizeof(Token*)*(sizeOfArray+50));
         for (int i = *nbTokens; i < (*nbTokens+50); i++){
             (*array)[i]=(Token*)malloc(sizeof(Token));
+            if((*array)[i] == NULL) return INTERNAL_ERROR;
         }
     }
     *(*array)[*nbTokens]=*newToken;

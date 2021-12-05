@@ -19,8 +19,8 @@
 
 #define SCAN_TOKEN \
     status = tokenScan(stdin, list, MyToken); \
-    if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \
-    if (status==10) return 0;
+    if (status==LEXICAL_ERROR) return LEXICAL_ERROR;
+    // if (status==10) return 0;
 
 /*status = tokenScan(stdin, list, MyToken); \
     if (status==LEXICAL_ERROR) return LEXICAL_ERROR; \

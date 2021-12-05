@@ -126,11 +126,11 @@ int main(){
     if (status == 0){
         status = isExpresionright(exprTree);
         if (status == 0){
-            printTree(exprTree);
+            printExpressionTree(exprTree);
             printf("OK\n");
         }
         else if(status == SEMANTICAL_COMPABILITY_ERROR){
-            printf("semantic mistake\n");
+            printf("WRONG DATA TYPES\n");
         }
         else if (status == DIVISION_ZERO_ERROR){
             printf("DIVISION ZERO ERROR\n");

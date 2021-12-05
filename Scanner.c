@@ -23,6 +23,9 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
     int sizeOfStr = 50;                 //pouzivam pre spravnu alokaciu pamate
     int CharNb = 0;
     char* str= stringCreate();           //hlavny string
+
+    if (str == NULL) return INTERNAL_ERROR;
+    
     int escapeInt [3];
     int finalnumber;
     
@@ -168,7 +171,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 else return LEXICAL_ERROR; //ak pride insi znak vraciam LEXIKALNU chybu
                 break;
 
-            //stav identifikator
+            //Identifikatory a klucove slova
             case Scanner_state_identifier_1: 
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
@@ -191,7 +194,6 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                         END=true; //koncovy stav
                     }
                 }
-                //state=1;
                 break;
 
             case Scanner_state_identifier_2: 
@@ -208,19 +210,19 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
 
             //cisla
             case Scanner_state_number_1: 
-                if (symbol >= '0' && symbol <= '9'){  //ak je cislo od 0...9
+                if (symbol >= '0' && symbol <= '9'){  
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_1; //state --> state
                 }
-                else if (symbol == '.'){  //ak pride bodka
+                else if (symbol == '.'){  
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_5; //state -> number_5
                 }
-                else if (symbol == 'e' || symbol == 'E'){ //ak pride e alebo E
+                else if (symbol == 'e' || symbol == 'E'){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                     state = Scanner_state_number_3; //state --> number_3
                 }
-                else{  //ak pride po cisle nieco ine, tak to vraciam naspat
+                else{  
                     ungetc(symbol, stdin);
                     MyToken->type = Integer; //type --> Integer
                     MyToken->data.integer = atoi(str); // ukladam hodnotu
@@ -231,59 +233,70 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
             case Scanner_state_number_2: 
                 if (symbol >= '0' && symbol <= '9'){ 
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);                   
-                    state = Scanner_state_number_2;
+                    state = Scanner_state_number_2; //state --> state
                 }
-                else if (symbol == 'e' || symbol == 'E'){
+                else if (symbol == 'e' || symbol == 'E'){  //ak pride E alebo e
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_3;
+                    state = Scanner_state_number_3; //state --> number_3
                 }
-                else{
-                    ungetc(symbol, stdin);
-                    MyToken->type = Number;
+                else{ 
+                    ungetc(symbol, stdin); //vraciam znak
+                    MyToken->type = Number; //type --> Number
                     MyToken->data.number = strtod(str, NULL);
-                    END=true; 
+                    END=true;  //koncovy stav
                 }
                 break;
 
-            case Scanner_state_number_3:
+            case Scanner_state_number_3: // moze prist iba cislo, alebo + a -
                 if (symbol >= '0' && symbol <= '9'){
                     stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_4;
+                    state = Scanner_state_number_4; //state --> number_4
                 }
                 else if ((symbol == '+' ) || (symbol == '-')){
                     stringAddChar(&str, symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_4;
+                    state = Scanner_state_number_6; //state --> number_6
                 }
                 else{
-                    return LEXICAL_ERROR;
+                    return LEXICAL_ERROR; //ak nepride ani cislo
                 }
                 break;
 
              case Scanner_state_number_4:
                  if ((symbol >= '0' && symbol <= '9')){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_4;
+                    state = Scanner_state_number_4; //state --> state
                 }
                 else{
                     ungetc(symbol, stdin);
-                    MyToken->type = Number;
+                    MyToken->type = Number; //type --> Number
                     MyToken->data.number = strtod(str, NULL);
-                    END = true;
+                    END = true; //koncovy stav
                 }
                 break;
 
-            case Scanner_state_number_5:
+            case Scanner_state_number_5: 
                 if ((symbol >= '0' && symbol <= '9')){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    state = Scanner_state_number_2;
+                    state = Scanner_state_number_2; //state --> number_2
                 }
                 else{
-                    return LEXICAL_ERROR;
+                    return LEXICAL_ERROR; //ak je bodka a za nou nejde cislo
                 }
                 
                 break;
-                
-            case Scanner_state_string_start: //TODO
+            
+            case Scanner_state_number_6:
+                if ((symbol >= '0' && symbol <= '9')){
+                    stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
+                    state = Scanner_state_number_4; //state --> number_4
+                }
+                else{
+                    return LEXICAL_ERROR; //ak je iba 'e'/'E' a nepride cislo
+                }
+                break;
+
+            //Stringy
+            case Scanner_state_string_start: 
                 if (symbol >= 32 && symbol <= 127 && symbol != 34 && symbol != 92){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
                 }
@@ -297,7 +310,7 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                     return LEXICAL_ERROR;
                 }
                 break;
-            
+
             case Scanner_state_string_end:
                 ungetc(symbol,stdin);
                 MyToken->type = String;
@@ -349,98 +362,110 @@ int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
                 }
                 break; 
 
+            //komentare
             case Scanner_state_minus: 
-                if (symbol == '-'){
-                    state = Scanner_state_comment_start;
+                if (symbol == '-'){ 
+                    state = Scanner_state_comment_start; //state --> comment_start
                 }
-                else{
-                    ungetc(symbol, stdin);
+                else{ 
+                    ungetc(symbol, stdin); //vraciam znak
                     stringAddChar(&str,45, &sizeOfStr, &CharNb);
-                    MyToken->type = Minus;
-                    MyToken->data.string = str;
-                    END=true;
+                    MyToken->type = Minus; //type --> Minus (-)
+                    MyToken->data.string = str; 
+                    END=true; //koncovy stav
                 }
                 break;
 
             case Scanner_state_comment_start:
-                if (symbol == '['){
-                    state = Scanner_state_comment_block;
+                if (symbol == '['){  
+                    state = Scanner_state_comment_block; //state --> comment_block
                 }
-                else if (symbol == '\n' || symbol == EOF){
-                    state = Scanner_state_reading;
+                else if (symbol == '\n' || symbol == EOF){ 
+                    ungetc(symbol, stdin);  //vraciam znak
+                    state = Scanner_state_reading;  // state --> reading
                 }
-                else{ 
-                    state = Scanner_state_comment_start;
+                else{  //vsetko ostatne
+                    state = Scanner_state_comment_start; //state --> state
                 }
                 break;
 
             case Scanner_state_comment_block:
-                if (symbol == '['){
-                    state = Scanner_state_comment_block_start;
+                if (symbol == '['){  
+                    state = Scanner_state_comment_block_start; //state --> comment_block_start
                 }
-                else{ 
-                    state = Scanner_state_comment_start;
+                else if (symbol == '\n' || symbol == EOF){
+                    return LEXICAL_ERROR;
+                }
+                else{  
+                    state = Scanner_state_comment_start; //state --> comment_start
                 }
                 break;
-                
+
+            //blokove komentare    
             case Scanner_state_comment_block_start:
-                if (symbol == ']'){
-                    state = Scanner_state_comment_block_end1;
+                if (symbol == ']'){ //ak prisiel znak ']'
+                    state = Scanner_state_comment_block_end1; //state -->comment_block_end1
                 }
-                else{ 
-                    state = Scanner_state_comment_block_start;
+                else if (symbol == '\n' || symbol == EOF){
+                    return LEXICAL_ERROR;
+                }
+                else{  
+                    state = Scanner_state_comment_block_start; //state --> state
                 }
                 break;
 
             case Scanner_state_comment_block_end1:
-                if (symbol == ']'){
-                    state = Scanner_state_reading;
+                if (symbol == ']'){ //ak prisiel dalsi znak ']', je to koniec blokoveho komentara
+                    state = Scanner_state_reading; // state --> state_reading
                 }
-                else{
-                    state = Scanner_state_comment_block_start;
+                else{ //blokovy koment konci iba dvoma znakmy ']'
+                    state = Scanner_state_comment_block_start; //state --> comment_block_start
                 }
                 break;
 
-            case Scanner_state_concatenation: //TODO
-                if (symbol == '.'){
+            //Konkatenacia
+            case Scanner_state_concatenation: 
+                if (symbol == '.'){ //ak su dva znaky '.'
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    MyToken->type = Concatenation;
+                    MyToken->type = Concatenation; //type -->Concatenation
                     MyToken->data.string = str;
-                    END=true;
+                    END=true; //koncovy stav
                 }
-                else{
-                    ungetc(symbol, stdin);
-                    return LEXICAL_ERROR;
+                else{ 
+                    ungetc(symbol, stdin); //vraciam znak
+                    return LEXICAL_ERROR; // podla zadania nemoze byt samotna bodka
                 }
                 break;
 
+            //Delenie
             case Scanner_state_division:
-                if (symbol == '/'){
+                if (symbol == '/'){ //ak su dva znaky '/'
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    MyToken->type = Division_integer;
+                    MyToken->type = Division_integer; //type --> Division_integer
                     MyToken->data.string = str;
-                    END=true;
+                    END=true; //koncovy stav
                 }
                 else{
-                    ungetc(symbol, stdin);
-                    MyToken->type = Division;
+                    ungetc(symbol, stdin); //vraciam znak
+                    MyToken->type = Division; // type -->Division
                     MyToken->data.string = str;
-                    END=true;
+                    END=true; //koncovy stav
                 }
                 break;
 
+            //Relacne operatory
             case Scanner_state_less: 
                 if (symbol == '='){
                     stringAddChar(&str,symbol, &sizeOfStr, &CharNb);
-                    MyToken->type = Less_equal;
+                    MyToken->type = Less_equal; //type --> Less_equal (<=)
                     MyToken->data.string = str;
-                    END = true;
+                    END = true; //konecny stav
                 }
                 else{
                    ungetc(symbol, stdin);
-                   MyToken->type = Less;
+                   MyToken->type = Less; //type --> Less (<)
                    MyToken->data.string = str;
-                   END=true;
+                   END=true; //konecny stav
                 }
                 break;
 
@@ -542,6 +567,10 @@ void tokenInit(Token* MyToken){
 char* stringCreate(){
     char* MyString;
     MyString=(char*)malloc(sizeof(char)*50);
+    if (MyString == NULL){
+        return NULL;
+    }
+    
     return MyString;
 }
 
@@ -554,16 +583,14 @@ char* stringCreate(){
     param charNb - terajsie miesto charakteru v stringu
 */
 char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb){
-    char charValue = newCharacter ;
+    char charValue = newCharacter;
     if(*charNb == (*sizeOfStr)-1){
         *sizeOfStr = *sizeOfStr + 50;
         *MyString = (char*)realloc(*MyString, sizeof(char)*(*sizeOfStr));
-        if (*MyString == NULL){
-            return NULL;
-        }
+        if (*MyString == NULL) return NULL;
     }
     
-    strcat(*MyString,&charValue);
+    strncat(*MyString,&charValue, 1);
     *charNb = *charNb +1;
     return *MyString;
 }

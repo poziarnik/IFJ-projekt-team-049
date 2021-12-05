@@ -5,13 +5,21 @@
 while e do end 21*/
 //bacha segfault
 int Parse(TokenList* list, ASTtree* abstractTree){
-    int status;
+    int status = 0;
+    
     Token* MyToken=(Token*)malloc(sizeof(Token));
+    if (MyToken == NULL) return INTERNAL_ERROR;
     
     symtable* mySymtable=(symtable*)malloc(sizeof(symtable));
-    symtableInit(mySymtable); 
+    if (mySymtable == NULL) return INTERNAL_ERROR;
     
-    tokenScan(stdin, list, MyToken);
+    status = symtableInit(mySymtable); 
+    if (status != 0) return status;
+    
+
+    status = tokenScan(stdin, list, MyToken);
+    if (status == LEXICAL_ERROR) return status; 
+
     RETURN_ON_ERROR(fc_program);
     //ASTprintStack(abstractTree->ASTStack);
     //printGlobalTree(mySymtable);
@@ -286,7 +294,7 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
 
 
 int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                  //program: <prolog><code>
-    int status;
+    int status = 0;
     if(first(MyToken, prolog)){
         RETURN_ON_ERROR(fc_prolog);
     }
@@ -298,7 +306,7 @@ int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* a
     return PARC_TRUE;
 }
 int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                     //code: <functionDec><code><statement>
-    int status;
+    int status = 0;
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
     }
@@ -317,7 +325,7 @@ int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abst
     return PARC_TRUE;
 }
 int fc_statementOutOfFc(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree){        //statementOutOfFc: <functionDec>||<functionCall>(bez ids) <statementOutOfFc>
-    int status;
+    int status = 0;
     //puts("halooooooooooo");
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
@@ -334,9 +342,10 @@ int fc_statementOutOfFc(Token* MyToken, TokenList* list, symtable* mySymtable, A
     return PARC_TRUE;
 }
 int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){              //functionDec: <global_scope>function<function_iden>(<params><returntypes>)<statement>end
-    int status;
-    ASTaddFCToTree(abstractTree->ASTStack);//vytvaranie AST
-    
+    int status = 0;
+    status = ASTaddFCToTree(abstractTree->ASTStack);//vytvaranie AST
+    if (status != 0) return status;
+
     if (first(MyToken,global_scope)){
         RETURN_ON_ERROR(fc_global_scope);
     }
@@ -376,7 +385,6 @@ int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
         RETURN_ON_ERROR(fc_statement);
     }
     
-
     if (chackStr(MyToken, list, "end")){
         parcerPrint("function_def" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -388,22 +396,24 @@ int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
     return PARC_TRUE;
 }
 int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                   //global_scope: global
-    int status;
+    int status = 0;
     if(chackStr(MyToken,list,"global")){
         parcerPrint("global" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
     
-    
     return PARC_TRUE;
 }
 int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                   //functionIden: <functionIden>
-    int status;
+    int status = 0;
     if (MyToken->type==Identifier){
-        ASTsaveToken(abstractTree->ASTStack, MyToken, functionID);//vytvaranie AST
-        
+        status = ASTsaveToken(abstractTree->ASTStack, MyToken, functionID);//vytvaranie AST
+        if(status != 0) return status;
+
         parcerPrint("function_Iden" ,MyToken ,PRINT_ON);
-        sym_saveFun(&mySymtable->sym_globalTree,&mySymtable->sym_subTree, mySymtable->sym_stack,MyToken->data.string);
+        status = sym_saveFun(&mySymtable->sym_globalTree,&mySymtable->sym_subTree, mySymtable->sym_stack,MyToken->data.string);
+        if (status != 0) return status;
+
         SCAN_TOKEN;
     }
     else{
@@ -412,7 +422,7 @@ int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtre
     return PARC_TRUE;
 }
 int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                         //params: <param><nextParam>
-    int status;
+    int status = 0;
     if(first(MyToken, param)){
         RETURN_ON_ERROR(fc_param);
     }
@@ -429,7 +439,7 @@ int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     return PARC_TRUE;
 }
 int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                          //param: <identifier>:<type>
-    int status;
+    int status = 0;
     if(MyToken->type==Identifier){
         printf("nieco %s\n",MyToken->data.string);
         ASTsaveToken(abstractTree->ASTStack, MyToken, functionParams);//vytvaranie AST
@@ -460,7 +470,7 @@ int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abst
     return PARC_TRUE;
 }
 int fc_nextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                      //nextparam: ,<param><nextparam>
-    int status;
+    int status = 0;
     if (chackStr(MyToken, list, ",")){
         SCAN_TOKEN;
     }
@@ -482,7 +492,7 @@ int fc_nextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* 
     return PARC_TRUE;
 }
 int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                      //returnTypes: :type<nextType>
-    int status;
+    int status = 0;
     if (MyToken->type==Colon){
         parcerPrint("return_types start" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;     
@@ -492,7 +502,9 @@ int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
     } 
 
     if (isTokenDataType(MyToken)){
-        ASTsaveToken(abstractTree->ASTStack, MyToken, functionReturnTypes);
+        status = ASTsaveToken(abstractTree->ASTStack, MyToken, functionReturnTypes);
+        if (status != 0) return status;
+        
         //printf("Type: %s\n",MyToken->att);
         SCAN_TOKEN;
     }
@@ -507,7 +519,7 @@ int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
     return PARC_TRUE;
 }
 int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                            //nextType: ,Type<nextType>
-    int status;
+    int status = 0;
     if (chackStr(MyToken, list, ",")){
         parcerPrint("next_type" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -529,7 +541,7 @@ int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* a
     return PARC_TRUE;
 }
 int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                              //statemnet: <<loop>||<condition>||<assigne>||<define>> <statment> 
-    int status;
+    int status = 0;
     
     if (first(MyToken, loop)){
         RETURN_ON_ERROR(fc_loop);
@@ -562,8 +574,11 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* 
     return PARC_TRUE;
 }
 int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                    //loop: while<expression>do<statement>end
-    int status;
-    ASTaddCycleToTree(abstractTree->ASTStack);
+    int status = 0;
+
+    status = ASTaddCycleToTree(abstractTree->ASTStack);
+    if (status != 0) return status;
+
     if (chackStr(MyToken, list, "while")){
         parcerPrint("loop" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -594,9 +609,11 @@ int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstr
     return PARC_TRUE;
 }
 int fc_condition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                               //condition: if<expresion>then<statement><elseCondition>end
-    int status;
+    int status = 0;
     
-    ASTaddConditionToTree(abstractTree->ASTStack);
+    status = ASTaddConditionToTree(abstractTree->ASTStack);
+    if (status != 0) return status;
+
     if (chackStr(MyToken, list, "if")){
         parcerPrint("condition" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -632,10 +649,11 @@ int fc_condition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* 
     return PARC_TRUE;
 }
 int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                               //else<statement>
-    int status;
+    int status = 0;
     
-    ASTaddElseToCondition(abstractTree->ASTStack);
-    
+    status = ASTaddElseToCondition(abstractTree->ASTStack);
+    if(status != 0) return status;
+
     if (chackStr(MyToken, list, "else")){
         parcerPrint("condition" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -649,9 +667,11 @@ int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtr
 }
     
 int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                      //<var><nextVar>=<expresion><nextExpresion>     or varlist=expresionlist
-    int status;
+    int status = 0;
     bool assigneOrFCcall=0;//0 - asigne
-    ASTaddAssigmentToTree(abstractTree->ASTStack);//vytvaranie AST
+    
+    status = ASTaddAssigmentToTree(abstractTree->ASTStack);//vytvaranie AST
+    if(status != 0) return status;
 
     if (first(MyToken, var)){
         RETURN_ON_ERROR(fc_var);
@@ -671,8 +691,12 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* ab
     if (first(MyToken, expression)){// or fccall + cash(Token** cash)ked sa rozhodne ci assigne alebo funkcia prida do vytvorenej struktury 
         if(MyToken->type==Identifier){
             if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+                
                 ASTdeleteLastFromTree(abstractTree->ASTStack);//odstranim assigneLeaf zo stromu
-                ASTswitchAssigneFCcall(abstractTree->ASTStack);//odstranim assigneLeaf zo stacku. Switch vytvori FCCall na stacku takze do fcCall posielam true aby dvakrat nevytvoril FCCall
+                
+                status = ASTswitchAssigneFCcall(abstractTree->ASTStack);//odstranim assigneLeaf zo stacku. Switch vytvori FCCall na stacku takze do fcCall posielam true aby dvakrat nevytvoril FCCall
+                if (status != 0) return status;
+
                 RETURN_ON_ERROR_FCCALL(true);
                 assigneOrFCcall=1; 
             }
@@ -695,10 +719,12 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* ab
     return PARC_TRUE;
 }
 int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                         //identifier
-    int status;
+    int status = 0;
     if(MyToken->type==Identifier){
-        ASTaddToTokenArray(&(abstractTree->ASTStack->head->statement->TStatement.assignment->IDs), \
+        status = ASTaddToTokenArray(&(abstractTree->ASTStack->head->statement->TStatement.assignment->IDs), \
         abstractTree->ASTStack->head->statement->TStatement.assignment->nbID, MyToken);
+        if (status != 0) return status;
+
         parcerPrint("var" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
@@ -707,7 +733,7 @@ int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstra
     return PARC_TRUE;
 }
 int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                     //,<var><nextVar>
-    int status;
+    int status = 0;
     if (chackStr(MyToken, list, ",")){
         parcerPrint("String" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -726,18 +752,23 @@ int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* ab
     return PARC_TRUE;
 }
 int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                  //Martin Huba
+    int status = 0;
+    
     Tree* newExpression=(Tree*)malloc(sizeof(Tree));
+    if (newExpression == NULL) return INTERNAL_ERROR;
+
     parcerPrint("expression" ,MyToken ,PRINT_ON);
     //skontroluj expresion
-    int status=expressionCheck(MyToken,list,newExpression);
+    status=expressionCheck(MyToken,list,newExpression);
     if (status!=0) return status;
     //vloz expression do AST
     if (abstractTree->ASTStack->head->statement->type==ASTcycle){
         *abstractTree->ASTStack->head->statement->TStatement.while_loop->expression=*newExpression;
     }
     else if (abstractTree->ASTStack->head->statement->type==ASTassigne){
-        ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.assignment->expressions), \
+        status = ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.assignment->expressions), \
                             abstractTree->ASTStack->head->statement->TStatement.assignment->nbexpressions, newExpression);
+        if(status != 0) return status;
     }
     else if(abstractTree->ASTStack->head->statement->type==ASTcondition){
         *abstractTree->ASTStack->head->statement->TStatement.if_loop->expression=*newExpression;
@@ -750,15 +781,11 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
         puts("hiiiiiiiiiiiiiiiiiiiiiii");
         *abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression=*newExpression;//uloz nove expression
     }
-    
-    
-    
-    
-    
+
     return PARC_TRUE;
 }
 int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                              //,<expresion><nextExpression>
-    int status;
+    int status = 0;
     if (chackStr(MyToken, list, ",")){
         parcerPrint("String" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -777,20 +804,21 @@ int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTt
     return PARC_TRUE;
 }
 int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                        //define: local|identifier:type<inicialize>
-    int status;
-    ASTaddDefineToTree(abstractTree->ASTStack);//vytvaranie AST
-    
+    int status = 0;
+    status = ASTaddDefineToTree(abstractTree->ASTStack);//vytvaranie AST
+    if(status != 0) return status;
+
     if (chackStr(MyToken, list, "local")){
         parcerPrint("define" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
-    
 
     if (MyToken->type==Identifier){
         parcerPrint("define" ,MyToken ,PRINT_ON);
-        ASTsaveToken(abstractTree->ASTStack, MyToken, definitionID);
-        
+        status = ASTsaveToken(abstractTree->ASTStack, MyToken, definitionID);
+        if(status != 0) return status;
+
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
@@ -802,7 +830,9 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
 
     if(isTokenDataType(MyToken)){
         parcerPrint("define" ,MyToken ,PRINT_ON);
-        ASTsaveToken(abstractTree->ASTStack, MyToken, definitionDataType);
+        status = ASTsaveToken(abstractTree->ASTStack, MyToken, definitionDataType);
+        if (status != 0)return status;
+        
         SCAN_TOKEN;
     }
     else return PARC_FALSE;
@@ -815,13 +845,15 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     return PARC_TRUE;
 }
 int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree, bool withIDs){                                 //functionCall: identifier(<FCparams>)
-    int status;
+    int status = 0;
   //zatial nie je pouzite(po implementacii symtable pridat do assigne a do define)
     //ASTprintStack(abstractTree->ASTStack);
     //printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Type %d", abstractTree->ASTStack->head->statement->type);
     
-    if (!withIDs) ASTaddFCcallToTree(abstractTree->ASTStack); 
-
+    if (!withIDs){
+        status = ASTaddFCcallToTree(abstractTree->ASTStack);
+        if (status != 0) return status; 
+    }
     if (MyToken->type==Identifier){
         abstractTree->ASTStack->head->statement->TStatement.functioncall->functionName->data.string = MyToken->data.string;
         parcerPrint("functionCall" ,MyToken ,PRINT_ON);
@@ -850,7 +882,7 @@ int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtre
     return PARC_TRUE;
 }
 int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                         //params: <param><nextParam>
-    int status;
+    int status = 0;
     if(first(MyToken, FCallparam)){
         RETURN_ON_ERROR(fc_FCallparam);
     }
@@ -864,7 +896,7 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
     return PARC_TRUE;
 }
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                          //param: <expression>
-    int status;
+    int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
         /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
@@ -875,7 +907,7 @@ int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
     return PARC_TRUE;
 }
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                      //nextparam: ,<param><nextparam>
-    int status;
+    int status = 0;
     if (chackStr(MyToken, list, ",")){
         SCAN_TOKEN;
     }
@@ -897,7 +929,7 @@ int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTt
 }
 //dorobit function call !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                                  //initialize: =<expresion>||<functionCall>
-    int status;
+    int status = 0;
 
     if (chackStr(MyToken, list, "=")){
         parcerPrint("String" ,MyToken ,PRINT_ON);
@@ -920,7 +952,7 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
 }
 
 int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){
-    int status;
+    int status = 0;
     if (MyToken->type==Keyword){
         if (chackStr(MyToken, list, "require")){
             parcerPrint("Prolog" ,MyToken ,PRINT_ON);
@@ -942,7 +974,7 @@ int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     return PARC_TRUE;
 }
 int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){          //FCreturn: return (<FCparams>)
-    int status;
+    int status = 0;
     if (MyToken->type==Keyword){
         if (chackStr(MyToken, list, "return")){
             parcerPrint("Return" ,MyToken ,PRINT_ON);
@@ -967,7 +999,7 @@ int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* a
 int chackType(Token* MyToken, TokenList* list, Token_type checkType){    
     if (MyToken->type==checkType){
         printf("TypeCheck: %d\n",MyToken->type);
-        int status;
+        int status = 0;
         SCAN_TOKEN;
         return PARC_TRUE;
     }
