@@ -446,8 +446,10 @@ int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
 int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                          //param: <identifier>:<type>
     int status = 0;
     if(MyToken->type==Identifier){
-        //printf("nieco %s\n",MyToken->data.string);
-        ASTsaveToken(abstractTree->ASTStack, MyToken, functionParams);//vytvaranie AST
+        //uloz premennu do symtable
+        sym_saveVar(&mySymtable->sym_subTree->tree, MyToken->data.string, &mySymtable->currentVar);
+        //vytvaranie AST
+        ASTsaveToken(abstractTree->ASTStack, MyToken, functionParams);
         parcerPrint("identifier" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
     }   
@@ -464,6 +466,7 @@ int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abst
 
     if(isTokenDataType(MyToken)){
         int status;
+        sym_saveVarType(mySymtable->currentVar,MyToken->data.string);
         parcerPrint("param" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
         //return true;
@@ -571,6 +574,7 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* 
         RETURN_ON_ERROR(fc_FCreturn);
     }
     else return PARC_FALSE; 
+    
     if (first(MyToken, statement)){
        RETURN_ON_ERROR(fc_statement);  
     }
@@ -840,6 +844,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     if (MyToken->type==Identifier){
         parcerPrint("define" ,MyToken ,PRINT_ON);
         sym_saveVar(&mySymtable->sym_subTree->tree, MyToken->data.string, &mySymtable->currentVar);
+        
 
         status = ASTsaveToken(abstractTree->ASTStack, MyToken, definitionID);
         if(status != 0) return status;
@@ -854,6 +859,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     }
 
     if(isTokenDataType(MyToken)){
+        sym_saveVarType(mySymtable->currentVar, MyToken->data.string);
         parcerPrint("define" ,MyToken ,PRINT_ON);
         status = ASTsaveToken(abstractTree->ASTStack, MyToken, definitionDataType);
         if (status != 0)return status;
@@ -865,7 +871,6 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
     if (first(MyToken,initialize)){
         RETURN_ON_ERROR(fc_initialize);
     }
-
     ASTendStatement(abstractTree->ASTStack);
     return PARC_TRUE;
 }
