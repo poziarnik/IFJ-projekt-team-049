@@ -410,10 +410,25 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
     }
 
     else if (exprTree->Data->type == Identifier){
-        if(isVarDeclared(Symtable->sym_stack, exprTree->Data->data.string) == true){
-
+        unary = sym_varType(Symtable->sym_stack, exprTree->Data->data.string);
+        printf("%i", unary);
+        if (unary == 0){
+            return STR;
         }
-        return UNDEFINED_VARIABLE;
+
+        else if (unary == 1){
+            return INT;
+        }
+
+        else if (unary == 2){
+            return NR;
+        }
+
+        else if (unary == 3){
+            return NIL;
+        }
+
+        return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
     }
 
     // Plus, Minus, Multiplication (+, -, *) -- standardne binarne operatory
@@ -425,6 +440,11 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
+
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        }
+        
 
         else if((left == INT && right == INT_zero) || \
                 (left == INT && right == NR) || \
@@ -465,6 +485,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return NIL_ERROR;
         }
 
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        }
+
         // moze byt iba string so stringom
         else if ((left == STR && right == STR) || \
             (left == STR && right == STR_zero) || \
@@ -492,6 +516,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return NIL_ERROR;
         }
 
+        else if (unary == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        }
+
         else if (unary != STR && unary != STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
@@ -510,6 +538,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
 
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
         }
 
         else if (right == NR_zero || right == INT_zero || \
@@ -536,6 +568,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
 
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        }
+
         else if (right == INT_zero || left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
             return DIVISION_ZERO_ERROR;
         }
@@ -560,6 +596,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return NIL_ERROR;
         }
 
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        }
+
         else if(left == right){
             return left;
         }
@@ -582,6 +622,10 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         
         if (left == right){
             return left;
+        }
+
+        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
         }
 
         else if (((left == STR || left == NR || left == NR_zero || left == INT || left == INT_zero || left == NIL) && right == NIL) || \
