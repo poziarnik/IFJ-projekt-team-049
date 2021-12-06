@@ -248,8 +248,10 @@ bool isVarDeclared(SymStack* myStack, char* key){
 }
 int sym_varType(SymStack* myStack, char* key){
   SymStackElement* tmp=myStack->head;
+  int Milan=-1;
   while(tmp!=NULL){
-    if(sym_search(tmp->root->tree, key)) return true;
+    Milan=sym_searchVarType(tmp->root->tree, key);
+    if(Milan!=-1) return Milan;
     tmp=tmp->next;
   }
   return false;
