@@ -1,6 +1,7 @@
 require "ifj21"
 
-function fn(a:integer):integer
+function fn(a : integer) : integer
+    local a : integer
     a = a+1
     return a
 end

@@ -45,9 +45,11 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             // puts("op expand");
             if (Stack->top->Item == NOTERM && table_input_symbol(MyToken) == DATA){
                 while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
-                status = reduce_by_rule(Stack, MyToken);
-            }
+                    status = reduce_by_rule(Stack, MyToken);
+                }
+                
                 END = true;
+                break;
             }
             
 
@@ -358,8 +360,8 @@ void printExpressionTree(Tree *exprtree){
     }
 }
 
-int isExpresionright(Tree *exprTree){
-    int isOK = expressionSemanticCheck(exprTree);
+int isExpresionright(Tree *exprTree, symtable *Symtable){
+    int isOK = expressionSemanticCheck(exprTree, Symtable);
     if (isOK == SEMANTICAL_COMPABILITY_ERROR){
         return isOK;
     }
@@ -369,11 +371,14 @@ int isExpresionright(Tree *exprTree){
     else if (isOK == NIL_ERROR){
         return isOK;
     }
+    else if (isOK == UNDEFINED_VARIABLE){
+        return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+    }
     return PROGRAM_OK;
 }
 
 
-int expressionSemanticCheck(Tree *exprTree){
+int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
     int left, right, unary;
 
     // typ Integer
@@ -404,11 +409,18 @@ int expressionSemanticCheck(Tree *exprTree){
         return NIL;
     }
 
+    else if (exprTree->Data->type == Identifier){
+        if(isVarDeclared(Symtable->sym_stack, exprTree->Data->data.string) == true){
+
+        }
+        return UNDEFINED_VARIABLE;
+    }
+
     // Plus, Minus, Multiplication (+, -, *) -- standardne binarne operatory
     else if (exprTree->Data->type == Plus || exprTree->Data->type == Minus ||\
              exprTree->Data->type == Multiplication){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
@@ -446,8 +458,8 @@ int expressionSemanticCheck(Tree *exprTree){
 
     // Concatenation (..)
     else if (exprTree->Data->type == Concatenation){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
         if(left == NIL || right == NIL){
             return NIL_ERROR;
@@ -474,7 +486,7 @@ int expressionSemanticCheck(Tree *exprTree){
 
     // Sizeof (#)
     else if (exprTree->Data->type == Sizeof){
-        unary = expressionSemanticCheck(exprTree->attr.unary.child);
+        unary = expressionSemanticCheck(exprTree->attr.unary.child, Symtable);
         
         if(unary == NIL){
             return NIL_ERROR;
@@ -493,8 +505,8 @@ int expressionSemanticCheck(Tree *exprTree){
 
     // Division, Division_integer (/, //)
     else if (exprTree->Data->type == Division){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
@@ -517,8 +529,8 @@ int expressionSemanticCheck(Tree *exprTree){
     }
 
     else if(exprTree->Data->type == Division_integer){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
@@ -541,8 +553,8 @@ int expressionSemanticCheck(Tree *exprTree){
 
     else if(exprTree->Data->type == Less || exprTree->Data->type == More || \
             exprTree->Data->type == Less_equal || exprTree->Data->type == More_equal){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
         if(left == NIL || right == NIL){
             return NIL_ERROR;
@@ -565,8 +577,8 @@ int expressionSemanticCheck(Tree *exprTree){
     }
 
     else if (exprTree->Data->type == Not_equal || exprTree->Data->type == Is_equal){
-        left = expressionSemanticCheck(exprTree->attr.binary.left);
-        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
+        right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
         
         if (left == right){
             return left;
@@ -575,8 +587,7 @@ int expressionSemanticCheck(Tree *exprTree){
         else if (((left == STR || left == NR || left == NR_zero || left == INT || left == INT_zero || left == NIL) && right == NIL) || \
                 (right == STR || right == NR || right == NR_zero || right == INT || right == INT_zero || right == NIL) && left == NIL){
             return PROGRAM_OK;
-        }
-        
+        } 
     }
 
     return -1;
