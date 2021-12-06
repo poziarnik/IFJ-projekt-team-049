@@ -13,6 +13,7 @@ int main(){
     SymTreeRoot *sym_subTree=(SymTreeRoot *)malloc(sizeof(SymTreeRoot));
     sym_subTree->tree==NULL;
     SymStack *sym_stack=(SymStack*)malloc(sizeof(SymStack));
+    TreeItem* symCurrentVar;
     symStackInit(sym_stack);
     int nb=0;
     while(nb<4){
@@ -23,21 +24,23 @@ int main(){
         end=tokenScan(stdin, &list, mytoken);
         if (end == 0){
                 sym_saveFun(&sym_globalTree,&sym_subTree, sym_stack,mytoken->data.string);              
-                if (strcmp(mytoken->data.string,"factorial")==0){
-                    sym_saveVar((&sym_subTree->tree),"x");
-
+                if (strcmp(mytoken->data.string,"global")==0){
+                    sym_saveVar((&sym_subTree->tree),"x",&symCurrentVar);
+                    sym_saveVarType(symCurrentVar,"integer");
                     printf("haloo2\n");
                     //sym_inorder(sym_subTree->tree);
         
                     symNewStackBlock(sym_stack,&sym_subTree);           //cyklus||podmienka||whatever
                     
-                    sym_saveVar((&sym_subTree->tree),"e");
-                    sym_saveVar((&sym_subTree->tree),"f");
-
+                    sym_saveVar((&sym_subTree->tree),"e",&symCurrentVar);
+                    sym_saveVarType(symCurrentVar,"nil");
+                    sym_saveVar((&sym_subTree->tree),"f",&symCurrentVar);
+                    sym_saveVarType(symCurrentVar,"integer");
+            
                     symNewStackBlock(sym_stack,&sym_subTree);           //cyklus||podmienka||whatever
                     
-                    sym_saveVar((&sym_subTree->tree),"n");
-                    sym_saveVar((&sym_subTree->tree),"p");
+                    sym_saveVar((&sym_subTree->tree),"n",&symCurrentVar);
+                    sym_saveVar((&sym_subTree->tree),"p",&symCurrentVar);
 
                     if (isVarDeclared(sym_stack, "x")){
                         printf("\ntrue\n");
@@ -64,6 +67,7 @@ int main(){
     //symDisposeStackBlock(sym_stack, &sym_subTree);
     //printf("no co %s\n", sym_subTree->tree->key);
     sym_inorderGlobal(sym_globalTree);
+    printf("heloooooooooo %d",sym_globalTree->subtree->tree->type);
     
 
     //symDisposeStackBlock(sym_stack);

@@ -61,6 +61,25 @@ bool sym_search(TreeItem *tree, char* key) {
   }
   return false;
 }
+int sym_searchVarType(TreeItem *tree, char* key) {
+  if (tree == NULL){
+    return -1;
+  }
+  else{
+    if (strcmp(key, tree->key)==0){
+      return tree->ForV.VData->varType;
+    }
+    else{
+      if (strcmp(key, tree->key)<0){
+        return sym_search(tree->lptr, key);
+      }
+      else{
+        return sym_search(tree->rptr, key);
+      }
+    }
+  }
+  return -1;
+}
 void symStackPop(SymStack *myStack){
     SymStackElement* tmp;
     if (myStack->head!=NULL){
@@ -154,18 +173,18 @@ int sym_saveVar(TreeItem **sym_subtree,char* key, TreeItem** currentVar){
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
   return 0;
 }
-void sym_saveVarType(varData* data, char* type){
-  if(strcmp(type,"integer")){
-    data->varType=integer;
+void sym_saveVarType(TreeItem* data, char* type){
+  if(strcmp(type,"string")==0){
+    data->ForV.VData->varType=string;
   }
-  else if(strcmp(type,"string")){
-    data->varType=string;
+  else if(strcmp(type,"integer")==0){
+    data->ForV.VData->varType=integer;
+  } 
+  else if(strcmp(type,"number")==0){
+    data->ForV.VData->varType=number;
   }
-  else if(strcmp(type,"number")){
-    data->varType=number;
-  }
-  else if(strcmp(type,"nil")){
-    data->varType=nil;
+  else if(strcmp(type,"nil")==0){
+    data->ForV.VData->varType=nil;
   }
 }
 /**
@@ -176,7 +195,20 @@ void sym_saveVarType(varData* data, char* type){
 void sym_inorder(TreeItem *tree) {
   if (tree != NULL){
     sym_inorder(tree->lptr);
-    printf("    %s\n", tree->key);
+    printf("    %s :", tree->key);
+    if (tree->ForV.VData->varType==0){
+      printf(" string\n");
+    }
+    else if (tree->ForV.VData->varType==1){
+      printf(" integer\n");
+    }
+    else if (tree->ForV.VData->varType==2){
+      printf(" number\n");
+    }
+    else if (tree->ForV.VData->varType==3){
+      printf(" nil\n");
+    }
+    
     sym_inorder(tree->rptr);
   }
 }
@@ -207,6 +239,14 @@ bool isFunDeclared(char* key, TreeItem* globalTree){
   return false;
 }
 bool isVarDeclared(SymStack* myStack, char* key){
+  SymStackElement* tmp=myStack->head;
+  while(tmp!=NULL){
+    if(sym_search(tmp->root->tree, key)) return true;
+    tmp=tmp->next;
+  }
+  return false;
+}
+int sym_varType(SymStack* myStack, char* key){
   SymStackElement* tmp=myStack->head;
   while(tmp!=NULL){
     if(sym_search(tmp->root->tree, key)) return true;

@@ -173,6 +173,7 @@ bool isFunDeclared(char* key, TreeItem* globalTree);
  * @return int 
  */
 int sym_saveVar(TreeItem **sym_subtree,char* key, TreeItem** currentVar);
+void sym_saveVarType(TreeItem* data, char* type);
 
 /**
  * @brief zisti ci sa na stacku nachadza item s klucom key
@@ -235,7 +236,7 @@ bool isInbuildFun(char* str);
  * @return false 
  */
 bool symSatckIsEmpty(SymStack* myStack);
-
+int sym_searchVarType(TreeItem *tree, char* key);
 void sym_inorderGlobal(TreeItem *tree);
 void printStack(SymStack *myStack);
 
