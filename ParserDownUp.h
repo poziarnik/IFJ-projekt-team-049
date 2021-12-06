@@ -15,6 +15,7 @@ typedef enum{
     STR,
     STR_zero,
     NIL,
+    UNDEFINED_VARIABLE,
 }expressionType;
 
 
@@ -46,8 +47,8 @@ int table_input_symbol(Token *Mytoken);
  */
 int reduce_by_rule(TStack *Stack, Token *MyToken);
 
-int isExpresionright(Tree *exprTree);
+int isExpresionright(Tree *exprTree, symtable *Symtable);
 
-int expressionSemanticCheck(Tree *exprTree);
+int expressionSemanticCheck(Tree *exprTree, symtable *Symtable);
 
 #endif // !__PARSER__
