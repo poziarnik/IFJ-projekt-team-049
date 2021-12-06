@@ -239,5 +239,6 @@ bool symSatckIsEmpty(SymStack* myStack);
 int sym_searchVarType(TreeItem *tree, char* key);
 void sym_inorderGlobal(TreeItem *tree);
 void printStack(SymStack *myStack);
+int sym_varType(SymStack* myStack, char* key);
 
 #endif
