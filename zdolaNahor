@@ -1,4 +1,1 @@
---[[ ] ] ] ]]
---[[ abcd ]]
---[[ \n\n\n\n\n ]]
-ahoj "
+#"help" * #a + #b + #a * #(a .. b) ahoj

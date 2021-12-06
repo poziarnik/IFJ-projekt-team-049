@@ -43,7 +43,10 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             
         case 'L':
             // puts("op expand");
-            if (Stack->top->Item == NOTERM && table_input_symbol(MyToken) == DATA && Stack_first_nonterm(Stack) == ELSE){
+            if (Stack->top->Item == NOTERM && table_input_symbol(MyToken) == DATA){
+                while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
+                status = reduce_by_rule(Stack, MyToken);
+            }
                 END = true;
             }
             
@@ -346,10 +349,235 @@ void printExpressionTree(Tree *exprtree){
             exprtree->Data->type == More || \
             exprtree->Data->type == Less_equal || \
             exprtree->Data->type == More_equal || \
+            exprtree->Data->type == Is_equal || \
             exprtree->Data->type == Not_equal || \
             exprtree->Data->type == Assign){
         printExpressionTree(exprtree->attr.binary.left);
         printf("%s ", exprtree->Data->data.string);
         printExpressionTree(exprtree->attr.binary.right);
     }
+}
+
+int isExpresionright(Tree *exprTree){
+    int isOK = expressionSemanticCheck(exprTree);
+    if (isOK == SEMANTICAL_COMPABILITY_ERROR){
+        return isOK;
+    }
+    else if (isOK == DIVISION_ZERO_ERROR){
+        return isOK;
+    }
+    else if (isOK == NIL_ERROR){
+        return isOK;
+    }
+    return PROGRAM_OK;
+}
+
+
+int expressionSemanticCheck(Tree *exprTree){
+    int left, right, unary;
+
+    // typ Integer
+    if (exprTree->Data->type == Integer){
+        if (exprTree->Data->data.integer == 0){
+            return INT_zero; 
+        }
+        return INT;
+    }
+
+    // typ Number
+    else if (exprTree->Data->type == Number){
+        if (exprTree->Data->data.number == 0){
+            return NR_zero;
+        }
+        return NR;
+    }
+
+    // typ String
+    else if (exprTree->Data->type == String){
+        if (strcmp(exprTree->Data->data.string, "") == 0){
+            return STR_zero;
+        }
+        return STR;
+    }
+
+    else if(strcmp(exprTree->Data->data.string, "nil") == 0){
+        return NIL;
+    }
+
+    // Plus, Minus, Multiplication (+, -, *) -- standardne binarne operatory
+    else if (exprTree->Data->type == Plus || exprTree->Data->type == Minus ||\
+             exprTree->Data->type == Multiplication){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+
+        if (left == STR || left == STR_zero || right == STR || right == STR_zero){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if((left == INT && right == INT_zero) || \
+                (left == INT && right == NR) || \
+                (left == INT && right == NR_zero) || \
+                (right == INT && left == INT_zero) || \
+                (right == INT && left == NR) || \
+                (right == INT && left == NR_zero) || \
+                (right == INT_zero && left == NR_zero) || \
+                (left == INT_zero && right == NR_zero)){
+            return left;
+        }
+
+        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+            return DIVISION_ZERO_ERROR;
+        }
+
+        else if(left == NIL || right == NIL){
+            return NIL_ERROR;
+        }
+
+        else if (left == right){
+            return left;
+        }
+
+        return SEMANTICAL_COMPABILITY_ERROR;
+    }
+
+    // Concatenation (..)
+    else if (exprTree->Data->type == Concatenation){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+
+        if(left == NIL || right == NIL){
+            return NIL_ERROR;
+        }
+
+        // moze byt iba string so stringom
+        else if ((left == STR && right == STR) || \
+            (left == STR && right == STR_zero) || \
+            (right == STR && left == STR_zero) || \
+            (left == STR_zero && right == STR_zero)){
+            return left;
+        }
+
+        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+            return DIVISION_ZERO_ERROR;
+        }
+
+        return SEMANTICAL_COMPABILITY_ERROR;;
+    }
+
+    // Sizeof (#)
+    else if (exprTree->Data->type == Sizeof){
+        unary = expressionSemanticCheck(exprTree->attr.unary.child);
+        
+        if(unary == NIL){
+            return NIL_ERROR;
+        }
+
+        else if (unary != STR && unary != STR_zero){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (unary == STR_zero){
+            return INT_zero;
+        }
+
+        return INT;
+    }
+
+    // Division, Division_integer (/, //)
+    else if (exprTree->Data->type == Division){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+
+        if (left == STR || left == STR_zero || right == STR || right == STR_zero){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (right == NR_zero || right == INT_zero || \
+            left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+            return DIVISION_ZERO_ERROR;
+        }
+
+        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if(left == NIL || right == NIL){
+            return NIL_ERROR;
+        }
+        
+        return left;
+    }
+
+    else if(exprTree->Data->type == Division_integer){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+
+        if (left == STR || left == STR_zero || right == STR || right == STR_zero){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        else if (right == INT_zero || left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+            return DIVISION_ZERO_ERROR;
+        }
+
+        else if ((left == INT && right == INT) || (left == INT_zero && right == INT)){
+            return INT;
+        }
+
+        else if(left == NIL || right == NIL){
+            return NIL_ERROR;
+        }
+
+        return SEMANTICAL_COMPABILITY_ERROR;
+    }
+
+    else if(exprTree->Data->type == Less || exprTree->Data->type == More || \
+            exprTree->Data->type == Less_equal || exprTree->Data->type == More_equal){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+
+        if(left == NIL || right == NIL){
+            return NIL_ERROR;
+        }
+
+        else if(left == right){
+            return left;
+        }
+
+        else if((left == INT && right == INT_zero) || \
+                (left == INT && right == NR) || \
+                (left == INT && right == NR_zero) || \
+                (right == INT && left == INT_zero) || \
+                (right == INT && left == NR) || \
+                (right == INT && left == NR_zero)){
+            return left;
+        }
+
+        return SEMANTICAL_COMPABILITY_ERROR;
+    }
+
+    else if (exprTree->Data->type == Not_equal || exprTree->Data->type == Is_equal){
+        left = expressionSemanticCheck(exprTree->attr.binary.left);
+        right = expressionSemanticCheck(exprTree->attr.binary.right);
+        
+        if (left == right){
+            return left;
+        }
+
+        else if (((left == STR || left == NR || left == NR_zero || left == INT || left == INT_zero || left == NIL) && right == NIL) || \
+                (right == STR || right == NR || right == NR_zero || right == INT || right == INT_zero || right == NIL) && left == NIL){
+            return PROGRAM_OK;
+        }
+        
+    }
+
+    return -1;
 }
