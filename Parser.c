@@ -197,6 +197,10 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         else if(MyToken->type==L_bracket){
             return true;
         }
+        else if(MyToken->type==Keyword){
+            if(strcmp(MyToken->data.string,"nil")==0) return true; 
+            else return false;
+        }
         else return false;
     }
     else if (MyNonTerminal == nextExpression){
@@ -835,7 +839,7 @@ int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abs
 
     if (MyToken->type==Identifier){
         parcerPrint("define" ,MyToken ,PRINT_ON);
-        sym_saveVar(&mySymtable->sym_subTree->tree, MyToken->data.string);
+        sym_saveVar(&mySymtable->sym_subTree->tree, MyToken->data.string, &mySymtable->currentVar);
 
         status = ASTsaveToken(abstractTree->ASTStack, MyToken, definitionID);
         if(status != 0) return status;

@@ -141,7 +141,7 @@ int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree, SymStack* 
   bst_insert(sym_globalTree, key, newItem);                       //vloz item do global tree
   return 0;
 }
-int sym_saveVar(TreeItem **sym_subtree,char* key){
+int sym_saveVar(TreeItem **sym_subtree,char* key, TreeItem** currentVar){
   varData* data=(varData*)malloc(sizeof(varData));                    //vytvor data
   data->varType=1;
   
@@ -149,13 +149,25 @@ int sym_saveVar(TreeItem **sym_subtree,char* key){
   if(newItem==NULL) return INTERNAL_ERROR;
   TreeItemInit(newItem);
   *newItem->ForV.VData=*data;
-  
+  *currentVar=newItem;
+
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
   return 0;
 }
-/*int sym_saveVarType(){
-
-}*/
+void sym_saveVarType(varData* data, char* type){
+  if(strcmp(type,"integer")){
+    data->varType=integer;
+  }
+  else if(strcmp(type,"string")){
+    data->varType=string;
+  }
+  else if(strcmp(type,"number")){
+    data->varType=number;
+  }
+  else if(strcmp(type,"nil")){
+    data->varType=nil;
+  }
+}
 /**
  * @brief Vypise zadany strom inorder na stdout
  *  
@@ -227,6 +239,7 @@ int symtableInit(symtable* sym){
   symStackInit(symstack);
   sym->sym_stack=symstack;
   sym->sym_globalTree=NULL;
+  sym->currentVar=NULL;
   return 0;
 }
 bool isInbuildFun(char* str){

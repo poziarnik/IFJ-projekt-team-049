@@ -22,8 +22,15 @@ typedef enum{
     variable
 }leafType;
 
+typedef enum{
+    string,
+    integer,
+    number,
+    nil
+}DataType;
+
 typedef struct {
-    int varType;
+    DataType varType;
 }varData;
 
 typedef struct {
@@ -63,6 +70,7 @@ typedef struct symtable{
     TreeItem *sym_globalTree;
     SymTreeRoot *sym_subTree;
     SymStack *sym_stack;
+    TreeItem *currentVar;
 }symtable;
 
 
@@ -164,7 +172,7 @@ bool isFunDeclared(char* key, TreeItem* globalTree);
  * @param key 
  * @return int 
  */
-int sym_saveVar(TreeItem **sym_subtree,char* key);
+int sym_saveVar(TreeItem **sym_subtree,char* key, TreeItem** currentVar);
 
 /**
  * @brief zisti ci sa na stacku nachadza item s klucom key
