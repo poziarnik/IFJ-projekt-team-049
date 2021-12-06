@@ -254,7 +254,7 @@ int sym_varType(SymStack* myStack, char* key){
     if(Milan!=-1) return Milan;
     tmp=tmp->next;
   }
-  return false;
+  return -1;
 }
 int symNewStackBlock(SymStack* myStack, SymTreeRoot **sym_subTree){
   SymTreeRoot* newRoot = treeCreateRoot();
