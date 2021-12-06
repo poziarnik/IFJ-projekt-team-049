@@ -71,10 +71,10 @@ int sym_searchVarType(TreeItem *tree, char* key) {
     }
     else{
       if (strcmp(key, tree->key)<0){
-        return sym_search(tree->lptr, key);
+        return sym_searchVarType(tree->lptr, key);
       }
       else{
-        return sym_search(tree->rptr, key);
+        return sym_searchVarType(tree->rptr, key);
       }
     }
   }

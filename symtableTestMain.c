@@ -26,7 +26,7 @@ int main(){
                 sym_saveFun(&sym_globalTree,&sym_subTree, sym_stack,mytoken->data.string);              
                 if (strcmp(mytoken->data.string,"global")==0){
                     sym_saveVar((&sym_subTree->tree),"x",&symCurrentVar);
-                    sym_saveVarType(symCurrentVar,"integer");
+                    sym_saveVarType(symCurrentVar,"nil");
                     printf("haloo2\n");
                     //sym_inorder(sym_subTree->tree);
         
@@ -42,8 +42,8 @@ int main(){
                     sym_saveVar((&sym_subTree->tree),"n",&symCurrentVar);
                     sym_saveVar((&sym_subTree->tree),"p",&symCurrentVar);
 
-                    if (isVarDeclared(sym_stack, "x")){
-                        printf("\ntrue\n");
+                    if (sym_varType(sym_stack, "x")!=-1){
+                        printf("\nhiiiiiiiiiiiiiiiii %d\n",sym_varType(sym_stack, "j"));
                     }
                     else{
                         printf("\nfalse\n");
