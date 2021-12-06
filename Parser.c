@@ -790,6 +790,10 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
     //skontroluj expresion
     status=expressionCheck(MyToken,list,newExpression);
     if (status!=0) return status;
+
+    status = isExpresionright(newExpression, mySymtable);
+    if(status != 0) return status;
+
     //vloz expression do AST
     if (abstractTree->ASTStack->head->statement->type==ASTcycle){
         *abstractTree->ASTStack->head->statement->TStatement.while_loop->expression=*newExpression;
