@@ -5,6 +5,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "MyStackTree.h"
+#include "symtable.h"
+
+typedef enum{
+    INT,
+    INT_zero,
+    NR,
+    NR_zero,
+    STR,
+    STR_zero,
+    NIL,
+}expressionType;
 
 
 
@@ -34,5 +45,9 @@ int table_input_symbol(Token *Mytoken);
  * @return int 
  */
 int reduce_by_rule(TStack *Stack, Token *MyToken);
+
+int isExpresionright(Tree *exprTree);
+
+int expressionSemanticCheck(Tree *exprTree);
 
 #endif // !__PARSER__
