@@ -41,17 +41,23 @@ void gen_move_string(root *root, int i, int a);
 
 void gen_move_number(root *root, int i, int a);
 
-void gen_move_in_func_call(root *root, int i, int a);
+void gen_move_int_indef(root *root,int i);
 
-void gen_add(char *x);
+void gen_move_string_indef(root *root, int i);
 
-void gen_sub(char *x);
+void gen_move_number_indef(root *root,int i);
 
-void gen_mul(char *x);
+void gen_move_in_func_call(char *var);
 
-void gen_div(char *x);
+void gen_add(char *first, char *second);
 
-void gen_idiv(char *x);
+void gen_sub(char *first, char *second);
+
+void gen_mul(char *first, char *second);
+
+void gen_div(char *first, char *second);
+
+void gen_idiv(char *first, char *second);
 
 void gen_LT(char *x);
 
