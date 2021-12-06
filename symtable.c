@@ -153,6 +153,9 @@ int sym_saveVar(TreeItem **sym_subtree,char* key){
   bst_insert(sym_subtree, key, newItem);                   //vloz do current subtree
   return 0;
 }
+/*int sym_saveVarType(){
+
+}*/
 /**
  * @brief Vypise zadany strom inorder na stdout
  *  
