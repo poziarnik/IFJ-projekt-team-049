@@ -15,7 +15,8 @@ typedef enum{
     ASTcycle,
     ASTdefine,
     ASTassigne,
-    ASTfunctionCall
+    ASTfunctionCall,
+    ASTreturn
 }statementType;
 
 typedef enum{
@@ -63,7 +64,8 @@ typedef struct state{
         struct assign_tree *assignment;
         struct definition_tree *definiton;
         struct functioncall_tree *functioncall;
-        struct global* root;
+        struct global *root;
+        struct returnTree *FCreturn;
     }TStatement;
 }Tstate;
 
@@ -132,6 +134,12 @@ typedef struct functioncall_tree{
     int* nbParameters;
 }TFunctioncall_tree;
 
+typedef struct returnTree{
+    Tree **expressions;
+    int* nbexpressions;
+}Treturn_tree;
+
+
 //!!!!! za kazdym define assigne FCcall musi ist po naplneni parametrov end
 
 ASTtree* ASTtreeCreate();
@@ -142,6 +150,7 @@ int ASTaddDefineToTree(ASTstack* myStack);
 int ASTaddAssigmentToTree(ASTstack* myStack);
 int ASTaddFCcallToTree(ASTstack* myStack);
 int ASTaddConditionToTree(ASTstack* myStack);
+int ASTaddReturnToTree(ASTstack* myStack);
 int ASTaddElseToCondition(ASTstack* myStack);
 int ASTallocateSpaceForElse(ASTstack* myStack);
 /**

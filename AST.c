@@ -171,6 +171,18 @@ int ASTaddElseToCondition(ASTstack* myStack){
         ASTallocateSpaceForElse(myStack);
     }
 }
+int ASTaddReturnToTree(ASTstack* myStack){
+    Tstate* newStatement=ASTcreateLeaf(ASTreturn);
+    if (newStatement==NULL){
+        return INTERNAL_ERROR;
+    }
+    //pridaj do stromu na statements na vrchu stacku
+    ASTaddToStatements(ASTreturnFastST(myStack), ASTreturnFastNB(myStack), newStatement);
+    //pridaj na vrch stacku
+    ASTStackPush(myStack, newStatement);
+    
+    return 0;
+}
 int ASTallocateSpaceForElse(ASTstack* myStack){
     //allokuj nbStatements
     myStack->head->statement->TStatement.if_loop->nbElseStatements = (int*)malloc(sizeof(int));
@@ -375,8 +387,6 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.functioncall->nbParameters = (int*)malloc(sizeof(int));
         newLeaf->TStatement.functioncall->IDs = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbID);
         newLeaf->TStatement.functioncall->parameters = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbParameters);
-
-
     }
     else if (type==ASTcondition){
         //-alokovat strukturu
@@ -389,6 +399,15 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.if_loop->nbIfStatements = (int*)malloc(sizeof(int));
         *(newLeaf->TStatement.if_loop->nbIfStatements)=0;
         newLeaf->TStatement.if_loop->if_statements = ASTcreateStatements(newLeaf->TStatement.if_loop->nbIfStatements); 
+    }
+    else if (type==ASTreturn){
+        //-alokovat strukturu
+        newLeaf->type=ASTreturn;
+        newLeaf->TStatement.FCreturn = (Treturn_tree*)malloc(sizeof(Treturn_tree));
+        //--alokovat priestor pre Tokeny
+        newLeaf->TStatement.FCreturn->nbexpressions = (int*)malloc(sizeof(int));
+        *(newLeaf->TStatement.FCreturn->nbexpressions)=0;
+        newLeaf->TStatement.FCreturn->expressions = ASTcreateExpressions(newLeaf->TStatement.FCreturn->nbexpressions);
     }
 
     return newLeaf;    
@@ -563,12 +582,22 @@ void ASTprintStatement(Tstate* statement){
     }
     else if (statement->type==ASTcondition)
     {
-    
         printf("\033[1;36m");
         printf("    If\n");
         printf("\033[0m");
         printf("        expression: ");
         printExpressionTree(statement->TStatement.if_loop->expression);
+        printf("\n");
+    }
+    else if(statement->type==ASTreturn){
+
+        printf("\033[0;31m");
+        printf("    return\n");
+        printf("\033[0m");
+        printf("\n        expression: ");
+        for (int i = 0; i < *statement->TStatement.FCreturn->nbexpressions; i++){
+            printExpressionTree(statement->TStatement.FCreturn->expressions[i]);
+        }
         printf("\n");
     }
     int nb=0;
@@ -601,7 +630,6 @@ void ASTprintStatement(Tstate* statement){
                 
                 tmp=NULL;
             }
-            
         }
         else if (statement->type==ASTdefine){
             tmp=NULL;
@@ -612,10 +640,11 @@ void ASTprintStatement(Tstate* statement){
         else if (statement->type==ASTfunctionCall){
             tmp=NULL;
         }
-        
+        else if (statement->type==ASTreturn){
+            tmp=NULL;
+        }
         
         nb=nb+1;
-        
         if (tmp==NULL) break;
         ASTprintStatement(tmp);
     }
@@ -626,6 +655,7 @@ void ASTprintStatement(Tstate* statement){
     else if(statement->type==ASTassigne) {printf("\033[0;31m"); printf("\n    assigment end\n"); printf("\033[0m");}
     else if(statement->type==ASTfunctionCall) {printf("\033[0;32m"); printf("\n    functionCall end\n"); printf("\033[0m");}
     else if(statement->type==ASTcondition)   {printf("\033[1;36m"); printf("\n    condition end\n"); printf("\033[0m");}
+    else if(statement->type==ASTreturn){printf("\033[0;31m"); printf("    return end\n"); printf("\033[0m");}
 }
 void ASTprintStack(ASTstack* myStack){
     ASTstackElement* tmp=myStack->head;

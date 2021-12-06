@@ -160,6 +160,9 @@ typedef enum{
     FCallparam,
     FCallnextParam,
     FCreturn,
+    returnParams,
+    returnParam,
+    returnNextParam,
     statementOutOfFc
 }NonTerminal;
 
@@ -195,6 +198,9 @@ int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
 int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnParams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnNextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
