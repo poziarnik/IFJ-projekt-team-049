@@ -17,8 +17,6 @@ int main(){
         return 0;
     }*/
 
-    TokenList list;
-    listInit(&list);
     int end=0;
     while(end!=10){
 
@@ -26,7 +24,7 @@ int main(){
         if(mytoken == NULL){
             return 10;
         }
-        end=tokenScan(stdin, &list, mytoken);
+        end=tokenScan(stdin, mytoken);
         if (end == 0){
             printf("----------------------------------------------------------\n");
             if (mytoken->type == Integer){

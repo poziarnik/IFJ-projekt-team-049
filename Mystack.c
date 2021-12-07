@@ -65,7 +65,7 @@ void Stack_pop(TStack *Stack){
 }
 
 
-int Stack_first_nonterm(TStack *stack){
+int Stack_first_term(TStack *stack){
     for (TElement *tmp = stack->top; tmp != NULL; tmp = tmp->next){
         if (tmp->Item < NOTERM){
             return tmp->Item;

@@ -121,11 +121,11 @@ typedef struct definition_tree{
     defineState* state;
     Token *id;
     Token *data_type;
-    union exfc{
+    union exfc {
         Tree *expression;
         struct state* FCcall;
-    }ExFc;
-}TDefinition_tree;
+    } ExFc;
+} TDefinition_tree;
 
 typedef struct aststack{
     struct ast_stackElement* head;

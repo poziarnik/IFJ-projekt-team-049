@@ -35,7 +35,7 @@ void gen_func_ret(root *root, int i, int j);
 
 void gen_defvar(root *root, int i);
 
-void gen_move_int(root *root, int i, int a);
+void gen_move_int(char *var, int i);
 
 void gen_move_string(root *root, int i, int a);
 
@@ -59,21 +59,33 @@ void gen_div(char *first, char *second);
 
 void gen_idiv(char *first, char *second);
 
-void gen_LT(char *x);
+void gen_strlen(char *string);
 
-void gen_GT(char *x);
+void gen_LT(char *first, char *second);
+
+void gen_GT(char *first, char *second);
+
+void gen_EQ(char *first, char *second);
     
-void gen_EQ(char *x);
+void gen_JUMPIFEQ(char *jump ,char *first, char *second);
+
+void gen_JUMPIFNEQ(char *jump ,char *first, char *second);
+
+void gen_OR(char *first, char *second);
 
 /******************** generovanie cyklov ********************/
 
-void gen_if();
+void gen_then(int counter);
 
-void gen_else();
+void gen_else(int counter);
 
-void gen_while();
+void gen_jump_end(int counter);
 
-void gen_then();
+void gen_end(int counter);
+
+void gen_while(int i);
+
+void gen_while_end(int i);
 
 /******************** generovanie vstavanych funkcii ********************/
 

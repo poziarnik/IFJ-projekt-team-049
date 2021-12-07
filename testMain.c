@@ -9,16 +9,16 @@ int main(){
     if (mySymtable == NULL) return INTERNAL_ERROR;
     symtableInit(mySymtable); 
 
-    TokenList list;
-    listInit(&list);
     Token* MyToken = tokenCreate();
-    tokenScan(stdin,&list,MyToken);
+    
+    tokenScan(stdin,MyToken);
+    
     int status;
-    Tree *exprTree;
-    status = expressionCheck(MyToken,&list, exprTree);
+    Tree *exprTree = (Tree *)malloc(sizeof(Tree));
+    status = expressionCheck(MyToken, exprTree);
     if (status == 0){
-        printf("OK");
-        printExpressionTree(exprTree);
+        status = isExpresionright(exprTree, mySymtable);
+        printf("%i", status);
         return status;
     }
     else{
