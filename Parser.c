@@ -578,7 +578,7 @@ int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* 
         
     }
     else if (first(MyToken, assigneOrFunctioCall)){ 
-        if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+        if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree, abstractTree)){   //ak je funkcia ries function call ak nie ries assigne
             RETURN_ON_ERROR_FCCALL(false); 
         }
         else{ 
@@ -736,7 +736,7 @@ int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* ab
 
     if (first(MyToken, expression)){// or fccall + cash(Token** cash)ked sa rozhodne ci assigne alebo funkcia prida do vytvorenej struktury 
         if(MyToken->type==Identifier){
-            if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+            if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree, abstractTree)){   //ak je funkcia ries function call ak nie ries assigne
                 
                 ASTdeleteLastFromTree(abstractTree->ASTStack);//odstranim assigneLeaf zo stromu
                 
@@ -833,6 +833,11 @@ int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
     else if(abstractTree->ASTStack->head->statement->type==ASTreturn){
         status = ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.FCreturn->expressions), \
                             abstractTree->ASTStack->head->statement->TStatement.FCreturn->nbexpressions, newExpression);
+        if(status != 0) return status;
+    }
+    else if(abstractTree->ASTStack->head->statement->type==ASTfunctionCall){
+        status = ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.functioncall->parameters), \
+                            abstractTree->ASTStack->head->statement->TStatement.functioncall->nbParameters, newExpression);
         if(status != 0) return status;
     }
 
@@ -996,7 +1001,7 @@ int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree*
     
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
-            if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree)){
+            if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree, abstractTree)){
                 RETURN_ON_ERROR_FCCALL(false);
             }
             else RETURN_ON_ERROR(fc_expression);

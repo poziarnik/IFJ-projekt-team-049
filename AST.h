@@ -6,7 +6,8 @@
 #include <stdbool.h>
 #include "Scanner.h"
 #include "MyStackTree.h"
-#include "ParserDownUp.h"
+//#include "ParserDownUp.h"
+//#include "symtable.h"
 
 typedef enum{
     ASTglobal,
@@ -32,6 +33,18 @@ typedef enum{
 }saveType;
 
 typedef enum{
+    readi,
+    reads,
+    readn,
+    write,
+    tointeger,
+    ord,
+    substr,
+    chr,
+    empty
+}inbuild;
+
+typedef enum{
     IfStatement,
     ElseStatement
 }ifOrElse;
@@ -45,6 +58,7 @@ typedef enum{
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
+    inbuild UsedInBuild[8];
 }ASTtree;
 /*typedef struct root{
     struct state **global_state;
@@ -130,7 +144,7 @@ typedef struct functioncall_tree{
     Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
     int* nbID;
     Token *functionName;
-    Token **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+    Tree **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
     int* nbParameters;
 }TFunctioncall_tree;
 
@@ -242,5 +256,26 @@ void ASTprintStatement(Tstate* statement);
  * @param myStack 
  */
 void ASTprintStack(ASTstack* myStack);
+
+/**
+ * @brief zapise do pola enumov v AST ze zadana inbuild funkcia bola v programe pouzita 
+ * 
+ */
+void ASTinBuildUsed(ASTtree* tree, inbuild FC);
+
+/**
+ * @brief inicializuje pole pouzitych funkcii na empty pri vytvoreni AST
+ * 
+ * @param array 
+ */
+void ASTinBuildArrayInit(inbuild* array);
+
+/**
+ * @brief Print expression stromu
+ * 
+ * @param exprtree -strom
+ */
+void printExpressionTree(Tree *exprtree);
+void ASTprintInBuild(ASTtree* tree);
 
 #endif 

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "AST.h"
 
 typedef enum{
     function,
@@ -66,7 +67,7 @@ typedef struct sym_stack{
     struct sym_stackElement* head;
 }SymStack;
 
-typedef struct symtable{
+typedef struct sym_symtable{
     TreeItem *sym_globalTree;
     SymTreeRoot *sym_subTree;
     SymStack *sym_stack;
@@ -163,7 +164,7 @@ int sym_saveFun(TreeItem **sym_globalTree, SymTreeRoot **sym_subTree,SymStack* m
  * @return true 
  * @return false 
  */
-bool isFunDeclared(char* key, TreeItem* globalTree);
+bool isFunDeclared(char* key, TreeItem* globalTree, ASTtree* abstractTree);
 
 /**
  * @brief Vytvori novy item s klucom key a vlozi ho do current subtree
@@ -228,6 +229,8 @@ int symtableInit(symtable* sym);
  * @return false 
  */
 bool isInbuildFun(char* str);
+
+bool ASTisInbuildFunSave(char* str, ASTtree* abstractTree);
 /**
  * @brief ak je stack prazny vracia NULL;
  * 

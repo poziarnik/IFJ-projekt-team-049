@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "MyStackTree.h"
 #include "symtable.h"
+#include "AST.h"
 
 typedef enum{
     INT,
@@ -21,13 +22,7 @@ typedef enum{
 
 
 
-/**
- * @brief Print expression stromu
- * 
- * @param exprtree -strom
- */
 
-void printExpressionTree(Tree *exprtree);
 int expressionCheck(Token* MyToken, TokenList* list, Tree *expression);
 
 /**

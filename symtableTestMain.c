@@ -43,7 +43,7 @@ int main(){
                     sym_saveVar((&sym_subTree->tree),"p",&symCurrentVar);
 
                     if (sym_varType(sym_stack, "x")!=-1){
-                        printf("\nhiiiiiiiiiiiiiiiii %d\n",sym_varType(sym_stack, "j"));
+                        printf("\nhiiiiiiiiiiiiiiiii %d\n",sym_varType(sym_stack, "x"));
                     }
                     else{
                         printf("\nfalse\n");
