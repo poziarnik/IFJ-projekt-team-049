@@ -708,6 +708,12 @@ void ASTinBuildUsed(ASTtree* tree, inbuild FC){
         else if(tree->UsedInBuild[i]==FC) break;
     }
 }
+bool ASTisInBuildUsed(ASTtree* tree, inbuild FC){
+    for (int i = 0; i < 8; i++){
+        if (tree->UsedInBuild[i]==empty) return false;
+        else if(tree->UsedInBuild[i]==FC) return true;
+    }
+}
 void ASTprintInBuild(ASTtree* tree){
     printf("\nUsed InBuild------------------------------------------------------\n\n");
     for (int i = 0; i < 8; i++){

@@ -276,6 +276,22 @@ void ASTinBuildArrayInit(inbuild* array);
  * @param exprtree -strom
  */
 void printExpressionTree(Tree *exprtree);
+
+/**
+ * @brief vypise pouzite inBuild funkcie (enum)
+ * 
+ * @param tree 
+ */
 void ASTprintInBuild(ASTtree* tree);
+
+/**
+ * @brief kontroluje ci bola zadana inbuild funkcia v programe pouzita
+ * 
+ * @param tree 
+ * @param FC 
+ * @return true 
+ * @return false 
+ */
+bool ASTisInBuildUsed(ASTtree* tree, inbuild FC);
 
 #endif 
