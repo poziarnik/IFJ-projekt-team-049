@@ -6,8 +6,6 @@
 #include <stdbool.h>
 #include "Scanner.h"
 #include "MyStackTree.h"
-//#include "ParserDownUp.h"
-//#include "symtable.h"
 
 typedef enum{
     ASTglobal,
