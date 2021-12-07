@@ -64,9 +64,9 @@ typedef enum{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int fc_program(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //program: <prolog><code>
-int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                           //code: <functionDec><code><statement>
+int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                           //code: <functionDec><code><statementOutOfFc>
 int fc_statementOutOfFc(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                               //statementOutOfFc: <functionDec>||<functionCall>(bez ids) <statementOutOfFc>
-int fc_functionDec(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                    //functionDec: <global_scope>function<function_iden>(<params><returntypes>)<statement>end
+int fc_functionDec(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                    //functionDec: <global_scope>function<functionIden>(<params><returntypes>)<statement>end
 int fc_global_scope(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                   //global_scope: global
 int fc_functionIden(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                   //functionIden: <functionIden>
 int fc_params(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //params: <param><nextParam>
@@ -77,11 +77,11 @@ int fc_nextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);  
 int fc_nextType(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                       //nextType: ,Type<nextType>
 int fc_loop(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                           //loop: while<expression>do<statement>end
 int fc_condition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                      //condition: if<expresion>then<statement><elseCondition>end
-int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //
+int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                  //elseCondition: else<statement>
+int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //assigne: <var><nextVar>=<expresion><nextExpresion>||<functionCall>
 int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //define: local|identifier:type<inicialize>
 int fc_expression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //expression: identifier||number||integer||string||sizeof||L_bracet
 int fc_nextExpression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                 //nextExpression: ,<expresion><nextExpression>
-int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                  //elseCondition: else<statement>
 int fc_var(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                            //var: identifier
 int fc_nextVar(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //nextVar: ,<var><nextVar>
 int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //initialize: =<expresion>||<functionCall>
