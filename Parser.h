@@ -12,13 +12,13 @@
 #define PARC_FALSE 2
 
 #define RETURN_ON_ERROR(_function) \
-    if ((status = _function(MyToken, list, mySymtable, abstractTree)) != PARC_TRUE) return status
+    if ((status = _function(MyToken, mySymtable, abstractTree)) != PARC_TRUE) return status
 
 #define RETURN_ON_ERROR_FCCALL(_withIDs) \
-    if ((status = fc_functionCall(MyToken, list, mySymtable, abstractTree, _withIDs)) != PARC_TRUE) return status
+    if ((status = fc_functionCall(MyToken, mySymtable, abstractTree, _withIDs)) != PARC_TRUE) return status
 
 #define SCAN_TOKEN \
-    status = tokenScan(stdin, list, MyToken); \
+    status = tokenScan(stdin, MyToken); \
     if (status==LEXICAL_ERROR) return LEXICAL_ERROR;
     // if (status==10) return 0;
 
@@ -163,38 +163,38 @@ typedef enum{
     statementOutOfFc
 }NonTerminal;
 
-int Parse(TokenList* list, ASTtree* abstractTree, symtable* mySymtable);
+int Parse(ASTtree* abstractTree, symtable* mySymtable);
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
-int fc_program(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_code(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_statementOutOfFc(Token* MyToken, TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_functionDec(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_global_scope(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_functionIden(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_params(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_returnTypes(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_statement(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_param(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_nextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_nextType(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_loop(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_condition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_assigne(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_define(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_expression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_nextExpression(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_elseCondition(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_var(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_nextVar(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_initialize(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_functionCall(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);
-int fc_prolog(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_program(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_statementOutOfFc(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionDec(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_global_scope(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionIden(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_params(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnTypes(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_statement(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_param(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextType(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_loop(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_condition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_expression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextExpression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_var(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_nextVar(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_functionCall(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);
+int fc_prolog(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
-bool chackStr(Token* MyToken, TokenList* list, char* checkType);
-int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
-int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+bool chackStr(Token* MyToken,  char* checkType);
+int fc_FCallparams(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallparam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallnextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCreturn(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,7 +208,7 @@ int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* a
  * @param checkType 
  * @return int 
  */
-int chackType(Token* MyToken, TokenList* list, Token_type checkType);
+int chackType(Token* MyToken, Token_type checkType);
 
 /**
  * @brief Porovna string ulozeny v tokene a parameter str 

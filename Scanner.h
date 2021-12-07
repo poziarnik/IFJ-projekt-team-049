@@ -99,7 +99,7 @@ typedef struct list{
  * @param MyToken 
  * @return int 
  */
-int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken);
+int tokenScan( FILE* Myfile, Token* MyToken);
 
 
 Token* tokenCreate();

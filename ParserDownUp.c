@@ -1,12 +1,12 @@
 #include "ParserDownUp.h"
 
-
+//makro na Scanovanie tokenu, vrati chybu, ak je v tokene lexikalna chyba
 #define SCAN_TOKEN \
-    status = tokenScan(stdin, list, MyToken); \
+    status = tokenScan(stdin, MyToken); \
     if (status==LEXICAL_ERROR ) return LEXICAL_ERROR;
 
 
-int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
+int expressionCheck(Token* MyToken, Tree *expression){
     int status = 0;
     int table[9][9]={
 
@@ -93,7 +93,6 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             // else if (Stack->top->tree->Data->type == Integer){
             //     printf("%i\n", Stack->top->tree->Data->data.integer);
             // }
-            
             SCAN_TOKEN
             break;
 
@@ -105,7 +104,6 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
             if (status != 0){
                 return status;
             }
-
             
     
             break;
@@ -142,8 +140,8 @@ int expressionCheck(Token* MyToken, TokenList* list, Tree *expression){
     
     
 
-    
     if (Stack->top->Item == NOTERM && Stack->top->next->Item == ELSE){
+
         *expression = *Stack->top->tree;
         return PROGRAM_OK;
     }
@@ -360,26 +358,29 @@ void printExpressionTree(Tree *exprtree){
     }
 }
 
+
 int isExpresionright(Tree *exprTree, symtable *Symtable){
     int isOK = expressionSemanticCheck(exprTree, Symtable);
-    if (isOK == SEMANTICAL_COMPABILITY_ERROR){
+    if (isOK == SEMANTICAL_COMPABILITY_ERROR){ //CHYBA 6 - Semanticka
         return isOK;
     }
-    else if (isOK == DIVISION_ZERO_ERROR){
+    else if (isOK == DIVISION_ZERO_ERROR){ //CHYBA 9 - Delenie nulou
         return isOK;
     }
-    else if (isOK == NIL_ERROR){
+    else if (isOK == NIL_ERROR){ //CHYBA 8 - Nespravne pouzitie hodnoty nil
         return isOK;
     }
-    else if (isOK == UNDEFINED_VARIABLE){
+    else if (isOK == UNDEFINED_VARIABLE){ //CHYBA 9 - Nedefinovana premenna
         return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
     }
+
+    
     return PROGRAM_OK;
 }
 
 
 int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
-    int left, right, unary;
+    int left, right, unary, mistakes;
 
     // typ Integer
     if (exprTree->Data->type == Integer){
@@ -405,13 +406,15 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         return STR;
     }
 
+    //typ nil
     else if(strcmp(exprTree->Data->data.string, "nil") == 0){
         return NIL;
     }
 
+    //identifikator
     else if (exprTree->Data->type == Identifier){
+        //podla hodnoty v unary rozhodujem aky ma premmenna typ, pripadne ci bola definovana
         unary = sym_varType(Symtable->sym_stack, exprTree->Data->data.string);
-        printf("%i", unary);
         if (unary == 0){
             return STR;
         }
@@ -428,7 +431,7 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return NIL;
         }
 
-        return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        return UNDEFINED_VARIABLE;
     }
 
     // Plus, Minus, Multiplication (+, -, *) -- standardne binarne operatory
@@ -437,36 +440,28 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
+        // ak je chyba niekde hlbsie v strome
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            return mistakes;
+        }
+
+        // nemozem scitavat retazce
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
-        }
-        
-
-        else if((left == INT && right == INT_zero) || \
-                (left == INT && right == NR) || \
-                (left == INT && right == NR_zero) || \
-                (right == INT && left == INT_zero) || \
-                (right == INT && left == NR) || \
-                (right == INT && left == NR_zero) || \
-                (right == INT_zero && left == NR_zero) || \
-                (left == INT_zero && right == NR_zero)){
-            return left;
-        }
-
-        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
-            return SEMANTICAL_COMPABILITY_ERROR;
-        }
-
-        else if (left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
-            return DIVISION_ZERO_ERROR;
-        }
-
+        //chybne pouzitie nil
         else if(left == NIL || right == NIL){
             return NIL_ERROR;
+        }
+
+        
+
+        // validne kombinacie
+        else if((left == INT || left == INT_zero || left == NR || left == NR_zero) && \
+                (right == INT || right == INT_zero || right == NR || right == NR_zero)){
+            return left;
         }
 
         else if (left == right){
@@ -481,12 +476,15 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
-        if(left == NIL || right == NIL){
-            return NIL_ERROR;
+        //ak je chyba hlbsie v strome
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            return mistakes;
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        // nespravne pouzitie nil
+        if(left == NIL || right == NIL){
+            return NIL_ERROR;
         }
 
         // moze byt iba string so stringom
@@ -497,14 +495,6 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return left;
         }
 
-        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
-            return SEMANTICAL_COMPABILITY_ERROR;
-        }
-
-        else if (left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
-            return DIVISION_ZERO_ERROR;
-        }
-
         return SEMANTICAL_COMPABILITY_ERROR;;
     }
 
@@ -512,7 +502,8 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
     else if (exprTree->Data->type == Sizeof){
         unary = expressionSemanticCheck(exprTree->attr.unary.child, Symtable);
         
-        if(unary == NIL){
+        // chyba hlbsie v strome
+        if(unary == NIL || unary == NIL_ERROR){
             return NIL_ERROR;
         }
 
@@ -520,6 +511,11 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
             return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
         }
 
+        else if (unary == SEMANTICAL_COMPABILITY_ERROR){
+            return SEMANTICAL_COMPABILITY_ERROR;
+        }
+
+        // ak nieje string
         else if (unary != STR && unary != STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
@@ -531,28 +527,28 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         return INT;
     }
 
-    // Division, Division_integer (/, //)
+    // Division (/)
     else if (exprTree->Data->type == Division){
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
+        //ak je chyba hlbsie v strome
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            return mistakes;
+        }
+
+        // nemozem delit stringy
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
-        }
-
-        else if (right == NR_zero || right == INT_zero || \
-            left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+        //delenie nulou
+        else if (right == NR_zero || right == INT_zero){
             return DIVISION_ZERO_ERROR;
         }
 
-        else if (left == SEMANTICAL_COMPABILITY_ERROR || right == SEMANTICAL_COMPABILITY_ERROR){
-            return SEMANTICAL_COMPABILITY_ERROR;
-        }
-
+        //nespravne pouzitie nil
         else if(left == NIL || right == NIL){
             return NIL_ERROR;
         }
@@ -560,72 +556,89 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         return left;
     }
 
+    // Celociselne delenie (//)
     else if(exprTree->Data->type == Division_integer){
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
+        //ak je chyba hlbsie v strome
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            printf("%i", mistakes);
+            return mistakes;
+            
+        }
+
+        // nemozem delit stringy
         if (left == STR || left == STR_zero || right == STR || right == STR_zero){
             return SEMANTICAL_COMPABILITY_ERROR;
+            
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
-        }
-
-        else if (right == INT_zero || left == DIVISION_ZERO_ERROR || right == DIVISION_ZERO_ERROR){
+        //delenie nulou
+        else if (right == INT_zero){
             return DIVISION_ZERO_ERROR;
         }
 
-        else if ((left == INT && right == INT) || (left == INT_zero && right == INT)){
-            return INT;
-        }
-
+        // nespravne pouzitie nil
         else if(left == NIL || right == NIL){
             return NIL_ERROR;
         }
 
+        // mozem delit iba dve nenulove cisla , alebo nulu nenulovym cislom
+        else if (left == INT && right == INT){
+            return INT;
+        }
+
+        //ak delim nulou vraciam INT_nula aby som popripade vedel zachytit chybu
+        else if (left == INT_zero && right == INT){
+            return INT_zero;
+        }
         return SEMANTICAL_COMPABILITY_ERROR;
     }
 
+    // relacne operatory - Less, More, Less_equal, More_equal (<, >, <=, >=)
     else if(exprTree->Data->type == Less || exprTree->Data->type == More || \
             exprTree->Data->type == Less_equal || exprTree->Data->type == More_equal){
+                
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
 
-        if(left == NIL || right == NIL){
-            return NIL_ERROR;
+        //ak je chyba hlbsie v strome
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            return mistakes;
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        // nespravne pouzitie nil
+        if(left == NIL || right == NIL){
+            return NIL_ERROR;
         }
 
         else if(left == right){
             return left;
         }
 
-        else if((left == INT && right == INT_zero) || \
-                (left == INT && right == NR) || \
-                (left == INT && right == NR_zero) || \
-                (right == INT && left == INT_zero) || \
-                (right == INT && left == NR) || \
-                (right == INT && left == NR_zero)){
+        else if((left == INT || left == NR || left == INT_zero || left == NR_zero) && \
+                (right == INT || right == NR || right == INT_zero || right == NR_zero)){
             return left;
         }
 
         return SEMANTICAL_COMPABILITY_ERROR;
     }
 
+    // relacne operatory ~= ==
     else if (exprTree->Data->type == Not_equal || exprTree->Data->type == Is_equal){
         left = expressionSemanticCheck(exprTree->attr.binary.left, Symtable);
         right = expressionSemanticCheck(exprTree->attr.binary.right, Symtable);
         
-        if (left == right){
-            return left;
+        mistakes = treeMistakes(left, right);
+        if (mistakes != 0){
+            return mistakes;
         }
 
-        else if (left == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || right == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-            return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+        if (left == right){
+            return left;
         }
 
         else if (((left == STR || left == NR || left == NR_zero || left == INT || left == INT_zero || left == NIL) && right == NIL) || \
@@ -635,4 +648,24 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
     }
 
     return -1;
+}
+
+int treeMistakes(int leftsubtree, int rightsubtree){
+    if (leftsubtree == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR || rightsubtree == SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
+        return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
+    }
+
+    else if (leftsubtree == SEMANTICAL_COMPABILITY_ERROR || rightsubtree == SEMANTICAL_COMPABILITY_ERROR){
+        return SEMANTICAL_COMPABILITY_ERROR;
+    }
+    
+    else if (leftsubtree == DIVISION_ZERO_ERROR || rightsubtree == DIVISION_ZERO_ERROR){
+        return DIVISION_ZERO_ERROR;
+    }
+    
+    if(leftsubtree == NIL_ERROR || rightsubtree == NIL_ERROR){
+        return NIL_ERROR;
+    }
+
+    return PROGRAM_OK;
 }

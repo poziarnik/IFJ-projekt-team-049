@@ -2,15 +2,14 @@
 //#include "Scanner.h"
 int main(){
     //printf("Meky Zbirka\n");
-    TokenList *list=(TokenList*)malloc(sizeof(TokenList));
-    listInit(list);
+    
     ASTtree* abstractTree = ASTtreeCreate();
 
     symtable* mySymtable=(symtable*)malloc(sizeof(symtable));
     if (mySymtable == NULL) return INTERNAL_ERROR;
     symtableInit(mySymtable); 
 
-    int result=Parse(list, abstractTree, mySymtable);
+    int result=Parse(abstractTree, mySymtable);
     if(result==PARC_TRUE){
         printf("\nASTtree---------------------------------------------------\n\n");
         
@@ -39,6 +38,9 @@ int main(){
         //sym_inorder(mySymtable->sym_globalTree);
         printf("\nkoniec suboru");
     }
+    else {
+        printf("%i", result);
+    }
 
-    return 0;
+    return result;
 }

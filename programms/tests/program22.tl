@@ -4,7 +4,7 @@ function main()
 	local a:string = "hello"
 	local b:string = "there!"
 
-	local x:integer = #"help" * #a + #b + #a * #(a..b)
+	local x:integer = #"help" * #a + #b + #a // 3
 	write(x, "\n")
 end
 

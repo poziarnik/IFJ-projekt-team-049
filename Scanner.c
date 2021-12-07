@@ -15,7 +15,7 @@
         10 - koniec suboru
         1 - lexikalana chyba 
 */
-int tokenScan( FILE* Myfile, TokenList* list, Token* MyToken){
+int tokenScan(FILE* Myfile, Token* MyToken){
 
     int symbol;
     bool END = false;
@@ -671,53 +671,3 @@ int isEscapeSeq(int symbol){
 
     return c;
 }
-
-/*
-    inicializujem zoznam
-    zoznam je vytvoeny koli moznosti pohodlne 
-    param list - inicializovany zoznam
-*/
-void listInit(TokenList* list){
-    list->Head = NULL;
-}
-
-/*
-    prida token dna koniec zoznamu
-    param list - zoznam do ktoreho vkladam token
-    param NewToken - pridavany token
-*/
-void listAddToken(TokenList* list, Token* NewToken){
-    if (list->Head == NULL){
-        list->Head = NewToken;
-    }
-    else{
-        Token* i = list->Head;
-        while (i->next!=NULL){
-            i=i->next;
-        }
-        i->next = NewToken;
-    }
-
-}
-
-/*
-    uvolni vsetky tokeny ulozene v zozname
-    param list - uvolnovany zoznam
-*/
-void listFree(TokenList* list){
-    Token* tmp;
-    Token* i = list->Head;
-    while(i != NULL){
-        tmp=i;
-        i=i->next;
-        if ((tmp->type != Number) || (tmp->type != Integer) )
-        {
-            free(tmp->data.string);
-        }
-        
-        
-        free(tmp);
-    }
-}
-
-

@@ -4,7 +4,7 @@ FILES = Scanner.c Scanner.h Mystack.c MyStackTree.h Parser.c Parser.h ParserDown
 MAIN =testParserMain.c
 NEWFILE = test
 PRECEDENCE = Scanner.c Scanner.h Mystack.c MyStackTree.h ParserDownUp.c ParserDownUp.h symtable.c symtable.h 
-
+SCANNER = Scanner.c Scanner.h
 
 advanced: 
 	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) $(MAIN)
@@ -13,7 +13,7 @@ primitive:
 	$(CC) -std=c99 	-o $(NEWFILE) $(FILES) $(MAIN)
 
 scanner:
-	$(CC) -std=c99 -o $(NEWFILE) $(FILES) main.c
+	$(CC) -std=c99 -o $(NEWFILE) $(SCANNER) main.c
 
 parser:
 	$(CC) -std=c99 -o $(NEWFILE) $(FILES) testParserMain.c
