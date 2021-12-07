@@ -17,12 +17,14 @@
 
 
 //inbuild na zaciatku
-//definica
-//pri bin a un operaciach pridat nejaky enum
+// nil v cykle
+//velkost pola
 
 
 
 bool code = true;
+int while_cycle_counter = 1;
+int if_cycle_counter = 1;
 
 int interpret(root *Root){
     if(code == true){
@@ -32,7 +34,7 @@ int interpret(root *Root){
     if(Root != NULL){
         if(*Root->statements != NULL && Root->nbStatements != NULL){
             for(int i = 0; i < *Root->nbStatements; i++){
-                ///////////////////////////////////////      FUNCTION      /////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////      FUNCTION      /////////////////////////////////////////////////////
                 if(Root->statements[i]->type == ASTfunction){   
                     gen_func_begin(Root, i);
                     if(Root->statements[i]->TStatement.function->nbParameters != NULL){
@@ -42,7 +44,7 @@ int interpret(root *Root){
                         for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters ; a++){  
                             gen_func_move_arg(Root,i,a);
                         }
-                    }
+                    } 
                     /////////////////////////////////   FUNCTION   STATEMENTS      //////////////////////////////////////////////////////
                     if(*Root->statements[i]->TStatement.function->statements != NULL){   
                         Tstate *funcRoot = ASTcreateLeaf(ASTglobal);
@@ -57,31 +59,42 @@ int interpret(root *Root){
                     }
                     gen_func_end(Root, i);
                 }
-                /////////////////////////////////////        IF          /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////        IF          /////////////////////////////////////////////////////////////////
                 else if(Root->statements[i]->type == ASTcondition){
-                    //TODO
-                }
-                ////////////////////////////////////         WHILE       ////////////////////////////////////////////////////////////////
-                else if(Root->statements[i]->type == ASTcycle){
-                    //TODO
-                }
-                ////////////////////////////////////        ASSIGNNE     ///////////////////////////////////////////////////////////////
-                // priradenie cisla / stringu / jednoduche bin. op DONE - unanrne / zlozene operacie  nie 
-                else if(Root->statements[i]->type == ASTassigne){
-                    if(*Root->statements[i]->TStatement.assignment->nbID == *Root->statements[i]->TStatement.assignment->nbexpressions){
-                        for(int a = 0; a < *Root->statements[i]->TStatement.assignment->nbID; a++ ){ 
-                            if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Integer){    
-                                gen_move_int(Root,i, a);
-                            }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Number){
-                                gen_move_number(Root,i, a);
-                            }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == String){
-                                gen_move_string(Root,i, a);
-                            }
-
-                            ////////////////////////////////////////////  BINARNY STROM /////////////////////////////////////////////////////////
-                           /* char INT1[100] = "int@";
+                    char *left1;
+                    char *right2;
+                    if(Root->statements[i]->TStatement.if_loop->expression->Data->type == More || Less || More_equal || Less_equal || Is_equal || Not_equal ){
+                        char INT1[100] = "int@";
+                        char float1[100] = "float@";
+                        char string1[100] = "string@";
+                        char var1[100] = "LF@";
+                        if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Integer){                                
+                            int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->data.integer;
+                            char num1[100];
+                            sprintf(num1,"%d",b);
+                            left1 = strcat(INT1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Number){   
+                            double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->data.number;
+                            char num1[100];
+                            sprintf(num1,"%a",b);
+                            left1 = strcat(float1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == String){                
+                            char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            left1 = strcat(string1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Identifier){                        
+                            char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            left1 = strcat(var1, num1);
+                        }
+                            
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                            char INT1[100] = "int@";
                             char INT2[100] = "int@";
                             char float1[100] = "float@";
                             char float2[100] = "float@";
@@ -89,70 +102,614 @@ int interpret(root *Root){
                             char var2[100] = "LF@";
                             char *first;
                             char *sec;
-                            if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == Integer){
-                                int b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.integer;
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->data.integer;
                                 char num1[100];
                                 sprintf(num1,"%d",b);
                                 first = strcat(INT1, num1);  
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == Number){
-                                double b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.number;
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->type == Number){
+                                double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->data.number;
                                 char num1[100];
-                                sprintf(num1,"%f",b);
+                                sprintf(num1,"%a",b);
                                 first = strcat(float1, num1);  
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == String){ 
-                                char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.string;                                    
-                                first = strcat(float1, b);  
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->type == Identifier){ 
+                                char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->data.string;                                    
+                                first = strcat(var1, b);  
                             }
-                            
-                            if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == Integer){
-                                int b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->data.integer;
+                                    
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->data.integer;
                                 char num1[100];
                                 sprintf(num1,"%d",b);
                                 sec = strcat(INT2, num1);
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == Number){                                    
-                                double b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.number;
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->type == Number){                                    
+                                double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->data.number;
                                 char num1[100];
-                                sprintf(num1,"%f",b);
+                                sprintf(num1,"%a",b);
                                 sec = strcat(float2, num1);  
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == String){
-                                char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.string;
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->type == Identifier){
+                                char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.right->Data->data.string;
                                 sec = strcat(var2, b);  
                             } 
 
                             ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
-                            if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Minus){
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus){
                                 gen_sub(first, sec);
-                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                char *var = "LF@left_side";
                                 gen_move_in_func_call(var);
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Plus){
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Plus){
                                 gen_add(first, sec);
-                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                char *var = "LF@left_side";
                                 gen_move_in_func_call(var);   
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Multiplication){
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Multiplication){
                                 gen_mul(first, sec);
-                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                char *var = "LF@left_side";
                                 gen_move_in_func_call(var);  
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Division){
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Division){
                                 gen_div(first, sec);
-                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                char *var = "LF@left_side";
                                 gen_move_in_func_call(var);  
                             }
-                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Division_integer){
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Division_integer){
                                 gen_idiv(first, sec);
-                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                char *var = "LF@left_side";
                                 gen_move_in_func_call(var);
-                            }*/
+                            }
+                            left1 = "LF@left_side";
+                        }
+                        
+                        if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Integer){
+                            char INT5[100] = "int@";
+                            int c = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->data.integer;
+                            char num5[100];
+                            sprintf(num5,"%d",c);                               
+                            right2 = strcat(INT5, num5); 
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Number){
+                            double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->data.number;
+                            char float5[100] = "float@";
+                            char num1[100];
+                            sprintf(num1,"%a",b);
+                            right2 = strcat(float5, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == String){
+                            char string5[100] = "string@";
+                            char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            right2 = strcat(string5, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Identifier){
+                            char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->data.string;
+                            char var5[100] = "LF@";
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            right2 = strcat(var5, num1);
+                        }
+                        
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                            char INT1[100] = "int@";
+                            char INT2[100] = "int@";
+                            char float1[100] = "float@";
+                            char float2[100] = "float@";
+                            char var1[100] = "LF@";
+                            char var2[100] = "LF@";
+                            char *first;
+                            char *sec;
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                first = strcat(INT1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->type == Number){
+                                double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                first = strcat(float1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->type == Identifier){ 
+                                char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->data.string;                                    
+                                first = strcat(var1, b);  
+                            }
+                                    
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                sec = strcat(INT2, num1);
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->type == Number){                                    
+                                double b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                sec = strcat(float2, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->type == Identifier){
+                                char *b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.right->Data->data.string;
+                                sec = strcat(var2, b);  
+                            } 
+
+                            ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Minus){
+                                gen_sub(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Plus){
+                                gen_add(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);   
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Multiplication){
+                                gen_mul(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Division){
+                                gen_div(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Division_integer){
+                                gen_idiv(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);
+                            }
+                            right2 = "LF@right_side";
+                        }
+                
+                        
+                    }
+                   
+                    
+                    if(Root->statements[i]->TStatement.if_loop->expression->Data->type == More){
+                        gen_GT(left1, right2);
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFEQ("then","LF@GTretval", "bool@true");
+                        }
+                        else gen_JUMPIFNEQ("else","LF@GTretval", "bool@true");
+                        
+                    }
+                    else if(Root->statements[i]->TStatement.if_loop->expression->Data->type == Less){
+                        gen_LT(left1, right2);
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFEQ("then","LF@LTretval", "bool@true");
+                        }
+                        else gen_JUMPIFNEQ("else","LF@LTretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.if_loop->expression->Data->type == More_equal){
+                        gen_GT(left1, right2);
+                        gen_EQ(left1, right2);
+                        gen_OR("LF@GTretval", "LF@EQretval");
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFEQ("then","LF@ORretval", "bool@true");
+                        }
+                        else gen_JUMPIFNEQ("else","LF@ORretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.if_loop->expression->Data->type == Less_equal){
+                        gen_LT(left1, right2);
+                        gen_EQ(left1, right2);
+                        gen_OR("LF@LTretval", "LF@EQretval");
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFEQ("then","LF@ORretval", "bool@true");
+                        }
+                        else gen_JUMPIFNEQ("else","LF@ORretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.if_loop->expression->Data->type == Is_equal){
+                        gen_EQ(left1, right2);
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFEQ("then","LF@EQretval", "bool@true");
+                        }
+                        else gen_JUMPIFNEQ("else","LF@EQretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.if_loop->expression->Data->type == Not_equal){
+                        gen_EQ(left1, right2);
+                        if(Root->statements[i]->TStatement.if_loop->hasElse == false){
+                            gen_JUMPIFNEQ("then","LF@EQretval", "bool@true");
+                        }
+                        else gen_JUMPIFEQ("else","LF@EQretval", "bool@true");
+                    }
+                    gen_then(if_cycle_counter);
+                    if(*Root->statements[i]->TStatement.if_loop->if_statements != NULL){   
+                        if_cycle_counter ++;
+                        Tstate *thenRoot = ASTcreateLeaf(ASTglobal);
+                        for(int b = 0; b < *Root->statements[i]->TStatement.if_loop->nbIfStatements; b++){
+                            thenRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.if_loop->if_statements[b];
+                        }
+                        thenRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.if_loop->nbIfStatements;
+                        interpret(thenRoot->TStatement.root);
+                        if_cycle_counter --;
+                    }
+                    gen_jump_end(if_cycle_counter);
+                    if(*Root->statements[i]->TStatement.if_loop->hasElse == true){
+                        gen_else(if_cycle_counter);
+                        if(*Root->statements[i]->TStatement.if_loop->else_statements != NULL){   
+                            if_cycle_counter ++;
+                            Tstate *elseRoot = ASTcreateLeaf(ASTglobal);
+                            for(int b = 0; b < *Root->statements[i]->TStatement.if_loop->nbElseStatements; b++){
+                                elseRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.if_loop->else_statements[b];
+                            }
+                            elseRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.if_loop->nbElseStatements;
+                            interpret(elseRoot->TStatement.root);
+                            if_cycle_counter --;
+                        }
+                        gen_jump_end(if_cycle_counter);
+                    }
+                    gen_end(if_cycle_counter);
+                }
+//////////////////////////////////////////////////////         WHILE       ////////////////////////////////////////////////////////////////
+                else if(Root->statements[i]->type == ASTcycle){
+                    gen_while(while_cycle_counter);
+                    char *left1;
+                    char *right2;
+                    if(Root->statements[i]->TStatement.while_loop->expression->Data->type == More || Less || More_equal || Less_equal || Is_equal || Not_equal ){
+                        char INT1[100] = "int@";
+                        char float1[100] = "float@";
+                        char string1[100] = "string@";
+                        char var1[100] = "LF@";
+                        if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Integer){                                
+                            int b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->data.integer;
+                            char num1[100];
+                            sprintf(num1,"%d",b);
+                            left1 = strcat(INT1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Number){   
+                            double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->data.number;
+                            char num1[100];
+                            sprintf(num1,"%a",b);
+                            left1 = strcat(float1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == String){                
+                            char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            left1 = strcat(string1, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Identifier){                        
+                            char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            left1 = strcat(var1, num1);
+                        }
+                            
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                            char INT1[100] = "int@";
+                            char INT2[100] = "int@";
+                            char float1[100] = "float@";
+                            char float2[100] = "float@";
+                            char var1[100] = "LF@";
+                            char var2[100] = "LF@";
+                            char *first;
+                            char *sec;
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                first = strcat(INT1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->type == Number){
+                                double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                first = strcat(float1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->type == Identifier){ 
+                                char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.left->Data->data.string;                                    
+                                first = strcat(var1, b);  
+                            }
+                                    
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                sec = strcat(INT2, num1);
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->type == Number){                                    
+                                double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                sec = strcat(float2, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->type == Identifier){
+                                char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->attr.binary.right->Data->data.string;
+                                sec = strcat(var2, b);  
+                            } 
+
+                            ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Minus){
+                                gen_sub(first, sec);
+                                char *var = "LF@left_side";
+                                gen_move_in_func_call(var);
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Plus){
+                                gen_add(first, sec);
+                                char *var = "LF@left_side";
+                                gen_move_in_func_call(var);   
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Multiplication){
+                                gen_mul(first, sec);
+                                char *var = "LF@left_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Division){
+                                gen_div(first, sec);
+                                char *var = "LF@left_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.left->Data->type == Division_integer){
+                                gen_idiv(first, sec);
+                                char *var = "LF@left_side";
+                                gen_move_in_func_call(var);
+                            }
+                            left1 = "LF@left_side";
+                        }
+                        
+                        if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Integer){
+                            char INT5[100] = "int@";
+                            int c = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->data.integer;
+                            char num5[100];
+                            sprintf(num5,"%d",c);                               
+                            right2 = strcat(INT5, num5); 
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Number){
+                            double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->data.number;
+                            char float5[100] = "float@";
+                            char num1[100];
+                            sprintf(num1,"%a",b);
+                            right2 = strcat(float5, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == String){
+                            char string5[100] = "string@";
+                            char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->data.string;
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            right2 = strcat(string5, num1);
+                        }
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Identifier){
+                            char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->data.string;
+                            char var5[100] = "LF@";
+                            char num1[100];
+                            sprintf(num1,"%s",b);
+                            right2 = strcat(var5, num1);
+                        }
+                        
+                        else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                            char INT1[100] = "int@";
+                            char INT2[100] = "int@";
+                            char float1[100] = "float@";
+                            char float2[100] = "float@";
+                            char var1[100] = "LF@";
+                            char var2[100] = "LF@";
+                            char *first;
+                            char *sec;
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                first = strcat(INT1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->type == Number){
+                                double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                first = strcat(float1, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->type == Identifier){ 
+                                char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.left->Data->data.string;                                    
+                                first = strcat(var1, b);  
+                            }
+                                    
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->type == Integer){
+                                int b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->data.integer;
+                                char num1[100];
+                                sprintf(num1,"%d",b);
+                                sec = strcat(INT2, num1);
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->type == Number){                                    
+                                double b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->data.number;
+                                char num1[100];
+                                sprintf(num1,"%a",b);
+                                sec = strcat(float2, num1);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->type == Identifier){
+                                char *b = Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->attr.binary.right->Data->data.string;
+                                sec = strcat(var2, b);  
+                            } 
+
+                            ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
+                            if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Minus){
+                                gen_sub(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Plus){
+                                gen_add(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);   
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Multiplication){
+                                gen_mul(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Division){
+                                gen_div(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);  
+                            }
+                            else if(Root->statements[i]->TStatement.while_loop->expression->attr.binary.right->Data->type == Division_integer){
+                                gen_idiv(first, sec);
+                                char *var = "LF@right_side";
+                                gen_move_in_func_call(var);
+                            }
+                            right2 = "LF@right_side";
+                        }
+                
+                        
+                    }
+                   
+                    
+                    if(Root->statements[i]->TStatement.while_loop->expression->Data->type == More){
+                        gen_GT(left1, right2);
+                        gen_JUMPIFNEQ("end","LF@GTretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.while_loop->expression->Data->type == Less){
+                        gen_LT(left1, right2);
+                        gen_JUMPIFNEQ("end","LF@LTretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.while_loop->expression->Data->type == More_equal){
+                        gen_GT(left1, right2);
+                        gen_EQ(left1, right2);
+                        gen_OR("LF@GTretval", "LF@EQretval");
+                        gen_JUMPIFNEQ("end","LF@ORretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.while_loop->expression->Data->type == Less_equal){
+                        gen_LT(left1, right2);
+                        gen_EQ(left1, right2);
+                        gen_OR("LF@LTretval", "LF@EQretval");
+                        gen_JUMPIFNEQ("end","LF@ORretval", "bool@true");
+                    }
+                    else if(Root->statements[i]->TStatement.while_loop->expression->Data->type == Is_equal){
+                        gen_JUMPIFNEQ("end",left1, right2);
+                    }
+                    else if(Root->statements[i]->TStatement.while_loop->expression->Data->type == Not_equal){
+                        gen_JUMPIFEQ("end",left1, right2);
+                    }
+                    
+                    if(*Root->statements[i]->TStatement.while_loop->do_statement != NULL){   
+                        while_cycle_counter ++;
+                        Tstate *whileRoot = ASTcreateLeaf(ASTglobal);
+                        for(int b = 0; b < *Root->statements[i]->TStatement.while_loop->nbStatements; b++){
+                            whileRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.while_loop->do_statement[b];
+                        }
+                        whileRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.while_loop->nbStatements;
+                        interpret(whileRoot->TStatement.root);
+                        while_cycle_counter --;
+                    }
+                    gen_while_end(while_cycle_counter);
+                    
+                }
+//////////////////////////////////////////////////        ASSIGNNE     ///////////////////////////////////////////////////////////////
+                // priradenie cisla / stringu / jednoduche bin. unanrne  op DONE -  zlozene operacie  nie 
+                else if(Root->statements[i]->type == ASTassigne){
+                    if(*Root->statements[i]->TStatement.assignment->nbID == *Root->statements[i]->TStatement.assignment->nbexpressions){
+                        for(int a = 0; a < *Root->statements[i]->TStatement.assignment->nbID; a++ ){ 
+                            if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Integer){  
+                                char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                int num = Root->statements[i]->TStatement.assignment->expressions[a]->Data->data.integer;
+                                gen_move_int(var, num);
+                            }
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Number){
+                                gen_move_number(Root,i, a);
+                            }
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == String){
+                                gen_move_string(Root,i, a);
+                            }
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Identifier){
+                                gen_move_string(Root,i, a);
+                            }
+                            ////////////////////////////////////////// UNARNE OPERACIE ////////////////////////////////////////////////////////////////
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Sizeof){
+                                    char *string = Root->statements[i]->TStatement.assignment->expressions[a]->attr.unary.child->Data->data.string;
+                                    gen_strlen(string);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);                            
+                                }
+                            
+                            ////////////////////////////////////////////  BINARNY STROM /////////////////////////////////////////////////////////
+                            else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                                char INT1[100] = "int@";
+                                char INT2[100] = "int@";
+                                char float1[100] = "float@";
+                                char float2[100] = "float@";
+                                char var1[100] = "LF@";
+                                char var2[100] = "LF@";
+                                char *first;
+                                char *sec;
+                                if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == Integer){
+                                    int b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.integer;
+                                    char num1[100];
+                                    sprintf(num1,"%d",b);
+                                    first = strcat(INT1, num1);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == Number){
+                                    double b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.number;
+                                    char num1[100];
+                                    sprintf(num1,"%a",b);
+                                    first = strcat(float1, num1);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == String ){ 
+                                    char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.string;                                    
+                                    first = strcat(var1, b);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->type == Identifier ){ 
+                                    char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.left->Data->data.string;                                    
+                                    first = strcat(var1, b);  
+                                }
+                                
+                                if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == Integer){
+                                    int b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->data.integer;
+                                    char num1[100];
+                                    sprintf(num1,"%d",b);
+                                    sec = strcat(INT2, num1);
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == Number){                                    
+                                    double b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->data.number;
+                                    char num1[100];
+                                    sprintf(num1,"%a",b);
+                                    sec = strcat(float2, num1);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == String ){
+                                    char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->data.string;
+                                    sec = strcat(var2, b);  
+                                } 
+
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->type == Identifier ){
+                                    char *b = Root->statements[i]->TStatement.assignment->expressions[a]->attr.binary.right->Data->data.string;
+                                    sec = strcat(var2, b);  
+                                } 
+
+                                ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
+                                if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Minus){
+                                    gen_sub(first, sec);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Plus){
+                                    gen_add(first, sec);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);   
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Multiplication){
+                                    gen_mul(first, sec);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Division){
+                                    gen_div(first, sec);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);  
+                                }
+                                else if(Root->statements[i]->TStatement.assignment->expressions[a]->Data->type == Division_integer){
+                                    gen_idiv(first, sec);
+                                    char *var = Root->statements[i]->TStatement.assignment->IDs[a]->data.string;
+                                    gen_move_in_func_call(var);
+                                }
+                                
+                            }
+                            
                         }
                     }   
                 }
-                //////////////////////////////////////////////      DEFINE      ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////      DEFINE      ////////////////////////////////////////////////////////////////////
                 else if(Root->statements[i]->type == ASTdefine){
                     gen_defvar(Root, i);
                     if(Root->statements[i]->TStatement.definiton != NULL){
@@ -184,7 +741,7 @@ int interpret(root *Root){
                     }
                     
                 }
-                ///////////////////////////////////////////////     FUNCTION CALL       ///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////     FUNCTION CALL       ///////////////////////////////////////////////////////////
                 // maybe DONE 
                 else if(Root->statements[i]->type == ASTfunctionCall){
                     if(isInbuildFun(Root->statements[i]->TStatement.functioncall->functionName->data.string) == true){
@@ -253,9 +810,8 @@ void gen_defvar(root *root, int i){
     
 }
 
-void gen_move_int(root *root,int i, int a){ 
-    printf(" \n MOVE LF@%s int@%d", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.integer );
-    
+void gen_move_int(char *var, int i){ 
+    printf(" \n MOVE LF@%s int@%d", var, i );
 }
 
 void gen_move_string(root *root, int i, int a){ 
@@ -263,7 +819,7 @@ void gen_move_string(root *root, int i, int a){
 }
 
 void gen_move_number(root *root,int i,  int a){ 
-    printf(" \n MOVE LF@%s float@%f", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.number);
+    printf(" \n MOVE LF@%s float@%a", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.number);
 }
 
 void gen_move_int_indef(root *root,int i){ 
@@ -276,7 +832,7 @@ void gen_move_string_indef(root *root, int i){
 }
 
 void gen_move_number_indef(root *root,int i){ 
-    printf(" \n MOVE LF@%s float@%f", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.number);
+    printf(" \n MOVE LF@%s float@%a", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.number);
 }
 
 void gen_move_in_func_call(char *var){                             
@@ -304,34 +860,60 @@ void gen_idiv(char *first, char *second){
     printf("\n IDIV  LF@retval %s %s", first, second);
 }
 
-void gen_LT(char *x){
-    printf("\n LT   LF@retval LF@%s LF@%s", x, x);
+void gen_strlen(char *string){
+    printf("\n STRLEN  LF@retval string@%s", string);  
 }
 
-void gen_GT(char *x){
-    printf("\n GT   LF@retval LF@%s LF@%s", x, x);
+
+void gen_LT(char *first, char *second){
+    printf("\n LT   LF@LTretval %s %s", first, second);
 }
 
-void gen_EQ(char *x){
-    printf("\n EQ   LF@result LF@%s LF@%s", x, x);
+void gen_GT(char *first, char *second){
+    printf("\n GT   LF@GTretval %s %s", first, second);
+}
+
+void gen_EQ(char *first, char *second){
+    printf("\n EQ   LF@EQretval %s %s", first, second);
+}
+
+void gen_JUMPIFEQ(char *jump ,char *first, char *second){
+    printf("\n JUMPIFEQ   %s %s %s",jump, first, second);
+}
+
+void gen_JUMPIFNEQ(char *jump ,char *first, char *second){
+    printf("\n JUMPIFNEQ   %s %s %s",jump, first, second);
+}
+
+void gen_OR(char *first, char *second){
+    printf("\n OR   LF@ORretval %s %s", first, second);
 }
 
 /******************** generovanie cyklov ********************/
 
-void gen_if(){
-//TODO
+void gen_then(int counter){
+    printf("\n LABEL then$%d", counter);
 }
 
-void gen_else(){
-//TODO
+void gen_jump_end(int counter){
+    printf("\n JUMP end$%d", counter);
 }
 
-void gen_while(){
-//TODO
+void gen_else(int counter){
+    printf("\n LABEL else$%d", counter );
 }
 
-void gen_then(){
-//TODO
+void gen_end(int counter){
+    printf("\n LABEL end$%d", counter);
+}
+
+void gen_while(int i){
+    printf("\n LABEL while$%d", i);
+}
+
+void gen_while_end(int i){
+    printf("\n JUMP while$%d\
+            \n LABEL end$%d", i, i);
 }
 
 /******************** generovanie vstavanych funkcii ********************/
