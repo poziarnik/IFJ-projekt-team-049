@@ -6,7 +6,7 @@ function main() -- uzivatelska funkce bez parametru
   local vysl : integer = 1+a
   write("Zadejte cislo pro vypocet faktorialu\n")
   a = readi() 
-  if a == nil then
+  if a == 2 then
       write("a je nil\n") return
   else
   end

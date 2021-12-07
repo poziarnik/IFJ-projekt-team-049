@@ -8,7 +8,6 @@
  */
 
 #include "generator.h"
-#include "ilist.h"
 #include "AST.h"
 #include "symtable.h"
 

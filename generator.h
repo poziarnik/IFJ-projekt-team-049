@@ -11,7 +11,6 @@
 #define generator_h
 
 #include "symtable.h"
-#include "ilist.h"
 #include "AST.h"
 
 
