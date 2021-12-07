@@ -1054,7 +1054,7 @@ int fc_FCreturn(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){   
     ASTendStatement(abstractTree->ASTStack);
     return PARC_TRUE;
 }
-int fc_returnParams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                         //params: <param><nextParam>
+int fc_returnParams(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                         //params: <param><nextParam>
     int status = 0;
     if(first(MyToken, returnParam)){
         RETURN_ON_ERROR(fc_returnParam);
@@ -1068,7 +1068,7 @@ int fc_returnParams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtre
 
     return PARC_TRUE;
 }
-int fc_returnParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                          //param: <expression>
+int fc_returnParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                          //param: <expression>
     int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
@@ -1079,9 +1079,9 @@ int fc_returnParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree
     
     return PARC_TRUE;
 }
-int fc_returnNextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                      //nextparam: ,<param><nextparam>
+int fc_returnNextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                      //nextparam: ,<param><nextparam>
     int status = 0;
-    if (chackStr(MyToken, list, ",")){
+    if (chackStr(MyToken, ",")){
         SCAN_TOKEN;
     }
     else{
