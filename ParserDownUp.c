@@ -39,7 +39,7 @@ int expressionCheck(Token* MyToken, Tree *expression){
     TElement *stackHelp = NULL;
     
     do{
-        switch (table[Stack_first_nonterm(Stack)][table_input_symbol(MyToken)]){
+        switch (table[Stack_first_term(Stack)][table_input_symbol(MyToken)]){
             
         case 'L':
             // puts("op expand");
@@ -203,7 +203,7 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
     TElement *main, *left, *right, *bracket, *child;
     
     //Pravidlo |<i -> E|
-    if (Stack_first_nonterm(Stack) == DATA){
+    if (Stack_first_term(Stack) == DATA){
         main = stack_pop_nofree(Stack);
         main->Item = NOTERM;
         Stack_pop(Stack);  // potom vyhodim pomocnu zatvorku <
@@ -214,10 +214,10 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
 
 
     // pravidlo |<E + E -> E|
-    else if (Stack_first_nonterm(Stack) == PLUS_MINUS ||  \
-        (Stack_first_nonterm(Stack) == MULTIPLICATION_DIVISION_INTDIV)  || \
-        (Stack_first_nonterm(Stack) == LESS_MORE_EQUAL_NOTEQUAL) || \
-        (Stack_first_nonterm(Stack) == CONCATENATION)){
+    else if (Stack_first_term(Stack) == PLUS_MINUS ||  \
+        (Stack_first_term(Stack) == MULTIPLICATION_DIVISION_INTDIV)  || \
+        (Stack_first_term(Stack) == LESS_MORE_EQUAL_NOTEQUAL) || \
+        (Stack_first_term(Stack) == CONCATENATION)){
             //ak je na stacku prvy TERM plus, minus, krat, deleno, ...
             //kontrolujem ci prvy na stacku je NETRMINAL
 
@@ -268,7 +268,7 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
     }
 
     //Pravidlo | <(E) -> E |
-    else if (Stack_first_nonterm(Stack) == LEFTBRACKET){
+    else if (Stack_first_term(Stack) == LEFTBRACKET){
         // prava zatvorka ')' nieje ulozena na stacku, ale do Stack elementu bracket si ulozim
         // NETERMINAL E
         bracket = stack_pop_nofree(Stack);
@@ -284,7 +284,7 @@ int reduce_by_rule(TStack *Stack, Token *MyToken){
     }
 
     //Pravidlo |<#E -> E|
-    else if (Stack_first_nonterm(Stack) == SIZEOF){
+    else if (Stack_first_term(Stack) == SIZEOF){
         child = stack_pop_nofree(Stack); // do stack Elementu child ulozim NETERMINAL 'E'
         if (child->Item != NOTERM){  // kontrolujem ci je skutocne NETERMINAL
             return SYNTAX_ERROR;
@@ -333,7 +333,7 @@ int isExpresionright(Tree *exprTree, symtable *Symtable){
         return SEMANTICAL_NODEFINITION_REDEFINITION_ERROR;
     }
 
-    
+
     return PROGRAM_OK;
 }
 
@@ -523,7 +523,6 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         //ak je chyba hlbsie v strome
         mistakes = treeMistakes(left, right);
         if (mistakes != 0){
-            printf("%i", mistakes);
             return mistakes;
             
         }

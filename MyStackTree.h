@@ -106,7 +106,7 @@ TElement *stack_pop_nofree(TStack *stack);
  * @param stack 
  * @return int 
  */
-int Stack_first_nonterm(TStack *stack);
+int Stack_first_term(TStack *stack);
 
 
 void Stack_print(TStack *stack);

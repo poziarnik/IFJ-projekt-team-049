@@ -10,39 +10,8 @@ int main(){
     symtableInit(mySymtable); 
 
     int result=Parse(abstractTree, mySymtable);
-    if(result==PARC_TRUE){
-        printf("\nASTtree---------------------------------------------------\n\n");
-        
-        ASTprintStatement(abstractTree->tree);
-
-        printf("\nSymTable---------------------------------------------------\n\n");
-
-        sym_inorderGlobal(mySymtable->sym_globalTree);
-
-        ASTprintInBuild(abstractTree);
-        //interpret(abstractTree->tree->TStatement.root);
-        printf("\nMeky Zbirka jubilejny koncert\n");
-    }
-    else if (result==PARC_FALSE){
-        
-        printf("%d Jozko Vajda",result);
-    }
-    else if (result==LEXICAL_ERROR)
-    {
-        printf("%d Marika Gombitova",result);
-    }
-    else if (result==SEMANTICAL_NODEFINITION_REDEFINITION_ERROR){
-        printf("%d nesmrtelny Kaja",result);
-    }
     
-    else if(result==10){
-        printf("my global treeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n");
-        //sym_inorder(mySymtable->sym_globalTree);
-        printf("\nkoniec suboru");
-    }
-    else {
-        printf("%i", result);
-    }
+    fprintf(stderr, "%i", result);
 
     return result;
 }
