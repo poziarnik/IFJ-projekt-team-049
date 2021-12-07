@@ -15,6 +15,8 @@ ASTtree* ASTtreeCreate(){
     }
     ASTstackInit(newTree->ASTStack);
 
+    ASTinBuildArrayInit(newTree->UsedInBuild);
+
     newTree->tree = ASTcreateLeaf(ASTglobal);
     ASTStackPush(newTree->ASTStack, newTree->tree);
     return newTree;
@@ -170,6 +172,18 @@ int ASTaddElseToCondition(ASTstack* myStack){
         *(myStack->head->statement->TStatement.if_loop->hasElse) = true;
         ASTallocateSpaceForElse(myStack);
     }
+}
+int ASTaddReturnToTree(ASTstack* myStack){
+    Tstate* newStatement=ASTcreateLeaf(ASTreturn);
+    if (newStatement==NULL){
+        return INTERNAL_ERROR;
+    }
+    //pridaj do stromu na statements na vrchu stacku
+    ASTaddToStatements(ASTreturnFastST(myStack), ASTreturnFastNB(myStack), newStatement);
+    //pridaj na vrch stacku
+    ASTStackPush(myStack, newStatement);
+    
+    return 0;
 }
 int ASTallocateSpaceForElse(ASTstack* myStack){
     //allokuj nbStatements
@@ -374,9 +388,7 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.functioncall->nbID = (int*)malloc(sizeof(int));
         newLeaf->TStatement.functioncall->nbParameters = (int*)malloc(sizeof(int));
         newLeaf->TStatement.functioncall->IDs = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbID);
-        newLeaf->TStatement.functioncall->parameters = ASTcreateTokenArray(newLeaf->TStatement.functioncall->nbParameters);
-
-
+        newLeaf->TStatement.functioncall->parameters = ASTcreateExpressions(newLeaf->TStatement.functioncall->nbParameters);
     }
     else if (type==ASTcondition){
         //-alokovat strukturu
@@ -389,6 +401,15 @@ Tstate* ASTcreateLeaf(statementType type){
         newLeaf->TStatement.if_loop->nbIfStatements = (int*)malloc(sizeof(int));
         *(newLeaf->TStatement.if_loop->nbIfStatements)=0;
         newLeaf->TStatement.if_loop->if_statements = ASTcreateStatements(newLeaf->TStatement.if_loop->nbIfStatements); 
+    }
+    else if (type==ASTreturn){
+        //-alokovat strukturu
+        newLeaf->type=ASTreturn;
+        newLeaf->TStatement.FCreturn = (Treturn_tree*)malloc(sizeof(Treturn_tree));
+        //--alokovat priestor pre Tokeny
+        newLeaf->TStatement.FCreturn->nbexpressions = (int*)malloc(sizeof(int));
+        *(newLeaf->TStatement.FCreturn->nbexpressions)=0;
+        newLeaf->TStatement.FCreturn->expressions = ASTcreateExpressions(newLeaf->TStatement.FCreturn->nbexpressions);
     }
 
     return newLeaf;    
@@ -467,9 +488,9 @@ Token*** ASTreturnFastArray(ASTstack* myStack, saveType type){
     else if(type==functionCallIDs){
         return &(myStack->head->statement->TStatement.functioncall->IDs);
     }
-    else if(type==functionCallParams){
+    /*else if(type==functionCallParams){
         return &(myStack->head->statement->TStatement.functioncall->parameters);
-    }
+    }*/
     return NULL;
 }
 int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
@@ -498,12 +519,12 @@ void ASTprintStatement(Tstate* statement){
         printf("\033[0m");
         if(*(statement->TStatement.function->nbParameters)!=0){
             for (int i = 0; i < *(statement->TStatement.function->nbParameters); i++){
-                printf("    %d parameter: %s\n",i, statement->TStatement.function->parameters[i]->data.string);
+                printf("    %d parameter: %s\n",i+1, statement->TStatement.function->parameters[i]->data.string);
             }
         }
         if(*(statement->TStatement.function->nbReturntypes)!=0){
             for (int i = 0; i < *(statement->TStatement.function->nbReturntypes); i++){
-                printf("    %d returntype: %s\n",i, statement->TStatement.function->returnTypes[i]->data.string);
+                printf("    %d returntype: %s\n",i+1, statement->TStatement.function->returnTypes[i]->data.string);
             }
         }
     }
@@ -558,17 +579,27 @@ void ASTprintStatement(Tstate* statement){
         }
         printf("\n        parameters: ");
         for (int i = 0; i < *statement->TStatement.functioncall->nbParameters; i++){
-            printf("%s, ",statement->TStatement.functioncall->parameters[i]->data.string);
+            printExpressionTree(statement->TStatement.functioncall->parameters[i]);
         }
     }
     else if (statement->type==ASTcondition)
     {
-    
         printf("\033[1;36m");
         printf("    If\n");
         printf("\033[0m");
         printf("        expression: ");
         printExpressionTree(statement->TStatement.if_loop->expression);
+        printf("\n");
+    }
+    else if(statement->type==ASTreturn){
+
+        printf("\033[0;31m");
+        printf("    return\n");
+        printf("\033[0m");
+        printf("        expression: ");
+        for (int i = 0; i < *statement->TStatement.FCreturn->nbexpressions; i++){
+            printExpressionTree(statement->TStatement.FCreturn->expressions[i]);
+        }
         printf("\n");
     }
     int nb=0;
@@ -601,7 +632,6 @@ void ASTprintStatement(Tstate* statement){
                 
                 tmp=NULL;
             }
-            
         }
         else if (statement->type==ASTdefine){
             tmp=NULL;
@@ -612,10 +642,11 @@ void ASTprintStatement(Tstate* statement){
         else if (statement->type==ASTfunctionCall){
             tmp=NULL;
         }
-        
+        else if (statement->type==ASTreturn){
+            tmp=NULL;
+        }
         
         nb=nb+1;
-        
         if (tmp==NULL) break;
         ASTprintStatement(tmp);
     }
@@ -626,6 +657,7 @@ void ASTprintStatement(Tstate* statement){
     else if(statement->type==ASTassigne) {printf("\033[0;31m"); printf("\n    assigment end\n"); printf("\033[0m");}
     else if(statement->type==ASTfunctionCall) {printf("\033[0;32m"); printf("\n    functionCall end\n"); printf("\033[0m");}
     else if(statement->type==ASTcondition)   {printf("\033[1;36m"); printf("\n    condition end\n"); printf("\033[0m");}
+    else if(statement->type==ASTreturn){printf("\033[0;31m"); printf("    return end\n"); printf("\033[0m");}
 }
 void ASTprintStack(ASTstack* myStack){
     ASTstackElement* tmp=myStack->head;
@@ -662,3 +694,76 @@ void ASTdeleteLastFromTree(ASTstack* myStack){
         }
     }
 }
+void ASTinBuildArrayInit(inbuild* array){
+    for (int i = 0; i < 8; i++){
+        array[i]=empty;
+    }
+}
+void ASTinBuildUsed(ASTtree* tree, inbuild FC){
+    for (int i = 0; i < 8; i++){
+        if (tree->UsedInBuild[i]==empty){
+            tree->UsedInBuild[i]=FC;
+            break;
+        }
+        else if(tree->UsedInBuild[i]==FC) break;
+    }
+}
+bool ASTisInBuildUsed(ASTtree* tree, inbuild FC){
+    for (int i = 0; i < 8; i++){
+        if (tree->UsedInBuild[i]==empty) return false;
+        else if(tree->UsedInBuild[i]==FC) return true;
+    }
+}
+void ASTprintInBuild(ASTtree* tree){
+    printf("\nUsed InBuild------------------------------------------------------\n\n");
+    for (int i = 0; i < 8; i++){
+        if (tree->UsedInBuild[i]!=empty){
+            printf("%d ",tree->UsedInBuild[i]);
+        }
+        else break;
+        
+    }
+}
+void printExpressionTree(Tree *exprtree){
+    if (exprtree->Data->type == Integer){
+        printf("%i ", exprtree->Data->data.integer);
+    }
+    else if (exprtree->Data->type == Number){
+        printf("%f ", exprtree->Data->data.number);
+    }
+    else if (exprtree->Data->type == String){
+        printf("%s ", exprtree->Data->data.string);
+    }
+
+    else if (exprtree->Data->type == Identifier){
+        printf("%s ", exprtree->Data->data.string);
+    }
+
+    else if (exprtree->Data->type == Sizeof){
+        printf("%s ", exprtree->Data->data.string);
+        printExpressionTree(exprtree->attr.unary.child);
+    }
+
+    else if (strcmp(exprtree->Data->data.string, "nil") == 0){
+        printf("nil ");
+    } 
+
+    else if (exprtree->Data->type == Plus || \
+            exprtree->Data->type == Minus || \
+            exprtree->Data->type == Multiplication || \
+            exprtree->Data->type == Division_integer || \
+            exprtree->Data->type == Division || \
+            exprtree->Data->type == Concatenation || \
+            exprtree->Data->type == Less || \
+            exprtree->Data->type == More || \
+            exprtree->Data->type == Less_equal || \
+            exprtree->Data->type == More_equal || \
+            exprtree->Data->type == Is_equal || \
+            exprtree->Data->type == Not_equal || \
+            exprtree->Data->type == Assign){
+        printExpressionTree(exprtree->attr.binary.left);
+        printf("%s ", exprtree->Data->data.string);
+        printExpressionTree(exprtree->attr.binary.right);
+    }
+}
+

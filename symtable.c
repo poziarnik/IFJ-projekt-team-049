@@ -232,8 +232,8 @@ void sym_inorderGlobal(TreeItem *tree){
     sym_inorderGlobal(tree->rptr);
   }
 }
-bool isFunDeclared(char* key, TreeItem* globalTree){
-  if(sym_search(globalTree, key) || isInbuildFun(key)){
+bool isFunDeclared(char* key, TreeItem* globalTree, ASTtree* abstractTree){
+  if(sym_search(globalTree, key) || ASTisInbuildFunSave(key, abstractTree)){
     return true;
   }
   return false;
@@ -284,10 +284,21 @@ int symtableInit(symtable* sym){
   sym->currentVar=NULL;
   return 0;
 }
+bool ASTisInbuildFunSave(char* str, ASTtree* abstractTree){
+  if(strcmp(str,"write")==0) {ASTinBuildUsed(abstractTree, write); return true;}
+  else if(strcmp(str,"readi")==0){ASTinBuildUsed(abstractTree, readi); return true;}
+  else if(strcmp(str,"reads")==0){ASTinBuildUsed(abstractTree, reads); return true;}
+  else if(strcmp(str,"readn")==0){ASTinBuildUsed(abstractTree, readn); return true;}
+  else if(strcmp(str,"tointeger")==0){ASTinBuildUsed(abstractTree, tointeger); return true;}
+  else if(strcmp(str,"substr")==0){ASTinBuildUsed(abstractTree, substr); return true;}
+  else if(strcmp(str,"ord")==0){ASTinBuildUsed(abstractTree, ord); return true;}
+  else if(strcmp(str,"chr")==0){ASTinBuildUsed(abstractTree, chr); return true;}
+  else return false;
+}
 bool isInbuildFun(char* str){
-  if(strcmp(str,"write")==0 || strcmp(str,"read")==0 || strcmp(str,"readi")==0 \
-  || strcmp(str,"reads")==0 || strcmp(str,"readn")==0 || strcmp(str,"tointeger")==0 \
-  || strcmp(str,"substr")==0 || strcmp(str,"ord")==0 || strcmp(str,"chr")==0) return true;
+  if ((strcmp(str,"write")==0) || (strcmp(str,"readi")==0) || (strcmp(str,"reads")==0) || \
+      (strcmp(str,"readn")==0) || (strcmp(str,"tointeger")==0) || (strcmp(str,"substr")==0) || \
+      (strcmp(str,"ord")==0) || (strcmp(str,"chr")==0)) return true;
   else return false;
 }
 bool symSatckIsEmpty(SymStack* myStack){

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "MyStackTree.h"
 #include "symtable.h"
+#include "AST.h"
 
 /**
  * @brief typ pouzity, pri analyze ci je expression validny, alebo nie
@@ -34,6 +35,7 @@ typedef enum{
 
 
 
+<<<<<<< HEAD
 /**
  * @brief Vypisovanie expression stromu
  * 
@@ -41,6 +43,10 @@ typedef enum{
  */
 
 void printExpressionTree(Tree *exprtree);
+=======
+
+int expressionCheck(Token* MyToken, TokenList* list, Tree *expression);
+>>>>>>> a508d91bdf1fa9a5dbc4bc77bc18c169cfdd2586
 
 /**
  * @brief hlavna funkcia, ktora podla tabulky urcuje ci mam vyraz redukovat, popripade expandovat

@@ -6,7 +6,8 @@
 #include <stdbool.h>
 #include "Scanner.h"
 #include "MyStackTree.h"
-#include "ParserDownUp.h"
+//#include "ParserDownUp.h"
+//#include "symtable.h"
 
 typedef enum{
     ASTglobal,
@@ -15,7 +16,8 @@ typedef enum{
     ASTcycle,
     ASTdefine,
     ASTassigne,
-    ASTfunctionCall
+    ASTfunctionCall,
+    ASTreturn
 }statementType;
 
 typedef enum{
@@ -31,6 +33,18 @@ typedef enum{
 }saveType;
 
 typedef enum{
+    readi,
+    reads,
+    readn,
+    write,
+    tointeger,
+    ord,
+    substr,
+    chr,
+    empty
+}inbuild;
+
+typedef enum{
     IfStatement,
     ElseStatement
 }ifOrElse;
@@ -44,6 +58,7 @@ typedef enum{
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
+    inbuild UsedInBuild[8];
 }ASTtree;
 /*typedef struct root{
     struct state **global_state;
@@ -63,7 +78,8 @@ typedef struct state{
         struct assign_tree *assignment;
         struct definition_tree *definiton;
         struct functioncall_tree *functioncall;
-        struct global* root;
+        struct global *root;
+        struct returnTree *FCreturn;
     }TStatement;
 }Tstate;
 
@@ -128,9 +144,15 @@ typedef struct functioncall_tree{
     Token **IDs;  //podla mna to musi byt pole, lebo ID moze byt viac
     int* nbID;
     Token *functionName;
-    Token **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
+    Tree **parameters; //rovnako ako pri ID, moze byt viac vstupnych parametrov
     int* nbParameters;
 }TFunctioncall_tree;
+
+typedef struct returnTree{
+    Tree **expressions;
+    int* nbexpressions;
+}Treturn_tree;
+
 
 //!!!!! za kazdym define assigne FCcall musi ist po naplneni parametrov end
 
@@ -142,6 +164,7 @@ int ASTaddDefineToTree(ASTstack* myStack);
 int ASTaddAssigmentToTree(ASTstack* myStack);
 int ASTaddFCcallToTree(ASTstack* myStack);
 int ASTaddConditionToTree(ASTstack* myStack);
+int ASTaddReturnToTree(ASTstack* myStack);
 int ASTaddElseToCondition(ASTstack* myStack);
 int ASTallocateSpaceForElse(ASTstack* myStack);
 /**
@@ -233,5 +256,42 @@ void ASTprintStatement(Tstate* statement);
  * @param myStack 
  */
 void ASTprintStack(ASTstack* myStack);
+
+/**
+ * @brief zapise do pola enumov v AST ze zadana inbuild funkcia bola v programe pouzita 
+ * 
+ */
+void ASTinBuildUsed(ASTtree* tree, inbuild FC);
+
+/**
+ * @brief inicializuje pole pouzitych funkcii na empty pri vytvoreni AST
+ * 
+ * @param array 
+ */
+void ASTinBuildArrayInit(inbuild* array);
+
+/**
+ * @brief Print expression stromu
+ * 
+ * @param exprtree -strom
+ */
+void printExpressionTree(Tree *exprtree);
+
+/**
+ * @brief vypise pouzite inBuild funkcie (enum)
+ * 
+ * @param tree 
+ */
+void ASTprintInBuild(ASTtree* tree);
+
+/**
+ * @brief kontroluje ci bola zadana inbuild funkcia v programe pouzita
+ * 
+ * @param tree 
+ * @param FC 
+ * @return true 
+ * @return false 
+ */
+bool ASTisInBuildUsed(ASTtree* tree, inbuild FC);
 
 #endif 

@@ -160,6 +160,9 @@ typedef enum{
     FCallparam,
     FCallnextParam,
     FCreturn,
+    returnParams,
+    returnParam,
+    returnNextParam,
     statementOutOfFc
 }NonTerminal;
 
@@ -190,11 +193,22 @@ int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 int fc_functionCall(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);
 int fc_prolog(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 void parcerPrint(char* state ,Token* MyToken ,bool on);
+<<<<<<< HEAD
 bool chackStr(Token* MyToken,  char* checkType);
 int fc_FCallparams(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 int fc_FCallparam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 int fc_FCallnextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
 int fc_FCreturn(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);
+=======
+bool chackStr(Token* MyToken, TokenList* list, char* checkType);
+int fc_FCallparams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallparam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCallnextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_FCreturn(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnParams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+int fc_returnNextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree);
+>>>>>>> a508d91bdf1fa9a5dbc4bc77bc18c169cfdd2586
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

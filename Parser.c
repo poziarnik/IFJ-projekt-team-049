@@ -270,6 +270,24 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         }
         else return false;
     }
+    else if(MyNonTerminal == returnParams){
+        if (first(MyToken,FCallparam)){
+            return true;
+        }
+        else return false;
+    }
+    else if(MyNonTerminal == returnParam){
+        if (first(MyToken, expression)){
+            return true;
+        }
+        else return false;
+    }
+    else if(MyNonTerminal == returnNextParam){
+        if (MyToken->type==Comma){
+            return true;
+        }
+        else return false;        
+    }
     else if(MyNonTerminal == statementOutOfFc){
         if(first(MyToken, functionCall)){
             return true;
@@ -560,7 +578,7 @@ int fc_statement(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){  
         
     }
     else if (first(MyToken, assigneOrFunctioCall)){ 
-        if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+        if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree, abstractTree)){   //ak je funkcia ries function call ak nie ries assigne
             RETURN_ON_ERROR_FCCALL(false); 
         }
         else{ 
@@ -718,7 +736,7 @@ int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){    
 
     if (first(MyToken, expression)){// or fccall + cash(Token** cash)ked sa rozhodne ci assigne alebo funkcia prida do vytvorenej struktury 
         if(MyToken->type==Identifier){
-            if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree)){   //ak je funkcia ries function call ak nie ries assigne
+            if (isFunDeclared(MyToken->data.string, mySymtable->sym_globalTree, abstractTree)){   //ak je funkcia ries function call ak nie ries assigne
                 
                 ASTdeleteLastFromTree(abstractTree->ASTStack);//odstranim assigneLeaf zo stromu
                 
@@ -811,6 +829,16 @@ int fc_expression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){ 
         if(abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression==NULL) return INTERNAL_ERROR;
         *abstractTree->ASTStack->head->statement->TStatement.definiton->state=Expression;//uloz info o tom ze define obsahuje espression
         *abstractTree->ASTStack->head->statement->TStatement.definiton->ExFc.expression=*newExpression;//uloz nove expression
+    }
+    else if(abstractTree->ASTStack->head->statement->type==ASTreturn){
+        status = ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.FCreturn->expressions), \
+                            abstractTree->ASTStack->head->statement->TStatement.FCreturn->nbexpressions, newExpression);
+        if(status != 0) return status;
+    }
+    else if(abstractTree->ASTStack->head->statement->type==ASTfunctionCall){
+        status = ASTaddToExpressions(&(abstractTree->ASTStack->head->statement->TStatement.functioncall->parameters), \
+                            abstractTree->ASTStack->head->statement->TStatement.functioncall->nbParameters, newExpression);
+        if(status != 0) return status;
     }
 
     return PARC_TRUE;
@@ -973,7 +1001,7 @@ int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){ 
     
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
-            if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree)){
+            if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree, abstractTree)){
                 RETURN_ON_ERROR_FCCALL(false);
             }
             else RETURN_ON_ERROR(fc_expression);
@@ -1009,6 +1037,7 @@ int fc_prolog(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){
 }
 int fc_FCreturn(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){          //FCreturn: return (<FCparams>)
     int status = 0;
+    status = ASTaddReturnToTree(abstractTree->ASTStack);//vytvaranie AST
     if (MyToken->type==Keyword){
         if (chackStr(MyToken, "return")){
             parcerPrint("Return" ,MyToken ,PRINT_ON);
@@ -1018,14 +1047,59 @@ int fc_FCreturn(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){   
     }
     else return PARC_FALSE;
 
-    if (first(MyToken,FCallparams)){
-        RETURN_ON_ERROR(fc_FCallparams);
+    if (first(MyToken,returnParams)){
+        RETURN_ON_ERROR(fc_returnParams);
+    }
+
+    ASTendStatement(abstractTree->ASTStack);
+    return PARC_TRUE;
+}
+int fc_returnParams(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                         //params: <param><nextParam>
+    int status = 0;
+    if(first(MyToken, returnParam)){
+        RETURN_ON_ERROR(fc_returnParam);
+    }
+    else{
+        return PARC_FALSE;
+    }
+    if(first(MyToken, returnNextParam)){
+        RETURN_ON_ERROR(fc_returnNextParam);
     }
 
     return PARC_TRUE;
 }
+int fc_returnParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                          //param: <expression>
+    int status = 0;
+    if(first(MyToken, expression)){
+        RETURN_ON_ERROR(fc_expression);
+        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;*/
+    }   
+    else return PARC_FALSE;
+    
+    return PARC_TRUE;
+}
+int fc_returnNextParam(Token* MyToken,TokenList* list, symtable* mySymtable, ASTtree* abstractTree){                      //nextparam: ,<param><nextparam>
+    int status = 0;
+    if (chackStr(MyToken, list, ",")){
+        SCAN_TOKEN;
+    }
+    else{
+        return PARC_FALSE;
+    }     
+    if (first(MyToken, FCallparam)){
+        RETURN_ON_ERROR(fc_returnParam);
+    }
+    else{
+        return PARC_FALSE;
+    }
 
+    if (first(MyToken, nextParam)){
+        RETURN_ON_ERROR(fc_returnNextParam);
+    }
 
+    return PARC_TRUE;
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

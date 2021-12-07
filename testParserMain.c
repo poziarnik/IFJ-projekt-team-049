@@ -18,6 +18,8 @@ int main(){
         printf("\nSymTable---------------------------------------------------\n\n");
 
         sym_inorderGlobal(mySymtable->sym_globalTree);
+
+        ASTprintInBuild(abstractTree);
         //interpret(abstractTree->tree->TStatement.root);
         printf("\nMeky Zbirka jubilejny koncert\n");
     }
