@@ -32,6 +32,10 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         if(first(MyToken, functionDec)){
             return true;
         }
+        else if (first(MyToken,functionCall)){
+            return true;
+        }
+        
     }
     else if (MyNonTerminal==functionDec){
         if (first(MyToken,global_scope)){
@@ -329,13 +333,10 @@ int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){       
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
     }
-    else{
-        return PARC_FALSE;
+    else if (MyToken->type==Identifier){
+        RETURN_ON_ERROR_FCCALL(false);
     }
-
-    if (first(MyToken, code)){
-        RETURN_ON_ERROR(fc_code);
-    }
+    else PARC_FALSE;
 
     if (first(MyToken, statementOutOfFc)){
         RETURN_ON_ERROR(fc_statementOutOfFc); 
@@ -345,7 +346,6 @@ int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){       
 }
 int fc_statementOutOfFc(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){        //statementOutOfFc: <functionDec>||<functionCall>(bez ids) <statementOutOfFc>
     int status = 0;
-    //puts("halooooooooooo");
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
     }
@@ -712,7 +712,7 @@ int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree
     return PARC_TRUE;
 }
     
-int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                      //<var><nextVar>=<expresion><nextExpresion>     or varlist=expresionlist
+int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                      //<var><nextVar>=<expresion><nextExpresion>||<functionCall>
     int status = 0;
     bool assigneOrFCcall=0;//0 - asigne
     
@@ -961,8 +961,6 @@ int fc_FCallparam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){ 
     int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
-        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;*/
     }   
     else return PARC_FALSE;
     
@@ -1072,8 +1070,6 @@ int fc_returnParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){
     int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
-        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;*/
     }   
     else return PARC_FALSE;
     
