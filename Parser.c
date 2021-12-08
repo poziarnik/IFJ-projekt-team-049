@@ -299,7 +299,11 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
             return true;
         }
         else return false;
-        
+    }
+    else if(MyNonTerminal == defineEquals){
+        if (MyToken->type == Assign){
+            return true;
+        }
     }
     
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!dorobit nejake first
@@ -899,6 +903,16 @@ int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){     
     }
     else return PARC_FALSE;
 
+    if (first(MyToken,defineEquals)){
+        RETURN_ON_ERROR(fc_defineEquals);
+    }
+
+    
+    ASTendStatement(abstractTree->ASTStack);
+    return PARC_TRUE;
+}
+int fc_defineEquals(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){
+    int status = 0;
     if (chackStr(MyToken, "=")){
         parcerPrint("String" ,MyToken ,PRINT_ON);
         SCAN_TOKEN;
@@ -908,14 +922,12 @@ int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){     
     if (first(MyToken,initialize)){
         RETURN_ON_ERROR(fc_initialize);
     }
-    ASTendStatement(abstractTree->ASTStack);
+    else return PARC_FALSE;
+
     return PARC_TRUE;
 }
 int fc_functionCall(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree, bool withIDs){                                 //functionCall: identifier(<FCparams>)
     int status = 0;
-  //zatial nie je pouzite(po implementacii symtable pridat do assigne a do define)
-    //ASTprintStack(abstractTree->ASTStack);
-    //printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Type %d", abstractTree->ASTStack->head->statement->type);
     
     if (!withIDs){
         status = ASTaddFCcallToTree(abstractTree->ASTStack);
