@@ -1,9 +1,8 @@
 /**
  *
  * @file symtable.c
- * @author Juraj Hatala
- * @brief 
- * @date 
+ * @author Juraj Hatala (xhatal01)
+ * @brief implementacia tabulky symbolov
  *
  */
 

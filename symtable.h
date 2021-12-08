@@ -2,10 +2,9 @@
 /**
  *
  * @file symtable.h
- * @author Juraj Hatala
- * @brief Header of symtable
- * @date 
- *
+ * @author Juraj Hatala (xhatal01)
+ * @brief hlavickovy subor tabulky symbolov
+ *  
  */
 
 
@@ -174,6 +173,13 @@ bool isFunDeclared(char* key, TreeItem* globalTree, ASTtree* abstractTree);
  * @return int 
  */
 int sym_saveVar(TreeItem **sym_subtree,char* key, TreeItem** currentVar);
+
+/**
+ * @brief ulozi do zadanej uzlu stomu typ danej premennej
+ * 
+ * @param data 
+ * @param type 
+ */
 void sym_saveVarType(TreeItem* data, char* type);
 
 /**
@@ -187,7 +193,7 @@ void sym_saveVarType(TreeItem* data, char* type);
 bool isVarDeclared(SymStack* myStack, char* key);
 
 void sym_inorder(TreeItem *tree);
-//int createSubTree(SymStack* myStack);
+
 /**
  * @brief Vytvora novy block na stacku. Pri volani cyklov condition...
  * 
@@ -230,7 +236,16 @@ int symtableInit(symtable* sym);
  */
 bool isInbuildFun(char* str);
 
+/**
+ * @brief Zistí či je zadaný identifikátor inbuild funkcia ak áno zaznamená do AST ze bola táto funkcia v programe použitá
+ * 
+ * @param str 
+ * @param abstractTree 
+ * @return true 
+ * @return false 
+ */
 bool ASTisInbuildFunSave(char* str, ASTtree* abstractTree);
+
 /**
  * @brief ak je stack prazny vracia NULL;
  * 
@@ -239,9 +254,37 @@ bool ASTisInbuildFunSave(char* str, ASTtree* abstractTree);
  * @return false 
  */
 bool symSatckIsEmpty(SymStack* myStack);
+
+/**
+ * @brief zisti ci sa premenna s klucom key nachádza v nejakom stome na zasobníku ak nie vráti -1, ak áno vracia enum DataType 
+ * 
+ * @param tree 
+ * @param key 
+ * @return int 
+ */
 int sym_searchVarType(TreeItem *tree, char* key);
+
+/**
+ * @brief prechádza celú symtable a vypisuje na stdout
+ * 
+ * @param tree 
+ */
 void sym_inorderGlobal(TreeItem *tree);
+
+/**
+ * @brief vypisuje obsah zásobníka na stdout
+ * 
+ * @param myStack 
+ */
 void printStack(SymStack *myStack);
+
+/** 
+ * @brief vracia typ premennej(enum) ak je ulozená na zásobníku. Ak nie vracia -1. Využíva sym_searchVarType
+ * 
+ * @param myStack 
+ * @param key 
+ * @return int 
+ */
 int sym_varType(SymStack* myStack, char* key);
 
 #endif
