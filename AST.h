@@ -305,15 +305,29 @@ int* ASTreturnFastNB(ASTstack* myStack);
  * @return int 
  */
 Token** ASTcreateTokenArray(int* nbTokens);
+
+/**
+ * @brief Prida newToken do pola tokenov ak je pole male zvacsi ho
+ * 
+ * @param array 
+ * @param nbTokens 
+ * @param newToken 
+ * @return int 
+ */
 int ASTaddToTokenArray(Token*** array, int* nbTokens, Token* newToken);
+
 /**
  * @brief ukonci sucasne upravovany statement na vrchu staku("stackPop"). Musi nasledovat za kazdym assigment a define a vsetkym proste
  * 
  * @param myStack 
  */
 void ASTendStatement(ASTstack *myStack);
-int ASTnewElementInit(Tstate* newElement, statementType Type);
-//void ASTprintTree(TRoot* tree);
+
+/**
+ * @brief inicializuje zasobnik
+ * 
+ * @param myStack 
+ */
 void ASTstackInit(ASTstack* myStack);
 
 /**
