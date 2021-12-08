@@ -24,9 +24,9 @@ void gen_func_end(root *root, int i);
 
 void gen_func_call(root *root, int i);
 
-void gen_func_def_arg(int i);
+void gen_func_def_arg(root *root, int i, int a);
 
-void gen_func_move_arg(root *root, int i, int j);
+//void gen_func_move_arg(root *root, int i, int j);
 
 void gen_func_ret(root *root, int i);
 

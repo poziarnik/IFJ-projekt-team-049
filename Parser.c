@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON true //ak chces printovat priebeh nastav true ak nie nastav false
+#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault

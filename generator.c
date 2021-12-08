@@ -19,37 +19,50 @@
 //zlozene operacie
 //velkost pola
 //uprava kodu
-//test merlin
+
 
 
 
 bool code = true;
 int while_cycle_counter = 1;
 int if_cycle_counter = 1;
+bool isMain = false;
+bool jump = true;
 
 int interpret(root *Root){
     if(Root != NULL){
         if(*Root->statements != NULL && Root->nbStatements != NULL){
             for(int i = 0; i < *Root->nbStatements; i++){
                 if(code == true){
-                    printf("\n.IFJcode21\n");\
+                    printf(" .IFJcode21\n");
+                    for(int num = 0; num < *Root->nbStatements; num ++){
+                        if(strcmp(Root->statements[num]->TStatement.function->id->data.string, "main")==0){
+                            printf(" JUMP $main\n");
+                            isMain = true;
+                        }
+                    }
+                    if(isMain = false){
+                        for(int num = 0; num < *Root->nbStatements; num ++){
+                            if(Root->statements[num]->TStatement.function->id->data.string != NULL){
+                                printf(" JUMP $%s\n", Root->statements[i]->TStatement.function->id->data.string);
+                                break;
+                            }  
+                        } 
+                    }
                     if(Root->UsedInBuild != NULL){
-                        printf("\n JUMP $%s\n", Root->statements[i]->TStatement.function->id->data.string);
                         for(int num_inbuild = 0; num_inbuild < 8; num_inbuild ++){
                             gen_builtin_func(Root, num_inbuild);
                         }
                     }
                     code = false;
                 }
+                
 ///////////////////////////////////////////////////////////      FUNCTION      /////////////////////////////////////////////////////
                 if(Root->statements[i]->type == ASTfunction){   
                     gen_func_begin(Root, i);
                     if(Root->statements[i]->TStatement.function->nbParameters != NULL){
-                        for(int a = 1; a < *Root->statements[i]->TStatement.function->nbParameters + 1 ; a++){  
-                            gen_func_def_arg(a);
-                        }
-                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters ; a++){  
-                            gen_func_move_arg(Root,i,a);
+                        for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters  ; a++){  
+                            gen_func_def_arg(Root, i, a);
                         }
                     } 
                     /////////////////////////////////   FUNCTION   STATEMENTS      //////////////////////////////////////////////////////
@@ -61,8 +74,10 @@ int interpret(root *Root){
                         funcRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.function->nbStatements;
                         interpret(funcRoot->TStatement.root);
                     }
+                    /*if(Root->statements[i]->TStatement.FCreturn != NULL){
+                        gen_func_ret(Root,i); 
+                    }*/
                     
-                    gen_func_ret(Root,i); 
                     
                     gen_func_end(Root, i);
                 }
@@ -819,24 +834,13 @@ int interpret(root *Root){
 //////////////////////////////////////////////////////////////     FUNCTION CALL       ///////////////////////////////////////////////////////////
                 // maybe DONE 
                 else if(Root->statements[i]->type == ASTfunctionCall){
-                    /*if(isInbuildFun(Root->statements[i]->TStatement.functioncall->functionName->data.string) == true){
-                        gen_builtin_func(Root,i);
-                        if(*Root->statements[i]->TStatement.functioncall->nbID != 0 != 0){
-                            for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
-                                char *var = Root->statements[i]->TStatement.functioncall->IDs[a]->data.string;
-                                gen_move_in_func_call(var);
-                            }
-                        }
-                    }
-                    else{*/
-                        gen_func_call(Root, i);                                                                        //prepisat
+                        gen_func_call(Root, i);                                                                     
                         if( *Root->statements[i]->TStatement.functioncall->nbID != 0){  
                            for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
                                 char *var = Root->statements[i]->TStatement.functioncall->IDs[a]->data.string;
                                 gen_move_in_func_call(var);
                             }
                         }
-                    //}
                 }
             }
         }
@@ -847,176 +851,179 @@ int interpret(root *Root){
 
 void gen_func_begin(root *root, int i){  
         char *func_name = root->statements[i]->TStatement.function->id->data.string;       
-        printf("\n LABEL $%s\
-                \n CREATEFRAME\
-                \n PUSHFRAME", func_name);
+        printf(" LABEL $%s\n\
+ CREATEFRAME\n\
+ PUSHFRAME\n", func_name);
 }
 
 void gen_func_end(root *root, int i){
         char *func_name = root->statements[i]->TStatement.function->id->data.string;
-        printf("\n LABEL $%s$end\
-                \n POPFRAME\
-                \n RETURN", func_name);
+        printf(" LABEL $%s$end\n\
+ POPFRAME\n\
+ RETURN\n", func_name);
 }
  
 
 void gen_func_call(root *root, int i){
-    printf("\n CALL $%s ", root->statements[i]->TStatement.functioncall->functionName->data.string);
+    printf(" CALL $%s\n", root->statements[i]->TStatement.functioncall->functionName->data.string);
     
 }
 
-void gen_func_def_arg(int i){
-    printf("\n DEFVAR LF@%d", i);
+void gen_func_def_arg(root *root, int i ,int a){
+    printf(" DEFVAR LF@%s\n", root->statements[i]->TStatement.function->parameters[a]->data.string);
 }
 
-void gen_func_move_arg(root *root, int i, int a){
-    printf("\n MOVE LF@%s", root->statements[i]->TStatement.function->parameters[a]->data.string );
+/*void gen_func_move_arg(root *root, int i, int a){
+    printf(" MOVE LF@%s LF@param%d\n", root->statements[i]->TStatement.function->parameters[a]->data.string, a +1 );
     
-}
+}*/
 
-void gen_func_ret(root *root, int i){
+/*void gen_func_ret(root *root, int i){
+    puts("\nahoj\n");
     for(int num_return = 0; num_return < *root->statements[i]->TStatement.FCreturn->nbexpressions; num_return++){
-        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Integer){
+        puts("\nahoj2\n");
+        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->attr.unary.child->Data->type == Integer){
             printf("\n POPS LF@return$%d", root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->data.integer);
         }
-        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == String){
+        else if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == String){
             printf("\n POPS LF@return$%s", root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->data.string);
         }
-        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Number){
+        else if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Number){
             printf("\n POPS LF@return$%a", root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->data.number);
         }
-        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Identifier){
+        else if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Identifier){
+            puts("\nahoj3\n");
             printf("\n POPS LF@return$%s", root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->data.string);
         }
-        if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Keyword){
+        else if(root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->type == Keyword){
             printf("\n POPS LF@return$%s", root->statements[i]->TStatement.FCreturn->expressions[num_return]->Data->data.string);
         }
         
     }
     
-} 
+} */
 
 /******************** generovanie instrukcii ********************/
 
 void gen_defvar(root *root, int i){
-    printf("\n DEFVAR LF@%s", root->statements[i]->TStatement.definiton->id->data.string);
+    printf(" DEFVAR LF@%s\n", root->statements[i]->TStatement.definiton->id->data.string);
     
 }
 
 void gen_move_int(char *var, int i){ 
-    printf(" \n MOVE LF@%s int@%d", var, i );
+    printf(" MOVE LF@%s int@%d\n", var, i );
 }
 
 void gen_move_string(root *root, int i, int a){ 
-    printf(" \n MOVE LF@%s string@%s", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.string );
+    printf(" MOVE LF@%s string@%s\n", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.string );
 }
 
 void gen_move_number(root *root,int i,  int a){ 
-    printf(" \n MOVE LF@%s float@%a", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.number);
+    printf(" MOVE LF@%s float@%a\n", root->statements[i]->TStatement.assignment->IDs[a]->data.string, root->statements[i]->TStatement.assignment->expressions[a]->Data->data.number);
 }
 
 void gen_move_int_indef(root *root,int i){ 
-    printf(" \n MOVE LF@%s int@%d", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.integer );
+    printf(" MOVE LF@%s int@%d\n", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.integer );
     
 }
 
 void gen_move_string_indef(root *root, int i){ 
-    printf(" \n MOVE LF@%s string@%s", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.string );
+    printf(" MOVE LF@%s string@%s\n", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.string );
 }
 
 void gen_move_number_indef(root *root,int i){ 
-    printf(" \n MOVE LF@%s float@%a", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.number);
+    printf(" MOVE LF@%s float@%a\n", root->statements[i]->TStatement.definiton->id->data.string, root->statements[i]->TStatement.definiton->ExFc.expression->Data->data.number);
 }
 
 void gen_move_in_func_call(char *var){                             
-    printf("\n MOVE  LF@%s TF@retval" , var );   
+    printf(" MOVE  LF@%s TF@retval\n" , var );   
 }
 
 
 void gen_add(char *first, char *second){
-    printf("\n DEFVAR LF@retval\
-            \n ADD  LF@retval %s %s" ,first, second);
+    printf(" DEFVAR LF@retval\n\
+ ADD  LF@retval %s %s\n" ,first, second);
 }
 
 void gen_sub(char *first, char *second){
-    printf("\n DEFVAR LF@retval\
-            \n SUB  LF@retval %s %s ", first, second);
+    printf(" DEFVAR LF@retval\n\
+             SUB  LF@retval %s %s\n", first, second);
 }
 
 void gen_mul(char *first, char *second){
-    printf("\n DEFVAR LF@retval\
-            \n MUL  LF@retval %s %s" ,first, second);
+    printf(" DEFVAR LF@retval\n\
+ MUL  LF@retval %s %s\n" ,first, second);
 }
 
 void gen_div(char *first, char *second){
-    printf("\n DEFVAR LF@retval\
-            \n DIV  LF@retval %s %s", first, second);
+    printf(" DEFVAR LF@retval\n\
+ DIV  LF@retval %s %s\n", first, second);
 }
 
 void gen_idiv(char *first, char *second){
-    printf("\n DEFVAR LF@retval\
-            \n IDIV  LF@retval %s %s", first, second);
+    printf(" DEFVAR LF@retval\n\
+ IDIV  LF@retval %s %s\n", first, second);
 }
 
 void gen_strlen(char *string){
-    printf("\n DEFVAR LF@retval\
-            \n STRLEN  LF@retval string@%s", string);  
+    printf(" DEFVAR LF@retval\n\
+ STRLEN  LF@retval string@%s\n", string);  
 }
 
 
 void gen_LT(char *first, char *second){
-    printf("\n DEFVAR LF@LTretval\
-            \n LT   LF@LTretval %s %s", first, second);
+    printf(" DEFVAR LF@LTretval\n\
+ LT   LF@LTretval %s %s\n", first, second);
 }
 
 void gen_GT(char *first, char *second){
-    printf("\n DEFVAR LF@GTretval\
-            \n GT   LF@GTretval %s %s", first, second);
+    printf(" DEFVAR LF@GTretval\n\
+ GT   LF@GTretval %s %s\n", first, second);
 }
 
 void gen_EQ(char *first, char *second){
-    printf("\n DEFVAR LF@EQretval\
-            \n EQ   LF@EQretval %s %s", first, second);
+    printf(" DEFVAR LF@EQretval\n\
+ EQ   LF@EQretval %s %s\n", first, second);
 }
 
 void gen_JUMPIFEQ(char *jump ,char *first, char *second){
-    printf("\n JUMPIFEQ   %s %s %s",jump, first, second);
+    printf(" JUMPIFEQ   %s %s %s\n",jump, first, second);
 }
 
 void gen_JUMPIFNEQ(char *jump ,char *first, char *second){
-    printf("\n JUMPIFNEQ   %s %s %s",jump, first, second);
+    printf(" JUMPIFNEQ   %s %s %s\n",jump, first, second);
 }
 
 void gen_OR(char *first, char *second){
-    printf("\n DEFVAR LF@ORretval\
-            \n OR   LF@ORretval %s %s", first, second);
+    printf(" DEFVAR LF@ORretval\n\
+ OR     LF@ORretval %s %s\n", first, second);
 }
 
 /******************** generovanie cyklov ********************/
 
 void gen_then(int counter){
-    printf("\n LABEL then$%d", counter);
+    printf(" LABEL then$%d\n", counter);
 }
 
 void gen_jump_end(int counter){
-    printf("\n JUMP end$%d", counter);
+    printf(" JUMP end$%d\n", counter);
 }
 
 void gen_else(int counter){
-    printf("\n LABEL else$%d", counter );
+    printf(" LABEL else$%d\n", counter );
 }
 
 void gen_end(int counter){
-    printf("\n LABEL end$%d", counter);
+    printf(" LABEL end$%d\n", counter);
 }
 
 void gen_while(int i){
-    printf("\n LABEL while$%d", i);
+    printf(" LABEL while$%d\n", i);
 }
 
 void gen_while_end(int i){
-    printf("\n JUMP while$%d\
-            \n LABEL end$%d", i, i);
+    printf(" JUMP while$%d\n\
+ LABEL end$%d\n", i, i);
 }
 
 /******************** generovanie vstavanych funkcii ********************/
@@ -1042,171 +1049,179 @@ void gen_builtin_func(root *root, int i){
 }
 
 int gen_read_i(){
-    printf("\n LABEL        $readi\
-            \n PUSHFRAME\
-            \n DEFVAR       LF@retval0\
-            \n DEFVAR       LF@retval1\
-            \n MOVE         LF@retval1 int@0\
-            \n DEFVAR       LF@typeout\
-            \n READ         LF@retval0 int\
-            \n TYPE         LF@typeout LF@retval0\
-            \n JUMPIFEQ     $readi$istrue LF@typeout string@int\
-            \n MOVE         LF@retval0 int@1\
-            \n MOVE         LF@retval1 int@1\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL        $readi$istrue\
-            \n POPFRAME\
-            \n RETURN\n");   
+    printf(" LABEL        $readi\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR       LF@retval0\n\
+ DEFVAR       LF@retval1\n\
+ MOVE         LF@retval1 int@0\n\
+ DEFVAR       LF@typeout\n\
+ READ         LF@retval0 int\n\
+ TYPE         LF@typeout LF@retval0\n\
+ JUMPIFEQ     $readi$istrue LF@typeout string@int\n\
+ MOVE         LF@retval0 int@1\n\
+ MOVE         LF@retval1 int@1\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL        $readi$istrue\n\
+ POPFRAME\n\
+ RETURN\n");   
 }
 
 int gen_read_s(){
-    printf("\n LABEL        $reads\
-            \n PUSHFRAME\
-            \n DEFVAR       LF@retval0\
-            \n DEFVAR       LF@retval1\
-            \n MOVE         LF@retval1 int@0\
-            \n READ         LF@retval0 string\
-            \n JUMPIFNEQ    $reads$noerr LF@retval0 nil@nil\
-            \n MOVE         LF@retval1 int@1\
-            \n LABEL        $reads$noerr\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL        $reads\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR       LF@retval0\n\
+ DEFVAR       LF@retval1\n\
+ MOVE         LF@retval1 int@0\n\
+ READ         LF@retval0 string\n\
+ JUMPIFNEQ    $reads$noerr LF@retval0 nil@nil\n\
+ MOVE         LF@retval1 int@1\n\
+ LABEL        $reads$noerr\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 int gen_read_n(){
-    printf("\n LABEL        $readn\
-            \n PUSHFRAME\
-            \n DEFVAR       LF@retval0\
-            \n DEFVAR       LF@retval1\
-            \n MOVE         LF@retval1 int@0\
-            \n DEFVAR       LF@typeout\
-            \n READ         LF@retval0 float\
-            \n TYPE         LF@typeout LF@retval0\
-            \n JUMPIFEQ     $readn$istrue LF@typeout string@float\
-            \n MOVE         LF@retval0 float@0x1p+0\
-            \n MOVE         LF@retval1 int@1\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL        $readn$istrue\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL        $readn\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR       LF@retval0\n\
+ DEFVAR       LF@retval1\n\
+ MOVE         LF@retval1 int@0\n\
+ DEFVAR       LF@typeout\n\
+ READ         LF@retval0 float\n\
+ TYPE         LF@typeout LF@retval0\n\
+ JUMPIFEQ     $readn$istrue LF@typeout string@float\n\
+ MOVE         LF@retval0 float@0x1p+0\n\
+ MOVE         LF@retval1 int@1\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL        $readn$istrue\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 void gen_write(){
-    printf("\n LABEL $write\
-            \n PUSHFRAME\
-            \n DEFVAR LF@%%0\
-            \n POPS LF@%%0\
-            \n DEFVAR LF@tmp\
-            \n DEFVAR LF@counter\
-            \n MOVE LF@counter int@0\
-            \n LABEL $write$while\
-            \n JUMPIFEQ $print$return LF@counter LF@%%0\
-            \n POPS LF@tmp\
-            \n WRITE LF@tmp\
-            \n ADD LF@counter LF@counter int@1\
-            \n JUMP $write$while\
-            \n LABEL $write$return\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL      $write\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR     LF@param0\n\
+ POPS       LF@param0\n\
+ DEFVAR     LF@tmp\n\
+ DEFVAR     LF@counter\n\
+ MOVE       LF@counter int@0\n\
+ LABEL      $write$while\n\
+ JUMPIFEQ   $print$return LF@counter LF@param0\n\
+ POPS       LF@tmp\n\
+ WRITE      LF@tmp\n\
+ ADD        LF@counter LF@counter int@1\n\
+ JUMP       $write$while\n\
+ LABEL      $write$return\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 void gen_f2i(){
-    printf("\n LABEL        $tointeger\
-            \n PUSHFRAME\
-            \n DEFVAR       LF@param\
-            \n DEFVAR       LF@retval\
-            \n FLOAT2INT    LF@retval LF@param\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL      $tointeger\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR     LF@param\n\
+ DEFVAR     LF@retval\n\
+ FLOAT2INT  LF@retval LF@param\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 
 
 void gen_substr(){
-    printf("\n LABEL $substr\
-            \n PUSHFRAME\
-            \n DEFVAR LF@retval1\
-            \n MOVE LF@retval1 int@0\
-            \n DEFVAR LF@index\
-            \n MOVE LF@index int@1\
-            \n DEFVAR LF@tmp\
-            \n DEFVAR LF@retval0\
-            \n MOVE LF@retval0 string@\
-            \n STRLEN LF@tmp LF@%%0\
-            \n LT LF@retval1 LF@%%1 int@0\
-            \n JUMPIFEQ $substr$error LF@retval1 bool@true\
-            \n GT LF@retval1 LF@%%1 LF@tmp\
-            \n JUMPIFEQ $substr$error LF@retval1 bool@true\
-            \n LT LF@retval1 LF@%%2 int@0\
-            \n JUMPIFEQ $substr$error LF@retval1 bool@true\
-            \n SUB LF@tmp LF@tmp LF@%%1\
-            \n GT LF@retval1 LF@%%2 LF@tmp\
-            \n JUMPIFEQ $substr$true LF@retval1 bool@true\
-            \n LABEL $substr$continue\
-            \n JUMPIFEQ $substr$end LF@%%2 int@0\
-            \n GETCHAR LF@retval0 LF@%%0 LF@%%1\
-            \n JUMPIFEQ $substr$end LF@%%2 int@1\
-            \n LABEL $substr$cycle\
-            \n ADD LF@%%1 LF@%%1 int@1\
-            \n ADD LF@index LF@index int@1\
-            \n GETCHAR LF@tmp LF@%%0 LF@%%1\
-            \n CONCAT LF@retval0 LF@%%retval0 LF@tmp\
-            \n JUMPIFNEQ $substr$cycle LF@index LF@%%2\
-            \n LABEL $substr$end\
-            \n MOVE LF@retval1 int@0\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL $substr$error\
-            \n MOVE LF@retval1 int@1\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL $substr$true\
-            \n MOVE LF@%%2 LF@tmp\
-            \n JUMP $substr$continue\n");
+    printf(" LABEL      $substr\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR     LF@retval1\n\
+ MOVE       LF@retval1 int@0\n\
+ DEFVAR     LF@index\n\
+ MOVE       LF@index int@1\n\
+ DEFVAR     LF@tmp\n\
+ DEFVAR     LF@retval0\n\
+ MOVE       LF@retval0 string@\n\
+ STRLEN     LF@tmp LF@param0\n\
+ LT         LF@retval1 LF@param1 int@0\n\
+ JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
+ GT         LF@retval1 LF@param1 LF@tmp\n\
+ JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
+ LT         LF@retval1 LF@param2 int@0\n\
+ JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
+ SUB        LF@tmp LF@tmp LF@param1\n\
+ GT         LF@retval1 LF@param2 LF@tmp\n\
+ JUMPIFEQ   $substr$true LF@retval1 bool@true\n\
+ LABEL      $substr$continue\n\
+ JUMPIFEQ   $substr$end LF@param2 int@0\n\
+ GETCHAR    LF@retval0 LF@param0 LF@param1\n\
+ JUMPIFEQ   $substr$end LF@param2 int@1\n\
+ LABEL      $substr$cycle\n\
+ ADD        LF@param1 LF@param1 int@1\n\
+ ADD        LF@index LF@index int@1\n\
+ GETCHAR    LF@tmp LF@param0 LF@param1\n\
+ CONCAT     LF@retval0 LF@retval0 LF@tmp\n\
+ JUMPIFNEQ  $substr$cycle LF@index LF@param2\n\
+ LABEL      $substr$end\n\
+ MOVE       LF@retval1 int@0\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL      $substr$error\n\
+ MOVE       LF@retval1 int@1\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL      $substr$true\n\
+ MOVE       LF@param2 LF@tmp\n\
+ JUMP       $substr$continue\n");
 }
 
 void gen_ord(){
-    printf("\n LABEL $ord\
-            \n PUSHFRAME\
-            \n DEFVAR LF@retval0\
-            \n DEFVAR LF@retval1\
-            \n STRLEN LF@retval0 LF@%%0\
-            \n SUB LF@retval0 LF@retval0 int@1\
-            \n GT LF@retval1 LF@%%1 LF@retval0\
-            \n JUMPIFEQ $ord$error LF@%%retval1 bool@true\
-            \n LT LF@retval1 LF@%%1 int@0\
-            \n JUMPIFEQ $ord$error LF@retval1 bool@true\
-            \n STRI2INT LF@retval0 LF@%%0 LF@%%1\
-            \n MOVE LF@retval1 int@0\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL $ord$error\
-            \n MOVE LF@retval0 int@-2\
-            \n MOVE LF@retval1 int@1\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL      $ord\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR     LF@retval0\n\
+ DEFVAR     LF@retval1\n\
+ STRLEN     LF@retval0 LF@param0\n\
+ SUB        LF@retval0 LF@retval0 int@1\n\
+ GT         LF@retval1 LF@param1 LF@retval0\n\
+ JUMPIFEQ   $ord$error LF@retval1 bool@true\n\
+ LT         LF@retval1 LF@param1 int@0\n\
+ JUMPIFEQ   $ord$error LF@retval1 bool@true\n\
+ STRI2INT   LF@retval0 LF@param0 LF@param1\n\
+ MOVE       LF@retval1 int@0\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL      $ord$error\n\
+ MOVE       LF@retval0 int@-2\n\
+ MOVE       LF@retval1 int@1\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 void gen_chr(){
-    printf("\n LABEL        $chr\
-            \n PUSHFRAME\
-            \n DEFVAR       LF@retval0\
-            \n DEFVAR       LF@retval1\
-            \n GT           LF@retval1 LF@param0 int@255\
-            \n JUMPIFEQ     $chr$error LF@retval1 bool@true\
-            \n LT           LF@retval1 LF@param0 int@0\
-            \n JUMPIFEQ     $chr$error LF@retval1 bool@true\
-            \n INT2CHAR     LF@retval0 LF@param0\
-            \n MOVE         LF@retval1 int@0\
-            \n POPFRAME\
-            \n RETURN\
-            \n LABEL        $chr$error\
-            \n MOVE         LF@retval0 string@\
-            \n MOVE         LF@retval1 int@1\
-            \n POPFRAME\
-            \n RETURN\n");
+    printf(" LABEL      $chr\n\
+ CERATEFRAME\n\
+ PUSHFRAME\n\
+ DEFVAR     LF@retval0\n\
+ DEFVAR     LF@retval1\n\
+ GT         LF@retval1 LF@param0 int@255\n\
+ JUMPIFEQ   $chr$error LF@retval1 bool@true\n\
+ LT         LF@retval1 LF@param0 int@0\n\
+ JUMPIFEQ   $chr$error LF@retval1 bool@true\n\
+ INT2CHAR   LF@retval0 LF@param0\n\
+ MOVE       LF@retval1 int@0\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL      $chr$error\n\
+ MOVE       LF@retval0 string@\n\
+ MOVE       LF@retval1 int@1\n\
+ POPFRAME\n\
+ RETURN\n");
 }
 
 
