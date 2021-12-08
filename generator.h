@@ -1,9 +1,9 @@
 /**
- *
+ *  Projekt : Implementace prekladace imperativniho jazyka IFJ21
  * @file generator.h
- * @author Daniel Zalezak
- * @brief
- * @date 
+ * @author Daniel Zalezak (xzalez01)
+ * @brief generovanie kodu
+ *  
  *
  */
 
