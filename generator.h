@@ -28,7 +28,7 @@ void gen_func_def_arg(int i);
 
 void gen_func_move_arg(root *root, int i, int j);
 
-void gen_func_ret(root *root, int i, int j);
+void gen_func_ret(root *root, int i);
 
 /******************** generovanie instrukcii ********************/
 

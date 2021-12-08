@@ -56,7 +56,7 @@ typedef enum{
 typedef struct AST{
     struct state* tree;
     struct aststack* ASTStack;
-    inbuild UsedInBuild[8];
+    
 }ASTtree;
 /*typedef struct root{
     struct state **global_state;
@@ -65,6 +65,7 @@ typedef struct AST{
 typedef struct global{
     struct state **statements;
     int* nbStatements;
+    inbuild UsedInBuild[8];
 }root;
 
 typedef struct state{
