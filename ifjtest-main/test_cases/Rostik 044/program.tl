@@ -1,7 +1,7 @@
 require "ifj21"
 
 function concat (x : string, y : string) : string, integer
-	return  y, 0 
+	return x .. y, 0 
 end
 
 function main()
