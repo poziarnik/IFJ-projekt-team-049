@@ -15,6 +15,7 @@
 
 
 int interpret(root *root);
+int gen_identifier(Token *token);
 
 /******************** generovanie funkcii ********************/
 
