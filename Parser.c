@@ -890,6 +890,12 @@ int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){     
         SCAN_TOKEN;
     }
 
+    if (chackStr(MyToken, "=")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+    
     if(isTokenDataType(MyToken)){
         sym_saveVarType(mySymtable->currentVar, MyToken->data.string);
         parcerPrint("define" ,MyToken ,PRINT_ON);
@@ -990,12 +996,6 @@ int fc_FCallnextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTre
 //dorobit function call !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                  //initialize: =<expresion>||<functionCall>
     int status = 0;
-
-    if (chackStr(MyToken, "=")){
-        parcerPrint("String" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;
-    }
-    else return PARC_FALSE;
     
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
