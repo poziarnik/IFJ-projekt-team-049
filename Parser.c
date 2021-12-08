@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON true //ak chces printovat priebeh nastav true ak nie nastav false
+#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault
@@ -923,7 +923,7 @@ int fc_defineEquals(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree)
         RETURN_ON_ERROR(fc_initialize);
     }
     else return PARC_FALSE;
-    
+
     return PARC_TRUE;
 }
 int fc_functionCall(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree, bool withIDs){                                 //functionCall: identifier(<FCparams>)

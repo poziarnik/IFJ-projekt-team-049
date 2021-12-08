@@ -1,0 +1,45 @@
+
+.IFJcode21
+
+ JUMP $concat
+
+ LABEL $write            
+ PUSHFRAME            
+ DEFVAR LF@%0            
+ POPS LF@%0            
+ DEFVAR LF@tmp            
+ DEFVAR LF@counter            
+ MOVE LF@counter int@0            
+ LABEL $write$while            
+ JUMPIFEQ $print$return LF@counter LF@%0            
+ POPS LF@tmp            
+ WRITE LF@tmp            
+ ADD LF@counter LF@counter int@1            
+ JUMP $write$while            
+ LABEL $write$return            
+ POPFRAME            
+ RETURN
+
+ LABEL $concat                
+ CREATEFRAME                
+ PUSHFRAME
+ DEFVAR LF@1
+ DEFVAR LF@2
+ MOVE LF@x
+ MOVE LF@y
+ LABEL $concat$end                
+ POPFRAME                
+ RETURN
+ LABEL $main                
+ CREATEFRAME                
+ PUSHFRAME
+ DEFVAR LF@x
+ DEFVAR LF@ret
+ CALL $concat 
+ MOVE  LF@x TF@retval
+ MOVE  LF@ret TF@retval
+ CALL $write 
+ LABEL $main$end                
+ POPFRAME                
+ RETURN
+ CALL $main 
