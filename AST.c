@@ -14,10 +14,8 @@ ASTtree* ASTtreeCreate(){
         return NULL;
     }
     ASTstackInit(newTree->ASTStack);
-
-    ASTinBuildArrayInit(newTree->UsedInBuild);
-
     newTree->tree = ASTcreateLeaf(ASTglobal);
+    ASTinBuildArrayInit(newTree->tree->TStatement.root->UsedInBuild);
     ASTStackPush(newTree->ASTStack, newTree->tree);
     return newTree;
 }
@@ -701,24 +699,24 @@ void ASTinBuildArrayInit(inbuild* array){
 }
 void ASTinBuildUsed(ASTtree* tree, inbuild FC){
     for (int i = 0; i < 8; i++){
-        if (tree->UsedInBuild[i]==empty){
-            tree->UsedInBuild[i]=FC;
+        if (tree->tree->TStatement.root->UsedInBuild[i]==empty){
+            tree->tree->TStatement.root->UsedInBuild[i]=FC;
             break;
         }
-        else if(tree->UsedInBuild[i]==FC) break;
+        else if(tree->tree->TStatement.root->UsedInBuild[i]==FC) break;
     }
 }
 bool ASTisInBuildUsed(ASTtree* tree, inbuild FC){
     for (int i = 0; i < 8; i++){
-        if (tree->UsedInBuild[i]==empty) return false;
-        else if(tree->UsedInBuild[i]==FC) return true;
+        if (tree->tree->TStatement.root->UsedInBuild[i]==empty) return false;
+        else if(tree->tree->TStatement.root->UsedInBuild[i]==FC) return true;
     }
 }
 void ASTprintInBuild(ASTtree* tree){
     printf("\nUsed InBuild------------------------------------------------------\n\n");
     for (int i = 0; i < 8; i++){
-        if (tree->UsedInBuild[i]!=empty){
-            printf("%d ",tree->UsedInBuild[i]);
+        if (tree->tree->TStatement.root->UsedInBuild[i]!=empty){
+            printf("%d ",tree->tree->TStatement.root->UsedInBuild[i]);
         }
         else break;
         

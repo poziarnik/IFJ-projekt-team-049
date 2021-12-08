@@ -1,6 +1,7 @@
-global function factorial ( n : integer, a : number) : integer , number 
-readi()
-n=2+2
-end 
+require "ifj21"
 
- 
+function a()
+end
+
+
+
