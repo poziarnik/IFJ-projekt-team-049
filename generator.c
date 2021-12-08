@@ -24,23 +24,51 @@
 
 
 bool code = true;
-int while_cycle_counter = 1;
-int if_cycle_counter = 1;
+int while_cycle_counter = 1;    //pocet vnorenych cyklov while
+int if_cycle_counter = 1;       //pocet vnorenych  if/else
 
 
+
+int gen_identifier(Token *token) {
+    switch(token->type) {
+        case String:
+            printf("string@");
+            for (int i = 0; token->data.string[i] != '\0'; ++i) {
+                char ch = token->data.string[i];
+                if (ch < 10) {
+                    printf("\\00%d",(int) ch);
+                } else if (ch <= 32 || ch == 35 || ch == 92) {
+                    printf("\\0%d",(int) ch);
+                } else {
+                    printf("%c", ch);
+                }
+            }
+            break;
+        case Integer:
+            printf("int@%d", token->data.integer);
+            break;
+        case Number:
+            printf("float@%a", token->data.number);
+            break;
+        case Identifier:
+            printf("LF@%s", token->data.string);
+            break;
+        case Keyword:
+            if (!strcmp(token->data.string, "nil"))
+                printf("nil@nil");
+        default:
+            break;
+    }
+    return PROGRAM_OK;
+}
 
 int interpret(root *Root){
-    if(Root != NULL){
-        if(*Root->statements != NULL && Root->nbStatements != NULL){
-            for(int i = 0; i < *Root->nbStatements; i++){
-                if(code == true){
+    if(Root != NULL){                                                                                           //kontrola ci je vytvoreny root
+        if(*Root->statements != NULL && Root->nbStatements != NULL){                                            //kontrola ci su vytvorene struktrury v roote
+            for(int i = 0; i < *Root->nbStatements; i++){                                                       //for cyklus, ktory prechadza parametre v poli statementov
+                if(code == true){                                                                               //podmienka aby sa hlavicka vygenerovala iba 1krat
                     printf(" .IFJcode21\n");
-                    for(int num = 0; num < *Root->nbStatements; num ++){
-                        if(strcmp(Root->statements[num]->TStatement.function->id->data.string, "main")==0){
-                            printf(" JUMP $main\n");
-                        }
-                    }
-                    if(Root->UsedInBuild != NULL){
+                    if(Root->UsedInBuild != NULL){                                                              //generovanie inbuild funkcii pre mainom
                         for(int num_inbuild = 0; num_inbuild < 8; num_inbuild ++){
                             gen_builtin_func(Root, num_inbuild);
                         }
@@ -49,7 +77,7 @@ int interpret(root *Root){
                 }
                 
 ///////////////////////////////////////////////////////////      FUNCTION      /////////////////////////////////////////////////////
-                if(Root->statements[i]->type == ASTfunction){   
+                if(Root->statements[i]->type == ASTfunction){                                                    //kontrola, ci je statement funkcia 
                     gen_func_begin(Root, i);
                     if(Root->statements[i]->TStatement.function->nbParameters != NULL){
                         for(int a = 0; a < *Root->statements[i]->TStatement.function->nbParameters  ; a++){  
@@ -57,28 +85,29 @@ int interpret(root *Root){
                         }
                     } 
                     /////////////////////////////////   FUNCTION   STATEMENTS      //////////////////////////////////////////////////////
-                    if(*Root->statements[i]->TStatement.function->statements != NULL){   
+                    if(*Root->statements[i]->TStatement.function->statements != NULL){                           //prechadza statementy vo funkcii  
                         Tstate *funcRoot = ASTcreateLeaf(ASTglobal);
                         for(int b = 0; b < *Root->statements[i]->TStatement.function->nbStatements; b++){
                             funcRoot->TStatement.root->statements[b] = Root->statements[i]->TStatement.function->statements[b];
                         }
                         funcRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.function->nbStatements;
-                        interpret(funcRoot->TStatement.root);
+                        interpret(funcRoot->TStatement.root);                                                   //rekurzivne volanie interpretu
                     }
                     
                     
                     gen_func_end(Root, i);
+
                 }
 ////////////////////////////////////////////////////////        IF          /////////////////////////////////////////////////////////////////
-                else if(Root->statements[i]->type == ASTcondition){
+                else if(Root->statements[i]->type == ASTcondition){                                                             // kontrola, ci je statetment if/else
                     char *left1;
                     char *right2;
-                    if(Root->statements[i]->TStatement.if_loop->expression->Data->type == More || Less || More_equal || Less_equal || Is_equal || Not_equal ){
+                    if(Root->statements[i]->TStatement.if_loop->expression->Data->type == More || Less || More_equal || Less_equal || Is_equal || Not_equal ){ //zistime, znamienko v podmienke
                         char INT1[100] = "int@";
                         char float1[100] = "float@";
                         char string1[100] = "string@";
                         char var1[100] = "LF@";
-                        char nil[100] = "nil@";
+                        char nil[100] = "nil@";                                                                                     //zistime typ premennych
                         if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Integer){                                
                             int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->data.integer;
                             char num1[100];
@@ -110,7 +139,7 @@ int interpret(root *Root){
                             left1 = strcat(nil, num1);
                         }
                             
-                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){         //zistime znamienko v podmienke
                             char INT1[100] = "int@";
                             char INT2[100] = "int@";
                             char float1[100] = "float@";
@@ -119,7 +148,7 @@ int interpret(root *Root){
                             char var2[100] = "LF@";
                             char nil1[100] = "nil@";
                             char nil2[100] = "nil@";
-                            char *first;
+                            char *first;                                                                                                                    //zistime typ premennych
                             char *sec;
                             if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->type == Integer){
                                 int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->attr.binary.left->Data->data.integer;
@@ -163,8 +192,8 @@ int interpret(root *Root){
                                 sec = strcat(nil2, b);  
                             } 
 
-                            ////////////////////////////////////   BINARNE OPERACIE   ///////////////////////////////////////////////////////////////
-                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus){
+                            ////////////////////////////////////   BINARNE  ///////////////////////////////////////////////////////////////
+                            if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.left->Data->type == Minus){                         
                                 gen_sub(first, sec);
                                 char *var = "LF@left_side";
                                 gen_move_in_func_call(var);
@@ -228,7 +257,7 @@ int interpret(root *Root){
                             right2 = strcat(var5, num1);
                         }
                         
-                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){
+                        else if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->Data->type == Minus || Plus || Multiplication || Division || Division_integer ){        //zistime znamienko v podmienke 
                             char INT1[100] = "int@";
                             char INT2[100] = "int@";
                             char float1[100] = "float@";
@@ -238,7 +267,7 @@ int interpret(root *Root){
                             char nil1[100] = "nil@";
                             char nil2[100] = "nil@";
                             char *first;
-                            char *sec;
+                            char *sec;                                                                                                                      //zistime typ premennej
                             if(Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->type == Integer){
                                 int b = Root->statements[i]->TStatement.if_loop->expression->attr.binary.right->attr.binary.left->Data->data.integer;
                                 char num1[100];
@@ -819,9 +848,20 @@ int interpret(root *Root){
                     }
                     
                 }
+                
 //////////////////////////////////////////////////////////////     FUNCTION CALL       ///////////////////////////////////////////////////////////
-                // maybe DONE 
-                else if(Root->statements[i]->type == ASTfunctionCall){
+
+                else if(Root->statements[i]->type == ASTfunctionCall){                                          //kontrola, ci je statement volanie funkcie 
+                    if(strcmp(Root->statements[i]->TStatement.functioncall->functionName->data.string , "write")==0){
+                        for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbParameters; ++a){
+                            /// printf(" PUSHS string@%s\n", Root->statements[i]->TStatement.functioncall->parameters[a]->Data->data.string);
+                            printf("PUSHS ");
+                            gen_identifier(Root->statements[i]->TStatement.functioncall->parameters[a]->Data);
+                            puts("");
+                            puts(" CALL $write\n");
+                        }
+                    } 
+                    else{
                         gen_func_call(Root, i);                                                                     
                         if( *Root->statements[i]->TStatement.functioncall->nbID != 0){  
                            for(int a = 0; a < *Root->statements[i]->TStatement.functioncall->nbID; a++){
@@ -829,6 +869,8 @@ int interpret(root *Root){
                                 gen_move_in_func_call(var);
                             }
                         }
+                    }                                     
+
                 }
             }
         }
@@ -838,17 +880,20 @@ int interpret(root *Root){
 /******************** generovanie funkcii ********************/
 
 void gen_func_begin(root *root, int i){  
-        char *func_name = root->statements[i]->TStatement.function->id->data.string;       
-        printf(" LABEL $%s\n\
- CREATEFRAME\n\
- PUSHFRAME\n", func_name);
+        char *func_name = root->statements[i]->TStatement.function->id->data.string; 
+
+        printf("JUMP $$%s_end$$\n\
+LABEL $%s\n\
+CREATEFRAME\n\
+PUSHFRAME\n", func_name, func_name);
 }
 
 void gen_func_end(root *root, int i){
         char *func_name = root->statements[i]->TStatement.function->id->data.string;
         printf(" LABEL $%s$end\n\
  POPFRAME\n\
- RETURN\n", func_name);
+ RETURN\n\
+ LABEL $$%s_end$$\n", func_name, func_name);
 }
  
 
@@ -858,7 +903,7 @@ void gen_func_call(root *root, int i){
 }
 
 void gen_func_def_arg(root *root, int i ,int a){
-    printf(" DEFVAR LF@%s\n", root->statements[i]->TStatement.function->parameters[a]->data.string);
+    printf(" DEFVAR LF@$%s\n", root->statements[i]->TStatement.function->parameters[a]->data.string);
 }
 
 /*void gen_func_move_arg(root *root, int i, int a){
@@ -1037,179 +1082,187 @@ void gen_builtin_func(root *root, int i){
 }
 
 int gen_read_i(){
-    printf(" LABEL        $readi\n\
- CERATEFRAME\n\
+    printf("JUMP $readi_end$\n LABEL        $readi\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR       LF@retval0\n\
- DEFVAR       LF@retval1\n\
- MOVE         LF@retval1 int@0\n\
- DEFVAR       LF@typeout\n\
- READ         LF@retval0 int\n\
- TYPE         LF@typeout LF@retval0\n\
- JUMPIFEQ     $readi$istrue LF@typeout string@int\n\
- MOVE         LF@retval0 int@1\n\
- MOVE         LF@retval1 int@1\n\
+ DEFVAR LF@retval0\n\
+ DEFVAR LF@retval1\n\
+ MOVE LF@retval1 int@0\n\
+ DEFVAR LF@typeout\n\
+ READ LF@retval0 int\n\
+ TYPE LF@typeout LF@retval0\n\
+ JUMPIFEQ $readi$istrue LF@typeout string@int\n\
+ MOVE LF@retval0 int@1\n\
+ MOVE LF@retval1 int@1\n\
  POPFRAME\n\
  RETURN\n\
- LABEL        $readi$istrue\n\
+ LABEL $readi$istrue\n\
  POPFRAME\n\
- RETURN\n");   
+ RETURN\n\
+ LABEL $readi_end$\n");   
 }
 
 int gen_read_s(){
-    printf(" LABEL        $reads\n\
- CERATEFRAME\n\
+    printf("JUMP $reads_end$\n LABEL $reads\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR       LF@retval0\n\
- DEFVAR       LF@retval1\n\
- MOVE         LF@retval1 int@0\n\
- READ         LF@retval0 string\n\
- JUMPIFNEQ    $reads$noerr LF@retval0 nil@nil\n\
- MOVE         LF@retval1 int@1\n\
- LABEL        $reads$noerr\n\
+ DEFVAR LF@retval0\n\
+ DEFVAR LF@retval1\n\
+ MOVE LF@retval1 int@0\n\
+ READ LF@retval0 string\n\
+ JUMPIFNEQ $reads$noerr LF@retval0 nil@nil\n\
+ MOVE LF@retval1 int@1\n\
+ LABEL $reads$noerr\n\
  POPFRAME\n\
- RETURN\n");
+ RETURN\n\
+ LABEL $reads_end$\n");
 }
 
 int gen_read_n(){
-    printf(" LABEL        $readn\n\
- CERATEFRAME\n\
+    printf("JUMP $readn_end$\n LABEL $readn\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR       LF@retval0\n\
- DEFVAR       LF@retval1\n\
- MOVE         LF@retval1 int@0\n\
- DEFVAR       LF@typeout\n\
- READ         LF@retval0 float\n\
- TYPE         LF@typeout LF@retval0\n\
- JUMPIFEQ     $readn$istrue LF@typeout string@float\n\
- MOVE         LF@retval0 float@0x1p+0\n\
- MOVE         LF@retval1 int@1\n\
+ DEFVAR LF@retval0\n\
+ DEFVAR LF@retval1\n\
+ MOVE LF@retval1 int@0\n\
+ DEFVAR LF@typeout\n\
+ READ LF@retval0 float\n\
+ TYPE LF@typeout LF@retval0\n\
+ JUMPIFEQ $readn$istrue LF@typeout string@float\n\
+ MOVE LF@retval0 float@0x1p+0\n\
+ MOVE LF@retval1 int@1\n\
  POPFRAME\n\
  RETURN\n\
- LABEL        $readn$istrue\n\
+ LABEL $readn$istrue\n\
  POPFRAME\n\
- RETURN\n");
+ RETURN\n\
+ LABEL $readn_end$\n");
 }
 
 void gen_write(){
-    printf(" LABEL      $write\n\
- CERATEFRAME\n\
+    printf("JUMP $write_end$\n LABEL $write\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR     LF@param0\n\
- POPS       LF@param0\n\
- DEFVAR     LF@tmp\n\
- DEFVAR     LF@counter\n\
- MOVE       LF@counter int@0\n\
- LABEL      $write$while\n\
- JUMPIFEQ   $print$return LF@counter LF@param0\n\
- POPS       LF@tmp\n\
- WRITE      LF@tmp\n\
- ADD        LF@counter LF@counter int@1\n\
- JUMP       $write$while\n\
- LABEL      $write$return\n\
+ DEFVAR LF@param0\n\
+ POPS LF@param0\n\
+ DEFVAR LF@vartype\n\
+ TYPE LF@vartype LF@param0\n\
+ JUMPIFEQ $writenil LF@vartype string@nil\n\
+ WRITE LF@param0\n\
  POPFRAME\n\
- RETURN\n");
-}
+ RETURN\n\
+ LABEL $writenil\n\
+ WRITE string@nil\n\
+ POPFRAME\n\
+ RETURN\n\
+ LABEL $write_end$\n");
+} 
+
+
 
 void gen_f2i(){
-    printf(" LABEL      $tointeger\n\
- CERATEFRAME\n\
+    printf("JUMP $tointeger_end$\n LABEL $tointeger\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR     LF@param\n\
- DEFVAR     LF@retval\n\
- FLOAT2INT  LF@retval LF@param\n\
+ DEFVAR LF@param\n\
+ DEFVAR LF@retval\n\
+ FLOAT2INT LF@retval LF@param\n\
  POPFRAME\n\
- RETURN\n");
+ RETURN\n\
+ LABEL $tointeger_end$\n");
 }
 
 
 
 void gen_substr(){
-    printf(" LABEL      $substr\n\
- CERATEFRAME\n\
+    printf("JUMP $substr_end$\n LABEL $substr\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR     LF@retval1\n\
- MOVE       LF@retval1 int@0\n\
- DEFVAR     LF@index\n\
- MOVE       LF@index int@1\n\
- DEFVAR     LF@tmp\n\
- DEFVAR     LF@retval0\n\
- MOVE       LF@retval0 string@\n\
- STRLEN     LF@tmp LF@param0\n\
- LT         LF@retval1 LF@param1 int@0\n\
- JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
- GT         LF@retval1 LF@param1 LF@tmp\n\
- JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
- LT         LF@retval1 LF@param2 int@0\n\
- JUMPIFEQ   $substr$error LF@retval1 bool@true\n\
- SUB        LF@tmp LF@tmp LF@param1\n\
- GT         LF@retval1 LF@param2 LF@tmp\n\
- JUMPIFEQ   $substr$true LF@retval1 bool@true\n\
- LABEL      $substr$continue\n\
- JUMPIFEQ   $substr$end LF@param2 int@0\n\
- GETCHAR    LF@retval0 LF@param0 LF@param1\n\
- JUMPIFEQ   $substr$end LF@param2 int@1\n\
- LABEL      $substr$cycle\n\
- ADD        LF@param1 LF@param1 int@1\n\
- ADD        LF@index LF@index int@1\n\
- GETCHAR    LF@tmp LF@param0 LF@param1\n\
- CONCAT     LF@retval0 LF@retval0 LF@tmp\n\
- JUMPIFNEQ  $substr$cycle LF@index LF@param2\n\
- LABEL      $substr$end\n\
- MOVE       LF@retval1 int@0\n\
+ DEFVAR LF@retval1\n\
+ MOVE LF@retval1 int@0\n\
+ DEFVAR LF@index\n\
+ MOVE LF@index int@1\n\
+ DEFVAR LF@tmp\n\
+ DEFVAR LF@retval0\n\
+ MOVE LF@retval0 string@\n\
+ STRLEN LF@tmp LF@param0\n\
+ LT LF@retval1 LF@param1 int@0\n\
+ JUMPIFEQ $substr$error LF@retval1 bool@true\n\
+ GT LF@retval1 LF@param1 LF@tmp\n\
+ JUMPIFEQ $substr$error LF@retval1 bool@true\n\
+ LT LF@retval1 LF@param2 int@0\n\
+ JUMPIFEQ $substr$error LF@retval1 bool@true\n\
+ SUB LF@tmp LF@tmp LF@param1\n\
+ GT LF@retval1 LF@param2 LF@tmp\n\
+ JUMPIFEQ $substr$true LF@retval1 bool@true\n\
+ LABEL $substr$continue\n\
+ JUMPIFEQ $substr$end LF@param2 int@0\n\
+ GETCHAR LF@retval0 LF@param0 LF@param1\n\
+ JUMPIFEQ $substr$end LF@param2 int@1\n\
+ LABEL $substr$cycle\n\
+ ADD LF@param1 LF@param1 int@1\n\
+ ADD LF@index LF@index int@1\n\
+ GETCHAR LF@tmp LF@param0 LF@param1\n\
+ CONCAT LF@retval0 LF@retval0 LF@tmp\n\
+ JUMPIFNEQ $substr$cycle LF@index LF@param2\n\
+ LABEL $substr$end\n\
+ MOVE LF@retval1 int@0\n\
  POPFRAME\n\
  RETURN\n\
- LABEL      $substr$error\n\
- MOVE       LF@retval1 int@1\n\
+ LABEL $substr$error\n\
+ MOVE LF@retval1 int@1\n\
  POPFRAME\n\
  RETURN\n\
- LABEL      $substr$true\n\
- MOVE       LF@param2 LF@tmp\n\
- JUMP       $substr$continue\n");
+ LABEL $substr$true\n\
+ MOVE LF@param2 LF@tmp\n\
+ JUMP $substr$continue\n\
+ LABEL $substr_end$\n");
 }
 
 void gen_ord(){
-    printf(" LABEL      $ord\n\
- CERATEFRAME\n\
+    printf("JUMP $ord_end$\n LABEL $ord\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR     LF@retval0\n\
- DEFVAR     LF@retval1\n\
- STRLEN     LF@retval0 LF@param0\n\
- SUB        LF@retval0 LF@retval0 int@1\n\
- GT         LF@retval1 LF@param1 LF@retval0\n\
- JUMPIFEQ   $ord$error LF@retval1 bool@true\n\
- LT         LF@retval1 LF@param1 int@0\n\
- JUMPIFEQ   $ord$error LF@retval1 bool@true\n\
- STRI2INT   LF@retval0 LF@param0 LF@param1\n\
- MOVE       LF@retval1 int@0\n\
+ DEFVAR LF@retval0\n\
+ DEFVAR LF@retval1\n\
+ STRLEN LF@retval0 LF@param0\n\
+ SUB LF@retval0 LF@retval0 int@1\n\
+ GT LF@retval1 LF@param1 LF@retval0\n\
+ JUMPIFEQ $ord$error LF@retval1 bool@true\n\
+ LT LF@retval1 LF@param1 int@0\n\
+ JUMPIFEQ $ord$error LF@retval1 bool@true\n\
+ STRI2INT LF@retval0 LF@param0 LF@param1\n\
+ MOVE LF@retval1 int@0\n\
  POPFRAME\n\
  RETURN\n\
- LABEL      $ord$error\n\
- MOVE       LF@retval0 int@-2\n\
- MOVE       LF@retval1 int@1\n\
+ LABEL $ord$error\n\
+ MOVE LF@retval0 int@-2\n\
+ MOVE LF@retval1 int@1\n\
  POPFRAME\n\
- RETURN\n");
+ RETURN\n\
+ LABEL $ord_end$\n");
 }
 
 void gen_chr(){
-    printf(" LABEL      $chr\n\
- CERATEFRAME\n\
+    printf("JUMP $chr_end$\n LABEL $chr\n\
+ CREATEFRAME\n\
  PUSHFRAME\n\
- DEFVAR     LF@retval0\n\
- DEFVAR     LF@retval1\n\
- GT         LF@retval1 LF@param0 int@255\n\
- JUMPIFEQ   $chr$error LF@retval1 bool@true\n\
- LT         LF@retval1 LF@param0 int@0\n\
- JUMPIFEQ   $chr$error LF@retval1 bool@true\n\
- INT2CHAR   LF@retval0 LF@param0\n\
- MOVE       LF@retval1 int@0\n\
+ DEFVAR LF@retval0\n\
+ DEFVAR LF@retval1\n\
+ GT LF@retval1 LF@param0 int@255\n\
+ JUMPIFEQ $chr$error LF@retval1 bool@true\n\
+ LT LF@retval1 LF@param0 int@0\n\
+ JUMPIFEQ $chr$error LF@retval1 bool@true\n\
+ INT2CHAR LF@retval0 LF@param0\n\
+ MOVE LF@retval1 int@0\n\
  POPFRAME\n\
  RETURN\n\
- LABEL      $chr$error\n\
- MOVE       LF@retval0 string@\n\
- MOVE       LF@retval1 int@1\n\
+ LABEL $chr$error\n\
+ MOVE LF@retval0 string@\n\
+ MOVE LF@retval1 int@1\n\
  POPFRAME\n\
- RETURN\n");
+ RETURN\n\
+ LABEL $chr_end$\n");
 }
 
 
