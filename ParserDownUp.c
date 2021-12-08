@@ -51,7 +51,6 @@ int expressionCheck(Token* MyToken, Tree *expression){
         switch (table[Stack_first_term(Stack)][table_input_symbol(MyToken)]){
             
         case 'L':
-            // puts("op expand");
             if (Stack->top->Item == NOTERM && table_input_symbol(MyToken) == DATA){
                 while (Stack->top->Item != NOTERM || Stack->top->next->Item != ELSE){
                     status = reduce_by_rule(Stack, MyToken);
@@ -96,18 +95,12 @@ int expressionCheck(Token* MyToken, Tree *expression){
                 Stack_push(Stack, table_input_symbol(MyToken), MyToken);
             }
 
-            // if (Stack->top->tree->Data->type == Plus){
-            //     printf("%s\n", Stack->top->tree->Data->data.string);
-            // }
-            // else if (Stack->top->tree->Data->type == Integer){
-            //     printf("%i\n", Stack->top->tree->Data->data.integer);
-            // }
+            
             SCAN_TOKEN
             break;
 
       
         case 'R':
-            // puts("op reduce");
             
             status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
@@ -117,7 +110,6 @@ int expressionCheck(Token* MyToken, Tree *expression){
     
             break;
         case 'I':
-            // puts("op equals");
 
             status = reduce_by_rule(Stack, MyToken);
             if (status != 0){
@@ -129,7 +121,6 @@ int expressionCheck(Token* MyToken, Tree *expression){
             break;
 
         case 'E':
-            // puts("op end");
             END = true;
             break;
 
