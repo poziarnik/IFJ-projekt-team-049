@@ -89,11 +89,11 @@ void gen_while_end(int i);
 
 void gen_builtin_func(root *root, int i);
 
-int gen_read_i();
+void gen_read_i();
 
-int gen_read_s();
+void gen_read_s();
 
-int gen_read_n();
+void gen_read_n();
 
 void gen_write();
 
