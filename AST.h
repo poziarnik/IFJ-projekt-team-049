@@ -1,3 +1,11 @@
+/**
+ *
+ * @file AST.h
+ * @author Juraj Hatala (xhatal01)
+ * @brief hlavickovy subor abstraktneho stromu
+ *  
+ */
+
 #ifndef _AST
 #define _AST
 #include <stdio.h>
@@ -158,19 +166,77 @@ typedef struct returnTree{
 ASTtree* ASTtreeCreate();
 int ASTStackPush(ASTstack* myStack, Tstate* newStatement);
 int ASTaddFCToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST cycle uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddCycleToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST define uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddDefineToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST assigment uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddAssigmentToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST functioCall uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddFCcallToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST condition uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddConditionToTree(ASTstack* myStack);
+
+/**
+ * @brief prida do AST return uzol a vlozi ho na vrch zasobniku
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddReturnToTree(ASTstack* myStack);
+
+/**
+ * @brief ak je na vrchu zasobnika uzol condition tak zavola alokovanie miesta pre if statementy a nastavy hasElse na true
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTaddElseToCondition(ASTstack* myStack);
+
+/**
+ * @brief alokuje v uzli pre condition dalsie miesto pre else statements a ich pocet
+ * 
+ * @param myStack 
+ * @return int 
+ */
 int ASTallocateSpaceForElse(ASTstack* myStack);
+
 /**
  * @brief Vyuziva sa pri urcovani ci ide o fccall alebo assigment, vytvori novy FCcall odstrani assigment a vsetky jeho ids vlozi do fccall ids
  * 
  */
 int ASTswitchAssigneFCcall(ASTstack* myStack);
+
 /**
  * @brief znizi pocet statementov v nadradenom statemente takze najblizsie zapisovany leaf sa zapise na jeho miesto
  * 
@@ -178,11 +244,56 @@ int ASTswitchAssigneFCcall(ASTstack* myStack);
  */
 void ASTdeleteLastFromTree(ASTstack* myStack);
 
+/**
+ * @brief allokuje miesto pre statementy(pouziva sa na alokovanie miesta v uzle stromu)
+ * 
+ * @param nbStatements 
+ * @return Tstate** 
+ */
 Tstate** ASTcreateStatements(int* nbStatements);
+
+/**
+ * @brief prida do pola statementov zadany newStatement, ak pre neho nie je miesto alokuje dalsie miesto
+ * 
+ * @param statements 
+ * @param nbStatements 
+ * @param newStatement 
+ * @return int 
+ */
 int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newStatement);
+
+/**
+ * @brief allokuje miesto pre vyrazi(pouziva sa na alokovanie miesta v uzle stromu)
+ * 
+ * @param nbExpressions 
+ * @return Tree** 
+ */
 Tree** ASTcreateExpressions(int* nbExpressions);
+
+/**
+ * @brief prida do pola vyrazov zadany newExpression, ak pre neho nie je miesto alokuje dalsie miesto
+ * 
+ * @param espressions 
+ * @param nbExpressions 
+ * @param newExpression 
+ * @return int 
+ */
 int ASTaddToExpressions(Tree*** espressions, int* nbExpressions, Tree* newExpression);
+
+/**
+ * @brief vrati statement z vrchu stacku(pouzite len na skratenie zapisu(makro by bolo sikovnejsie :( )))
+ * 
+ * @param myStack 
+ * @return Tstate*** 
+ */
 Tstate*** ASTreturnFastST(ASTstack* myStack);
+
+/**
+ * @brief vrati pocet statementov zo statementu na vrchu zasobnika
+ * 
+ * @param myStack 
+ * @return int* 
+ */
 int* ASTreturnFastNB(ASTstack* myStack);
 
 /**
