@@ -1,5 +1,5 @@
 /**
- *
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
  * @file Parser.h
  * @author Juraj Hatala (xhatal01)
  * @brief hlavickovy subor parseru

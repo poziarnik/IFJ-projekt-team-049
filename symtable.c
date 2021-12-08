@@ -1,5 +1,5 @@
 /**
- *
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
  * @file symtable.c
  * @author Juraj Hatala (xhatal01)
  * @brief implementacia tabulky symbolov

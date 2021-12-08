@@ -65,9 +65,6 @@ int interpret(root *Root){
                         funcRoot->TStatement.root->nbStatements = Root->statements[i]->TStatement.function->nbStatements;
                         interpret(funcRoot->TStatement.root);
                     }
-                    /*if(Root->statements[i]->TStatement.FCreturn != NULL){
-                        gen_func_ret(Root,i); 
-                    }*/
                     
                     
                     gen_func_end(Root, i);
