@@ -6,26 +6,5 @@ NEWFILE = test
 PRECEDENCE = Scanner.c Scanner.h Mystack.c MyStackTree.h ParserDownUp.c ParserDownUp.h symtable.c symtable.h 
 SCANNER = Scanner.c Scanner.h
 
-advanced: 
-	$(CC) $(CFLAGS) -o $(NEWFILE) $(FILES) $(MAIN)
-
-primitive:
-	$(CC) -std=c99 	-o $(NEWFILE) $(FILES) $(MAIN)
-
-scanner:
-	$(CC) -std=c99 -o $(NEWFILE) $(SCANNER) main.c
-
-parser:
-	$(CC) -std=c99 -o $(NEWFILE) $(FILES) testParserMain.c
-	
-precedence:
-	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) testMain.c
-
-symtable:
-	$(CC) -std=c99 -o $(NEWFILE) $(PRECEDENCE) symtableTestMain.c
-
-AST:
-	$(CC) $(CFLAGS) -o $(NEWFILE) AST.c AST.h ASTtestMain.c
-
-main:
-	$(CC) -std=c99 -o $(NEWFILE) $(FILES) MainMain.c
+all:
+	$(CC) -std=c99 -o $(NEWFILE) $(FILES) Main.c
