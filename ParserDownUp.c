@@ -3,6 +3,7 @@
  * @file ParserDownUp.c
  * @brief Zpracovanie vyrazov a semanticka kontrola vyrazov
  * @author Jakub Skunda (xskund02)
+ * *@author Juraj Hatala (xhatal01)
  * 
  */
 
