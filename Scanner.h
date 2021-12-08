@@ -104,19 +104,39 @@ typedef struct MyToken {        //token
  */
 int tokenScan( FILE* Myfile, Token* MyToken);
 
-
+/**
+ * @brief vytvorenie tokenu
+ * 
+ * @return Token* 
+ */
 Token* tokenCreate();
 
-
+/**
+ * @brief inicializovanie tokenu
+ * 
+ * @param MyToken 
+ */
 void tokenInit(Token* MyToken);
 
 
 void tokenFullup(Token* MyToken, Token_type type, char* att);
 
-
+/**
+ * @brief vytvorenie stringu
+ * 
+ * @return char* 
+ */
 char* stringCreate();
 
-
+/**
+ * @brief pridanie charakteru do stringu
+ * 
+ * @param MyString 
+ * @param newCharacter 
+ * @param sizeOfStr 
+ * @param charNb 
+ * @return char* 
+ */
 char* stringAddChar(char** MyString, int newCharacter, int* sizeOfStr, int* charNb);
 
 /**
