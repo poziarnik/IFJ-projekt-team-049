@@ -1,3 +1,12 @@
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file error.h
+ * @author Jakub Skunda (xskund02)
+ * @brief makra pre volania chýb
+ * 
+ * 
+ */
+
 #ifndef _ERROR
 #define _ERROR
 
