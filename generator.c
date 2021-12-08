@@ -26,8 +26,8 @@
 bool code = true;
 int while_cycle_counter = 1;
 int if_cycle_counter = 1;
-bool isMain = false;
-bool jump = true;
+
+
 
 int interpret(root *Root){
     if(Root != NULL){
@@ -38,16 +38,7 @@ int interpret(root *Root){
                     for(int num = 0; num < *Root->nbStatements; num ++){
                         if(strcmp(Root->statements[num]->TStatement.function->id->data.string, "main")==0){
                             printf(" JUMP $main\n");
-                            isMain = true;
                         }
-                    }
-                    if(isMain = false){
-                        for(int num = 0; num < *Root->nbStatements; num ++){
-                            if(Root->statements[num]->TStatement.function->id->data.string != NULL){
-                                printf(" JUMP $%s\n", Root->statements[i]->TStatement.function->id->data.string);
-                                break;
-                            }  
-                        } 
                     }
                     if(Root->UsedInBuild != NULL){
                         for(int num_inbuild = 0; num_inbuild < 8; num_inbuild ++){
