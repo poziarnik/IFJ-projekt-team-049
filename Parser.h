@@ -55,10 +55,11 @@ typedef enum{
     returnParams,
     returnParam,
     returnNextParam,
+    defineEquals,
     statementOutOfFc
 }NonTerminal;
 
-
+//implementacia LL gramatiky
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +80,8 @@ int fc_loop(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);       
 int fc_condition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                      //condition: if<expresion>then<statement><elseCondition>end
 int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                  //elseCondition: else<statement>
 int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //assigne: <var><nextVar>=<expresion><nextExpresion>||<functionCall>
-int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //define: local|identifier:type<inicialize>
+int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //define: local|identifier:type<defineEquals>
+int fc_defineEquals(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                   //defineEquals: =<initialize>                   
 int fc_expression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //expression: identifier||number||integer||string||sizeof||L_bracet
 int fc_nextExpression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                 //nextExpression: ,<expresion><nextExpression>
 int fc_var(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                            //var: identifier
