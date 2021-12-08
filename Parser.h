@@ -1,3 +1,11 @@
+/**
+ *
+ * @file Parser.h
+ * @author Juraj Hatala (xhatal01)
+ * @brief hlavickovy subor parseru
+ *  
+ */
+
 #ifndef _parcer
 #define _parcer
 #include <stdio.h>
@@ -82,11 +90,11 @@ int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree
 int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //assigne: <var><nextVar>=<expresion><nextExpresion>||<functionCall>
 int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //define: local|identifier:type<defineEquals>
 int fc_defineEquals(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                   //defineEquals: =<initialize>                   
+int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //initialize: <expresion>||<functionCall>
 int fc_expression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //expression: identifier||number||integer||string||sizeof||L_bracet
 int fc_nextExpression(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                 //nextExpression: ,<expresion><nextExpression>
 int fc_var(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                            //var: identifier
 int fc_nextVar(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                        //nextVar: ,<var><nextVar>
-int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                     //initialize: =<expresion>||<functionCall>
 int fc_functionCall(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree,bool withIDs);                      //functionCall: identifier(<FCparams>)
 int fc_prolog(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                         //prolog: requier ifj21
 int fc_FCallparams(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree);                                    //FCallparams: <FCallparam><FCallnextParam>
@@ -101,9 +109,42 @@ int fc_returnNextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTr
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Spusta syntakticku analizu a lexikalnu analizu pri com vytvara symtable a AST 
+ * 
+ * @param abstractTree 
+ * @param mySymtable 
+ * @return int 
+ */
 int Parse(ASTtree* abstractTree, symtable* mySymtable);
+
+/**
+ * @brief funkcia skontoluje ci je token sucastou first mnoziny zadanej funkcie
+ * 
+ * @param MyToken 
+ * @param MyNonTerminal 
+ * @return true 
+ * @return false 
+ */
 bool first(Token* MyToken, NonTerminal MyNonTerminal);
+
+/**
+ * @brief vypis na stdout obsah tokenu pre kontolu priebehu syntaktickej analizi ak je on true  
+ * 
+ * @param state 
+ * @param MyToken 
+ * @param on 
+ */
 void parcerPrint(char* state ,Token* MyToken ,bool on);
+
+/**
+ * @brief porovna string z tokenu a vlozeni string
+ * 
+ * @param MyToken 
+ * @param checkType 
+ * @return true 
+ * @return false 
+ */
 bool chackStr(Token* MyToken, char* checkType);
 
 /**
@@ -134,8 +175,13 @@ bool compareTokenStr(Token* MyToken, char* Str);
  * @return false 
  */
 bool isTokenDataType(Token* MyToken);
-int global_level_root();
+
+/**
+ * @brief vypis symtable 
+ * 
+ * @param mySymtable 
+ */
 void printGlobalTree(symtable* mySymtable);
-void printGlobalTree(symtable* mySymtable);
+
 
 #endif

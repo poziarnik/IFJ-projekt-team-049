@@ -1,9 +1,8 @@
 /**
  *
  * @file symtable.c
- * @author Juraj Hatala
- * @brief 
- * @date 
+ * @author Juraj Hatala (xhatal01)
+ * @brief implementacia tabulky symbolov
  *
  */
 
@@ -23,14 +22,11 @@ void bst_insert(TreeItem **tree, char* key, TreeItem *new){
       if (strcmp(key, (*tree)->key)>0){
         bst_insert(&((*tree)->rptr), key, new);
       }
-      /*else{
-        (*tree)->data = data;
-      }  */
     }  
   }
 }
 void TreeItemInit(TreeItem *treeitem){
-  treeitem->key = NULL;//(char*)malloc(sizeof(char));
+  treeitem->key = NULL;
   treeitem->lptr = NULL;
   treeitem->rptr = NULL;
   treeitem->subtree = NULL;
@@ -47,7 +43,6 @@ bool sym_search(TreeItem *tree, char* key) {
   }
   else{
     if (strcmp(key, tree->key)==0){
-      //printf("*%s\n",tree->key);
       return true;
     }
     else{

@@ -49,10 +49,8 @@ int Stack_push(TStack *Stack, int newItem, Token *token){
 
 void Stack_Push_Element(TStack *Stack, TElement *Element){
     TElement *tmp = Stack->top;
-    //printf("push element tmp --> %p\n", tmp);
     Stack->top = Element;
     Stack->top->next = tmp;
-    //printf("push element top next --> %p\n", Stack->top->next);
 }
 
 

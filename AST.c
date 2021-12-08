@@ -1,3 +1,10 @@
+/**
+ *
+ * @file AST.c
+ * @author Juraj Hatala (xhatal01)
+ * @brief Implementacia abstraktneho stromu
+ *  
+ */
 
 #include "AST.h"
 
@@ -48,7 +55,6 @@ Tstate*** ASTreturnFastST(ASTstack* myStack){
 int* ASTreturnFastNB(ASTstack* myStack){
     
     statementType Type=myStack->head->statement->type;
-    //printf(x ? "true" : "false" );
     if (Type==ASTfunction){
         return myStack->head->statement->TStatement.function->nbStatements;
     }
@@ -228,7 +234,7 @@ int ASTaddToStatements(Tstate*** statements, int* nbStatements, Tstate* newState
         sizeOfArray=50*((*nbStatements / 50) + 1);
     }
 
-    if(*nbStatements == (sizeOfArray)-1){           //-2 aby bol posledny znak vzdy null
+    if(*nbStatements == (sizeOfArray)-1){           
         *statements = (Tstate**)realloc(*statements, sizeof(Tstate*)*(sizeOfArray+50));
         if (*statements == NULL){
             return INTERNAL_ERROR;
@@ -251,14 +257,6 @@ Tree** ASTcreateExpressions(int* nbExpressions){
 
     return espressions;
 }
-/**
- * @brief vlozi zadane expression do zadaneho pola expressions
- * 
- * @param espressions 
- * @param nbExpressions 
- * @param newExpression 
- * @return int 
- */
 int ASTaddToExpressions(Tree*** expressions, int* nbExpressions, Tree* newExpression){
     int sizeOfArray=0;                    //odvozdujem velkost pola
     if (*nbExpressions<50){
@@ -268,7 +266,7 @@ int ASTaddToExpressions(Tree*** expressions, int* nbExpressions, Tree* newExpres
         sizeOfArray=50*((*nbExpressions / 50) + 1);
     }
 
-    if(*nbExpressions == (sizeOfArray)-1){           //-2 aby bol posledny znak vzdy null
+    if(*nbExpressions == (sizeOfArray)-1){           
         *expressions = (Tree**)realloc(*expressions, sizeof(Tree*)*(sizeOfArray+50));
         if (*expressions == NULL) return INTERNAL_ERROR;
         for (int i = *nbExpressions; i < (*nbExpressions+50); i++){
@@ -466,13 +464,6 @@ int ASTsaveToken(ASTstack* myStack, Token* myToken, saveType type){
         
     return 0;
 }
-/**
- * @brief vrati cestu stackom k polu tokenov v danom type unie Tstate(len na zkratenie zapisu) 
- * 
- * @param myStack 
- * @param type 
- * @return Token*** 
- */
 Token*** ASTreturnFastArray(ASTstack* myStack, saveType type){
     if(type==functionParams){
         return &(myStack->head->statement->TStatement.function->parameters);
@@ -486,9 +477,6 @@ Token*** ASTreturnFastArray(ASTstack* myStack, saveType type){
     else if(type==functionCallIDs){
         return &(myStack->head->statement->TStatement.functioncall->IDs);
     }
-    /*else if(type==functionCallParams){
-        return &(myStack->head->statement->TStatement.functioncall->parameters);
-    }*/
     return NULL;
 }
 int* ASTreturnFastArrayNB(ASTstack* myStack, saveType type){
@@ -554,7 +542,7 @@ void ASTprintStatement(Tstate* statement){
         printf("\033[0;31m");
         printf("    assigment\n");
         printf("\033[0m");
-        printf("        IDs: ");//vypis vsetky variables
+        printf("        IDs: ");
         for (int i = 0; i < *statement->TStatement.assignment->nbID; i++){
             printf("%s, ",statement->TStatement.assignment->IDs[i]->data.string);
         }
@@ -570,7 +558,7 @@ void ASTprintStatement(Tstate* statement){
         printf("\033[0m");
         printf("        name: %s\n", statement->TStatement.functioncall->functionName->data.string);
         if(*(statement->TStatement.functioncall->nbID)!=0){
-            printf("        IDs: ");//vypis vsetky variables
+            printf("        IDs: ");
             for (int i = 0; i < *statement->TStatement.functioncall->nbID; i++){
                 printf("%s, ",statement->TStatement.functioncall->IDs[i]->data.string);
             }
@@ -622,7 +610,6 @@ void ASTprintStatement(Tstate* statement){
             else tmp=NULL;
         }
         else if (statement->type==ASTcondition){
-            //tmp=NULL;
             if (nb<*(statement->TStatement.if_loop->nbIfStatements)){
                 tmp=statement->TStatement.if_loop->if_statements[nb];
             }
@@ -664,7 +651,6 @@ void ASTprintStack(ASTstack* myStack){
         tmp=tmp->next;
     }
 }
-//void ASTnewStatementInit(Tstate* newStatement)
 void ASTstackInit(ASTstack* myStack){
     myStack->head=NULL;
 }
