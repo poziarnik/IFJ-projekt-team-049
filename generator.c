@@ -1084,7 +1084,7 @@ void gen_builtin_func(root *root, int i){
             
 }
 
-int gen_read_i(){
+void gen_read_i(){
     printf("JUMP $readi_end$\n LABEL        $readi\n\
  CREATEFRAME\n\
  PUSHFRAME\n\
@@ -1105,7 +1105,7 @@ int gen_read_i(){
  LABEL $readi_end$\n");   
 }
 
-int gen_read_s(){
+void gen_read_s(){
     printf("JUMP $reads_end$\n LABEL $reads\n\
  CREATEFRAME\n\
  PUSHFRAME\n\
@@ -1121,7 +1121,7 @@ int gen_read_s(){
  LABEL $reads_end$\n");
 }
 
-int gen_read_n(){
+void gen_read_n(){
     printf("JUMP $readn_end$\n LABEL $readn\n\
  CREATEFRAME\n\
  PUSHFRAME\n\
