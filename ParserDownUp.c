@@ -602,7 +602,14 @@ int expressionSemanticCheck(Tree *exprTree, symtable *Symtable){
         else if (((left == STR || left == NR || left == NR_zero || left == INT || left == INT_zero || left == NIL) && right == NIL) || \
                 (right == STR || right == NR || right == NR_zero || right == INT || right == INT_zero || right == NIL) && left == NIL){
             return PROGRAM_OK;
-        } 
+        }
+
+        else if ((left == INT || left == INT_zero || left == NR || left == NR_zero) && \
+                (right == INT || right == INT_zero || right == NR || right == NR_zero)){
+            return PROGRAM_OK;
+        }
+
+        return SEMANTICAL_COMPABILITY_ERROR; 
     }
 
     return -1;
