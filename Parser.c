@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#define PRINT_ON false //ak chces printovat priebeh nastav true ak nie nastav false
+#define PRINT_ON true //ak chces printovat priebeh nastav true ak nie nastav false
 /*global function factorial ( n : integer, a : number) : integer , number 
 while e do end 21*/
 //bacha segfault
@@ -32,6 +32,10 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
         if(first(MyToken, functionDec)){
             return true;
         }
+        else if (first(MyToken,functionCall)){
+            return true;
+        }
+        
     }
     else if (MyNonTerminal==functionDec){
         if (first(MyToken,global_scope)){
@@ -238,10 +242,9 @@ bool first(Token* MyToken, NonTerminal MyNonTerminal){
     }
     else if (MyNonTerminal == initialize)
     {
-        if (MyToken->type==Assign){
+        if(first(MyToken, expression)){
             return true;
         }
-        else return false;
     }
     else if(MyNonTerminal == FCallparams){
         if (first(MyToken,FCallparam)){
@@ -329,13 +332,10 @@ int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){       
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
     }
-    else{
-        return PARC_FALSE;
+    else if (MyToken->type==Identifier){
+        RETURN_ON_ERROR_FCCALL(false);
     }
-
-    if (first(MyToken, code)){
-        RETURN_ON_ERROR(fc_code);
-    }
+    else PARC_FALSE;
 
     if (first(MyToken, statementOutOfFc)){
         RETURN_ON_ERROR(fc_statementOutOfFc); 
@@ -345,7 +345,6 @@ int fc_code(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){       
 }
 int fc_statementOutOfFc(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){        //statementOutOfFc: <functionDec>||<functionCall>(bez ids) <statementOutOfFc>
     int status = 0;
-    //puts("halooooooooooo");
     if (first(MyToken, functionDec)){
         RETURN_ON_ERROR(fc_functionDec);
     }
@@ -712,7 +711,7 @@ int fc_elseCondition(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree
     return PARC_TRUE;
 }
     
-int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                      //<var><nextVar>=<expresion><nextExpresion>     or varlist=expresionlist
+int fc_assigne(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                      //<var><nextVar>=<expresion><nextExpresion>||<functionCall>
     int status = 0;
     bool assigneOrFCcall=0;//0 - asigne
     
@@ -900,6 +899,12 @@ int fc_define(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){     
     }
     else return PARC_FALSE;
 
+    if (chackStr(MyToken, "=")){
+        parcerPrint("String" ,MyToken ,PRINT_ON);
+        SCAN_TOKEN;
+    }
+    else return PARC_FALSE;
+
     if (first(MyToken,initialize)){
         RETURN_ON_ERROR(fc_initialize);
     }
@@ -961,8 +966,6 @@ int fc_FCallparam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){ 
     int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
-        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;*/
     }   
     else return PARC_FALSE;
     
@@ -992,13 +995,6 @@ int fc_FCallnextParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTre
 //dorobit function call !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 int fc_initialize(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){                                  //initialize: =<expresion>||<functionCall>
     int status = 0;
-
-    if (chackStr(MyToken, "=")){
-        parcerPrint("String" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;
-    }
-    else return PARC_FALSE;
-    
     if (first(MyToken, expression)){                                                //!!!!!or functionCall
         if(MyToken->type==Identifier){
             if(isFunDeclared(MyToken->data.string,mySymtable->sym_globalTree, abstractTree)){
@@ -1072,8 +1068,6 @@ int fc_returnParam(Token* MyToken, symtable* mySymtable, ASTtree* abstractTree){
     int status = 0;
     if(first(MyToken, expression)){
         RETURN_ON_ERROR(fc_expression);
-        /*parcerPrint("functionCall" ,MyToken ,PRINT_ON);
-        SCAN_TOKEN;*/
     }   
     else return PARC_FALSE;
     

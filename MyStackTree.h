@@ -1,5 +1,12 @@
-#ifndef __STACKTREE__
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file MyStackTree.h
+ * @brief Zpracovanie vyrazov - pomocny Stack
+ * @author Jakub Skunda (xskund02)
+ * 
+ */
 
+#ifndef __STACKTREE__
 #define __STACKTREE__
 
 #include <stdio.h>

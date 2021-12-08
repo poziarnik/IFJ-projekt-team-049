@@ -1,3 +1,11 @@
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file Mystack.c
+ * @brief Zpracovanie vyrazov - pomocny Stack
+ * @author Jakub Skunda (xskund02)
+ * 
+ */
+
 #include "MyStackTree.h"
 
 

@@ -1,5 +1,13 @@
-#ifndef __PRECEDENCEPARSER__
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file ParserDownUp.h
+ * @brief Zpracovanie vyrazov a semanticka kontrola vyrazov
+ * @author Jakub Skunda (xskund02)
+ * @author Juraj Hatala (xhatal01)
+ * 
+ */
 
+#ifndef __PRECEDENCEPARSER__
 #define __PRECEDENCEPARSER__
 
 #include <stdio.h>
