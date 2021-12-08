@@ -10,7 +10,7 @@ int main(){
     symtableInit(mySymtable); 
 
     int result=Parse(abstractTree, mySymtable);
-    // if(result == PROGRAM_OK) interpret(abstractTree->tree->TStatement.root);
+    if(result == PROGRAM_OK) interpret(abstractTree->tree->TStatement.root);
     fprintf(stderr, "%i\n", result);
 
     return result;

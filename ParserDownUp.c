@@ -1,3 +1,11 @@
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file ParserDownUp.c
+ * @brief Zpracovanie vyrazov a semanticka kontrola vyrazov
+ * @author Jakub Skunda (xskund02)
+ * 
+ */
+
 #include "ParserDownUp.h"
 
 //makro na Scanovanie tokenu, vrati chybu, ak je v tokene lexikalna chyba

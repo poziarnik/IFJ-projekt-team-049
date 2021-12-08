@@ -1,3 +1,12 @@
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file Scanner.c
+ * @brief Lexikalna analyza
+ * @author Jakub Skunda (xskund02)
+ * @author Juraj Hatala (xhatal01)
+ * 
+ */
+
 
 #include "Scanner.h"
 #include "error.h"
@@ -406,7 +415,7 @@ int tokenScan(FILE* Myfile, Token* MyToken){
                 if (symbol == ']'){ //ak prisiel znak ']'
                     state = Scanner_state_comment_block_end1; //state -->comment_block_end1
                 }
-                else if (symbol == '\n' || symbol == EOF){
+                else if (symbol == EOF){
                     return LEXICAL_ERROR;
                 }
                 else{  

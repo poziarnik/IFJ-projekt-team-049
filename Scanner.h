@@ -1,3 +1,12 @@
+/**
+ * Projekt : Implementace prekladace imperativniho jazyka IFJ21
+ * @file Scanner.h
+ * @brief Lexikalna analyza
+ * @author Jakub Skunda (xskund02)
+ * @author Juraj Hatala (xhatal01)
+ * 
+ */
+
 #ifndef _SCANNER_
 #define _SCANNER_ 
 #include <stdio.h>
@@ -82,13 +91,7 @@ typedef struct MyToken {        //token
         double number;
         char *string;
     }data;
-                  
-    struct MyToken* next;
 }Token;
-
-typedef struct list{
-    Token* Head;
-}TokenList;
 
 
 /**
@@ -131,8 +134,5 @@ int isKeyword(char *word);
  * @return int 
  */
 int isEscapeSeq(int symbol);
-void listInit(TokenList* list);
-void listAddToken(TokenList* list, Token* NewToken);
-void listFree(TokenList* list);
 
 #endif //_SCANNER_
